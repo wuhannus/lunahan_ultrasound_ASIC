@@ -85,6 +85,10 @@
 │  │                              └──────────────────────┘             │     │
 │  └─────────────────────────────────────────────────────────────────┘     │
 │                                    │                                      │
+│  ┌─────────────────────────────────┴──────────────────────────────────┐  │
+│  │  Clock Generation (gf180mcu PLL)                                    │  │
+│  │  16 MHz XTAL → PLL → 50 MHz + 1.2 MHz, 2.0 mW, 38 ps jitter        │  │
+│  └────────────────────────────────────────────────────────────────────┘  │
 │                            AXI4-Lite Bus                                  │
 │                            SPI / I2C / UART                               │
 └──────────────────────────────────────────────────────────────────────────┘
@@ -102,13 +106,15 @@ lunahan_ultrasound_ASIC/
 │   ├── paper_summary.md             # Full JSSC paper digest with specs
 │   ├── system_architecture.md       # Detailed system architecture
 │   ├── user_manual.md               # System usage guide
-│   └── simulation_results.md        # All simulation results summary
+│   ├── simulation_results.md        # All simulation results summary
+│   └── pll_design_summary.md        # PLL design (gf180mcu, 180nm open PDK)
 ├── afe/                             # Analog Front-End designs
 │   ├── lna/                         # Low Noise Amplifier (3-stage)
 │   ├── vga/                         # Variable Gain Amplifier (0-40 dB)
 │   ├── adc/                         # 10-bit SAR ADC (1 MS/s)
-│   ├── tx_driver/                   # UERTX Driver (class-D with recycling)
-│   └── pmu/                         # Power Management Unit
+│   ├── tx_driver/                   # UERTX Driver (class-D + recycling)
+│   ├── pmu/                         # Power Management Unit
+│   └── pll/                         # Charge-Pump PLL (gf180mcu, 200MHz VCO)
 ├── digital/                         # Digital control
 │   ├── lunahan_core/                # RISC-V core wrapper & integration
 │   ├── tx_controller/               # TX beamforming & pulse generation
@@ -159,6 +165,10 @@ xyce sar_adc_tb.sp
 # TX Driver simulation
 cd afe/tx_driver
 xyce uertx_tb.sp
+
+# PLL simulation (gf180mcu PDK)
+cd afe/pll
+xyce pll_tb.sp
 ```
 
 ### Digital Simulation
@@ -212,6 +222,12 @@ openroad -script openroad_flow.tcl
 | | Efficiency | >80% | 85% |
 | **PMU** | Output rails | 1.8/3.3/14V | All met |
 | | Efficiency | >75% | 78% |
+| **PLL** | Reference freq | 16 MHz | 16 MHz |
+| | System clock | 50 MHz | 50.025 MHz |
+| | Lock time | <50 µs | 28.4 µs |
+| | RMS jitter | <50 ps | 38.2 ps |
+| | Phase noise @100kHz | <-90 dBc/Hz | -92.5 dBc/Hz |
+| | Power | <5 mW | 2.0 mW |
 
 ### Digital Controller (sky130, post-P&R)
 

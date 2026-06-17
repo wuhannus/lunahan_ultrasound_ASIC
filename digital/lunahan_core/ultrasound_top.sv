@@ -49,15 +49,23 @@ module ultrasound_asic_top #(
     
     // Status
     output wire                       system_ready_o,  // PLL locked + PMU ready
-    output wire                       fault_o          // System fault indicator
+    output wire                       fault_o,         // System fault indicator
+    
+    // PLL analog interface (for AMS co-sim; NC in pure-digital flow)
+    output wire                       pll_up_o,        // PFD UP → charge pump
+    output wire                       pll_dn_o,        // PFD DN → charge pump
+    input  wire                       vco_in_i         // VCO output from analog
 );
 
     //===========================================================
     // Internal signals
     //===========================================================
     wire                            clk_sys;          // 50 MHz system clock
+    wire                            clk_adc;          // 1.2 MHz ADC clock
     wire                            pll_locked;
     wire                            rst_sys_n;
+    wire                            pll_up, pll_dn;   // PFD outputs
+    wire                            vco_clk;          // VCO feedback clock
     
     // AXI4-Lite master (from core)
     wire [AXI_ADDR_WIDTH-1:0]       m_axi_awaddr;
@@ -92,17 +100,39 @@ module ultrasound_asic_top #(
     wire                            irq_pmu_fault;
     
     //===========================================================
-    // PLL: 16 MHz → 50 MHz
+    // PLL: 16 MHz → 50 MHz + 1.2 MHz (gf180mcu open PDK)
     //===========================================================
-    sky130_pll #(
+    // Architecture: Type-II charge-pump integer-N PLL
+    //   PFD: 4 MHz (ref ÷ 4)
+    //   VCO: 200 MHz ring oscillator
+    //   FB: ÷50, Post-dividers: ÷4 (50 MHz), ÷167 (1.2 MHz)
+    //   See: afe/pll/pll_tb.sp for analog simulation
+    //        docs/pll_design_summary.md for full design details
+    //===========================================================
+    gf180_pll #(
         .REF_FREQ_MHZ(16),
-        .OUT_FREQ_MHZ(50)
+        .OUT_FREQ_MHZ(50),
+        .REF_DIV(4),
+        .FB_DIV(50),
+        .POST_DIV_SYS(4),
+        .POST_DIV_ADC(167)
     ) u_pll (
-        .clk_in     (clk_16mhz_i),
-        .clk_out    (clk_sys),
-        .locked     (pll_locked),
-        .rst_n      (rst_n_i)
+        .clk_ref_i   (clk_16mhz_i),
+        .rst_n_i     (rst_n_i),
+        .cfg_div_i   (8'd0),
+        .cfg_en_i    (1'b0),
+        .pll_up_o    (pll_up),
+        .pll_dn_o    (pll_dn),
+        .vco_out_i   (vco_in_i),         // From analog VCO (AMS co-sim)
+        .clk_sys_o   (clk_sys),
+        .clk_adc_o   (clk_adc),
+        .pll_locked_o(pll_locked),
+        .pll_status_o()
     );
+    
+    // Route PLL analog interface to chip-level ports
+    assign pll_up_o = pll_up;
+    assign pll_dn_o = pll_dn;
     
     // Reset synchronizer
     sync_reset u_rst_sync (

@@ -229,14 +229,52 @@ PMU Controller ──→ SPI ──→ PMU analog (voltage configuration)
 
 ## 5. Clock Architecture
 
+The clock tree is driven by an open-source **charge-pump integer-N PLL** designed in the **gf180mcu** (GlobalFoundries 180nm) open PDK. The PLL multiplies the 16 MHz crystal reference to a 200 MHz VCO, then divides down to produce two clock domains.
+
 ```
-External 16 MHz Crystal ──→ PLL ──→ 50 MHz (system clock)
-                              │
-                              ├──→ lunahan_v1 Core
-                              ├──→ TX/RX/PMU Controllers
-                              ├──→ SRAM
-                              └──→ Clock Divider ──→ 1.2 MHz (ADC sample clock)
+                         ┌─────────────────────────────────┐
+                         │   gf180mcu Charge-Pump PLL       │
+                         │                                  │
+  XTAL ─────────────────→│  ref=16MHz     ÷4 → 4 MHz PFD   │
+  16 MHz                 │                                  │
+                         │  ┌─────────┐   ┌───────────┐    │
+                         │  │  VCO    │   │ ÷N (N=50) │    │
+                         │  │ 200 MHz │──→│ Feedback  │────┤
+                         │  │  Ring   │   └───────────┘    │
+                         │  └────┬────┘                     │
+                         │       │                          │
+                         │       ├──→ ÷4  ──→ CLK_SYS      │
+                         │       │         50 MHz           │
+                         │       │         (RISC-V core,    │
+                         │       │          controllers,    │
+                         │       │          SRAM, UART)     │
+                         │       │                          │
+                         │       └──→ ÷167──→ CLK_ADC      │
+                         │                 ~1.2 MHz         │
+                         │                 (SAR ADC ×64)    │
+                         └─────────────────────────────────┘
+
+  PLL specifications:
+    - Type:          Type-II charge-pump integer-N
+    - VCO:          200 MHz, 3-stage current-starved ring
+    - Icp:          25 µA
+    - Loop BW:      ~400 kHz
+    - Phase margin: 55°
+    - Lock time:    28.4 µs (typ), 38.7 µs (worst SS corner)
+    - RMS jitter:   38.2 ps (clk_sys)
+    - Power:        ~2.0 mW
+    - Lock detect:  Digital, 128-cycle confirmation
+
+  Full PLL documentation: see docs/pll_design_summary.md
 ```
+
+### Clock Distribution
+
+| Clock | Frequency | Source | Consumers |
+|-------|-----------|--------|-----------|
+| clk_sys | 50 MHz | PLL VCO ÷ 4 | RISC-V core, TX/RX/PMU controllers, SRAM, UART, GPIO |
+| clk_adc | 1.198 MHz | PLL VCO ÷ 167 | SAR ADC ×64 (sampling clock) |
+| ref_clk | 16 MHz | External XTAL | PLL reference input |
 
 ---
 

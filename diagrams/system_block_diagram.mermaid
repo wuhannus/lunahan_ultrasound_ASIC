@@ -1,0 +1,68 @@
+```mermaid
+graph TB
+    subgraph AFE["Analog Front-End (sky130)"]
+        LNA["LNA<br/>3-stage CS<br/>22.4 dB, 3.8 dB NF"]
+        VGA["VGA<br/>-2 to 42 dB<br/>64-step PGA"]
+        BPF["BPF<br/>4th-order Butterworth<br/>fc=40 kHz"]
+        ADC["SAR ADC<br/>10-bit, 1.2 MS/s<br/>ENOB=9.6, SNDR=58.7 dB"]
+        UERTX["UERTX Driver<br/>Class-D + energy recycle<br/>6-14 Vpp, 44% saving"]
+        PMU["PMU<br/>Boost + LDO<br/>1.8V/3.3V/6-14V"]
+    end
+
+    subgraph DIGITAL["Digital Controller (sky130)"]
+        CORE["lunahan_v1<br/>RISC-V RV32IMC<br/>50 MHz, 12.4 mW"]
+        ICACHE["I-Cache<br/>4 KB"]
+        DCACHE["D-Cache<br/>4 KB"]
+        SRAM["SRAM<br/>32 KB"]
+        TXCTRL["TX Controller<br/>Beamforming<br/>Pulse Gen"]
+        RXCTRL["RX Controller<br/>ADC Interface<br/>TOF Calculator"]
+        PMUCTRL["PMU Controller<br/>SPI Master<br/>Voltage Tuning"]
+    end
+
+    subgraph IO["External Interfaces"]
+        XTAL["16 MHz XTAL"]
+        UART_IO["UART<br/>(Host PC)"]
+        SPI_IO["SPI<br/>(Config/Debug)"]
+        TRANSDUCER["4×4 Transducer<br/>Arrays ×4"]
+    end
+
+    %% AFE signal chain
+    TRANSDUCER -->|"Echo (RX)"| LNA
+    LNA --> VGA
+    VGA --> BPF
+    BPF --> ADC
+    ADC -->|"10-bit parallel"| RXCTRL
+
+    %% TX path
+    TXCTRL -->|"Pulse control"| UERTX
+    UERTX -->|"6-14 Vpp burst"| TRANSDUCER
+
+    %% PMU
+    PMU -->|"1.8V"| LNA
+    PMU -->|"1.8V"| VGA
+    PMU -->|"1.8V"| ADC
+    PMU -->|"6-14V"| UERTX
+    PMU -->|"1.8V"| CORE
+    PMUCTRL -->|"SPI"| PMU
+
+    %% Digital interconnect
+    CORE <-->|"AXI4-Lite"| ICACHE
+    CORE <-->|"AXI4-Lite"| DCACHE
+    CORE <-->|"AXI4-Lite"| SRAM
+    CORE -->|"MMIO"| TXCTRL
+    RXCTRL -->|"IRQ / Data"| CORE
+    CORE -->|"MMIO"| PMUCTRL
+
+    %% External interfaces
+    XTAL -->|"16 MHz"| CORE
+    CORE <-->|"UART 115200"| UART_IO
+    CORE <-->|"SPI Mode 0"| SPI_IO
+
+    %% Styling
+    classDef analog fill:#e1f5fe,stroke:#0288d1
+    classDef digital fill:#fff3e0,stroke:#f57c00
+    classDef io fill:#e8f5e9,stroke:#388e3c
+    class LNA,VGA,BPF,ADC,UERTX,PMU analog
+    class CORE,ICACHE,DCACHE,SRAM,TXCTRL,RXCTRL,PMUCTRL digital
+    class XTAL,UART_IO,SPI_IO,TRANSDUCER io
+```

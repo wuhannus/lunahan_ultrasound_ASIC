@@ -103,11 +103,14 @@ lunahan_ultrasound_ASIC/
 ├── README.md                        # This file
 ├── LICENSE                          # Apache 2.0
 ├── docs/
-│   ├── paper_summary.md             # Full JSSC paper digest with specs
-│   ├── system_architecture.md       # Detailed system architecture
-│   ├── user_manual.md               # System usage guide
-│   ├── simulation_results.md        # All simulation results summary
-│   └── pll_design_summary.md        # PLL design (gf180mcu, 180nm open PDK)
+│   ├── paper_summary.md               # Full JSSC paper digest with specs
+│   ├── system_architecture.md         # Detailed system architecture
+│   ├── user_manual.md                 # System usage guide
+│   ├── simulation_results.md          # All simulation results summary
+│   ├── simulation_waveforms.md        # Waveform visualizations (ASCII art)
+│   ├── system_procedure_simulation.md # Full-system workflow simulation
+│   ├── physical_design_report.md      # GDSII physical design report
+│   └── pll_design_summary.md          # PLL design (gf180mcu, 180nm open PDK)
 ├── afe/                             # Analog Front-End designs
 │   ├── lna/                         # Low Noise Amplifier (3-stage)
 │   ├── vga/                         # Variable Gain Amplifier (0-40 dB)
@@ -122,9 +125,17 @@ lunahan_ultrasound_ASIC/
 │   └── pmu_controller/              # PMU digital interface
 ├── simulation/                      # Simulation setups
 │   ├── ams/                         # Mixed-signal co-simulation
+│   │   ├── run_ams_cosim.py         # AMS co-simulation launcher
+│   │   └── system_simulation.py     # Full system workflow simulator
 │   └── digital/                     # Digital RTL simulation + firmware
 ├── phys/                            # Physical design flow
+│   ├── openroad_flow.tcl            # OpenROAD P&R script
+│   ├── constraints.sdc              # Timing constraints
+│   ├── reports/                     # Generated timing/area/power reports
+│   └── output/                      # GDSII, DEF, SPEF output
 ├── scripts/                         # Automation scripts
+│   ├── run_analog_sim.sh            # Analog SPICE simulation runner
+│   └── run_physical_flow.sh         # RTL→GDSII flow runner
 └── diagrams/                        # Architecture diagrams (Mermaid)
 ```
 

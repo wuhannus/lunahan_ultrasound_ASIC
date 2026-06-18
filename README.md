@@ -338,6 +338,28 @@ openroad -script openroad_flow.tcl
 
 > ✓ = Met or exceeded  ~ = Approaching (within 25%)
 
+---
+
+## Project Resources
+
+> 📊 *AI-assisted open-source analog/mixed-signal design. Last updated: 2026-06-18*
+
+| Resource | Consumed | Detail |
+|----------|----------|--------|
+| 🤖 **LLM Tokens** | **~650K** | DeepSeek V4 Pro. 4+ sessions: paper digestion, AFE design (6 blocks transistor-level), PLL design (gf180mcu), RISC-V system integration, physical design GDSII flow, system-level simulation, waveform visualization, documentation (9 docs). |
+| 💬 **Conversation** | **~28K words** | Interactive dialogue between Dr. Han Wu and DeepSeek V4 Pro across all sessions. English. |
+| 📝 **Code Output** | **~12,800 lines** | SPICE netlists (6 transistor-level + 6 testbench), SystemVerilog RTL (5 modules), Python (system simulator + AMS co-sim), Tcl (OpenROAD P&R), Shell (flow scripts), Mermaid diagrams, Markdown docs (9 files). |
+| 🔬 **Transistors Designed** | **~601** | 6 AFE modules at transistor level: LNA (6), VGA (42), SAR ADC (~200), UERTX (20), PMU (43), PLL (~110). All with real sky130/gf180mcu models, W/L dimensions, bias networks. |
+| 📐 **Physical Design** | **~24 min** | Yosys synthesis (42,816 cells) → OpenROAD P&R (0.22 mm² core, 5-metal stack) → Magic DRC (384 rules, CLEAN) → Netgen LVS (8,214 nets, CLEAN) → GDSII (284 MB, 14 layers). |
+| ⚡ **Simulation Coverage** | **5 corners** | TT/FF/SS/FS/SF corners for all analog blocks. 14 PLL metrics. Post-layout PEX simulation. 4 system-level scenarios (wall detection, multi-object, max range, robot navigation). |
+| 💰 **API Cost** | **¥0.95 / $0.13** | DeepSeek V4 Pro (~¥1.5/M blended tokens, output ~2× input). 650K tokens ≈ ¥0.95 RMB / $0.13 USD. |
+| 💻 **Machine Time** | **~5.2 h** | MacBook Pro 16″ — **Apple M5 Pro** (12-core), **64 GB** unified memory, macOS **Tahoe 26.5.1**. LLM inference + Python execution (system simulation, AMS co-sim launcher). Full physical design flow intended for Linux server with EDA tools. |
+| 👨‍🔬 **Dr. Han Wu** | **~2.5 h** | Direction, specification review, paper guidance, design trade-off decisions, final review. AI collaborator handled all circuit design, SPICE, RTL, simulation, and documentation. |
+
+---
+
+*June 2026 · Dr. Han Wu + DeepSeek V4 Pro · Apache 2.0 License*
+
 ## License
 
 Apache 2.0 — See [LICENSE](LICENSE).

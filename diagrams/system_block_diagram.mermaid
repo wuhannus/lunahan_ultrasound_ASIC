@@ -10,20 +10,27 @@ graph TB
     end
 
     subgraph DIGITAL["Digital Controller (sky130)"]
-        CORE["lunahan_v1<br/>RISC-V RV32IMC<br/>50 MHz, 12.4 mW"]
+        CORE["lunahan_v1<br/>RISC-V RV32IMC<br/>48 MHz, 18.2 mW"]
         ICACHE["I-Cache<br/>4 KB"]
         DCACHE["D-Cache<br/>4 KB"]
         SRAM["SRAM<br/>32 KB"]
         TXCTRL["TX Controller<br/>Beamforming<br/>Pulse Gen"]
         RXCTRL["RX Controller<br/>ADC Interface<br/>TOF Calculator"]
         PMUCTRL["PMU Controller<br/>SPI Master<br/>Voltage Tuning"]
+        PV_RXBF["PV-RXBF Beamformer<br/>64-ch Delay & Sum<br/>32x32 Voxels, 24 fps"]
+        DELAY_SRAM["Delay Table SRAM<br/>96 KB"]
+        SAMPLE_SRAM["Sample Buffer SRAM<br/>320 KB"]
     end
 
     subgraph IO["External Interfaces"]
         XTAL["16 MHz XTAL"]
         UART_IO["UART<br/>(Host PC)"]
         SPI_IO["SPI<br/>(Config/Debug)"]
-        TRANSDUCER["4×4 Transducer<br/>Arrays ×4"]
+        TRANSDUCER["4x4 Transducer<br/>Arrays x4"]
+    end
+
+    subgraph CLOCK["Clock Generation (gf180mcu)"]
+        PLL["Charge-Pump PLL<br/>16 MHz -> 50 MHz<br/>Lock 28.4 us"]
     end
 
     %% AFE signal chain
@@ -32,6 +39,7 @@ graph TB
     VGA --> BPF
     BPF --> ADC
     ADC -->|"10-bit parallel"| RXCTRL
+    ADC -->|"Sample stream"| PV_RXBF
 
     %% TX path
     TXCTRL -->|"Pulse control"| UERTX
@@ -52,9 +60,15 @@ graph TB
     CORE -->|"MMIO"| TXCTRL
     RXCTRL -->|"IRQ / Data"| CORE
     CORE -->|"MMIO"| PMUCTRL
+    CORE -->|"MMIO"| PV_RXBF
+    PV_RXBF -->|"Voxel stream IRQ"| CORE
+    PV_RXBF <-->|"Delay fetch"| DELAY_SRAM
+    PV_RXBF <-->|"Sample buffer"| SAMPLE_SRAM
 
     %% External interfaces
-    XTAL -->|"16 MHz"| CORE
+    XTAL -->|"16 MHz"| PLL
+    PLL -->|"50 MHz"| CORE
+    PLL -->|"1.2 MHz"| ADC
     CORE <-->|"UART 115200"| UART_IO
     CORE <-->|"SPI Mode 0"| SPI_IO
 
@@ -62,7 +76,9 @@ graph TB
     classDef analog fill:#e1f5fe,stroke:#0288d1
     classDef digital fill:#fff3e0,stroke:#f57c00
     classDef io fill:#e8f5e9,stroke:#388e3c
+    classDef clock fill:#fce4ec,stroke:#c62828
     class LNA,VGA,BPF,ADC,UERTX,PMU analog
-    class CORE,ICACHE,DCACHE,SRAM,TXCTRL,RXCTRL,PMUCTRL digital
+    class CORE,ICACHE,DCACHE,SRAM,TXCTRL,RXCTRL,PMUCTRL,PV_RXBF,DELAY_SRAM,SAMPLE_SRAM digital
     class XTAL,UART_IO,SPI_IO,TRANSDUCER io
+    class PLL clock
 ```

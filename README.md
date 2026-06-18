@@ -110,14 +110,27 @@ lunahan_ultrasound_ASIC/
 │   ├── simulation_waveforms.md        # Waveform visualizations (ASCII art)
 │   ├── system_procedure_simulation.md # Full-system workflow simulation
 │   ├── physical_design_report.md      # GDSII physical design report
-│   └── pll_design_summary.md          # PLL design (gf180mcu, 180nm open PDK)
+│   ├── pll_design_summary.md          # PLL design (gf180mcu, 180nm open PDK)
+│   └── transistor_level_schematics.md # Transistor-level schematics for all AFE blocks
 ├── afe/                             # Analog Front-End designs
 │   ├── lna/                         # Low Noise Amplifier (3-stage)
+│   │   ├── lna_tb.sp                #   Functional testbench
+│   │   └── lna_transistor_level.sp  #   Transistor-level schematic
 │   ├── vga/                         # Variable Gain Amplifier (0-40 dB)
+│   │   ├── vga_tb.sp
+│   │   └── vga_transistor_level.sp
 │   ├── adc/                         # 10-bit SAR ADC (1 MS/s)
+│   │   ├── sar_adc_tb.sp
+│   │   └── sar_adc_transistor_level.sp
 │   ├── tx_driver/                   # UERTX Driver (class-D + recycling)
+│   │   ├── uertx_tb.sp
+│   │   └── uertx_transistor_level.sp
 │   ├── pmu/                         # Power Management Unit
+│   │   ├── pmu_tb.sp
+│   │   └── pmu_transistor_level.sp
 │   └── pll/                         # Charge-Pump PLL (gf180mcu, 200MHz VCO)
+│       ├── pll_tb.sp
+│       └── pll_transistor_level.sp
 ├── digital/                         # Digital control
 │   ├── lunahan_core/                # RISC-V core wrapper & integration
 │   ├── tx_controller/               # TX beamforming & pulse generation

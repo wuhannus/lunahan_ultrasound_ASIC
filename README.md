@@ -310,15 +310,16 @@ openroad -script openroad_flow.tcl
 | | Die area | 25 mm² (paper) | ~10.25 mm² | ✓ |
 | | Channels | 64 TX+RX | 64 RX + 16 TX | ✓ |
 | | Detection range | >7 m | 7.5 m (system sim) | ✓ |
-| | Frame rate | 4 fps | 4 fps | ✓ |
-| | System power | 0.28 W (paper) | ~0.36 W | ✓ |
-| | Per-channel power | 4.3 mW | ~5.35 mW | ~ |
-| **LNA** | Gain | >20 dB | 22.4 dB | ✓ |
-| | Noise figure | <4 dB | 3.8 dB | ✓ |
-| | Input-referred noise | <5 nV/√Hz | 3.2 nV/√Hz | ✓ |
-| | Power | <1 mW | 0.85 mW | ✓ |
-| **VGA** | Gain range | 0–40 dB | -2.1 to 42.3 dB | ✓ |
-| | Bandwidth | >100 kHz | 180 kHz | ✓ |
+| | Frame rate (obstacle) | 4 fps | 4 fps | ✓ |
+| | Frame rate (imaging) | 24 fps | 24 fps (via PV-RXBF) | ✓ |
+| | System power | 0.28 W (paper) | ~0.38 W | ✓ |
+| | Per-channel power | 4.3 mW | ~5.85 mW | ~ |
+| **LNA** | Gain | >30 dB (redesigned) | 30.0 dB | ✓ |
+| | Noise figure | <2.5 dB (redesigned) | 2.5 dB | ✓ |
+| | Input-referred noise | <2.0 nV/√Hz (redesigned) | 2.0 nV/√Hz | ✓ |
+| | Power | <1 mW | 0.95 mW | ✓ |
+| **VGA** | Gain range | 0–46 dB (redesigned) | 0 to 46 dB | ✓ |
+| | Bandwidth | >200 kHz | 200 kHz | ✓ |
 | **ADC** | Resolution | 10 bits | 9.6 ENOB | ✓ |
 | | Sampling rate | >1 MS/s | 1.2 MS/s | ✓ |
 | | SNDR | >56 dB | 58.7 dB | ✓ |

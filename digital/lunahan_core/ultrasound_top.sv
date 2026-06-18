@@ -54,7 +54,12 @@ module ultrasound_asic_top #(
     // PLL analog interface (for AMS co-sim; NC in pure-digital flow)
     output wire                       pll_up_o,        // PFD UP → charge pump
     output wire                       pll_dn_o,        // PFD DN → charge pump
-    input  wire                       vco_in_i         // VCO output from analog
+    input  wire                       vco_in_i,        // VCO output from analog
+    
+    // Beamforming output (voxel intensity stream)
+    output wire [15:0]                voxel_intensity_o,
+    output wire [15:0]                voxel_addr_o,
+    output wire                       voxel_valid_o
 );
 
     //===========================================================
@@ -98,6 +103,18 @@ module ultrasound_asic_top #(
     wire                            irq_rx_done;
     wire                            irq_uart_rx;
     wire                            irq_pmu_fault;
+    wire                            irq_bf_done;       // Beamforming frame complete
+    
+    // PV-RXBF interface wires
+    wire [15:0]                     bf_voxel_intensity;
+    wire [15:0]                     bf_voxel_addr;
+    wire                            bf_voxel_valid;
+    wire                            bf_done;
+    wire                            bf_busy;
+    wire [11:0]                     bf_dtbl_addr;
+    wire                            bf_dtbl_rd_en;
+    wire [11:0]                     bf_dtbl_data;
+    wire                            bf_dtbl_valid;
     
     //===========================================================
     // PLL: 16 MHz → 50 MHz + 1.2 MHz (gf180mcu open PDK)
@@ -160,7 +177,7 @@ module ultrasound_asic_top #(
         // Interrupts
         .irq_timer_i    (irq_timer),
         .irq_software_i (1'b0),
-        .irq_external_i (irq_tx_done | irq_rx_done | irq_uart_rx | irq_pmu_fault)
+        .irq_external_i (irq_tx_done | irq_rx_done | irq_uart_rx | irq_pmu_fault | irq_bf_done)
     );
     
     //===========================================================
@@ -266,6 +283,85 @@ module ultrasound_asic_top #(
         .rst_n_i        (rst_sys_n),
         .gpio_io        (gpio_io)
     );
+    
+    //===========================================================
+    // PV-RXBF — Per-Voxel RX Beamfocusing (JSSC 2022)
+    //===========================================================
+    // On-chip delay-and-sum beamformer for 64-channel 8×8 array.
+    // 32×32 voxel grid, ~10 M Focal Points/s, 24 fps imaging.
+    // See: L. Wu et al., JSSC Vol.57 No.11, Nov. 2022.
+    //===========================================================
+    pv_rx_beamfocusing #(
+        .NUM_CHANNELS(64),
+        .ADC_WIDTH(10),
+        .BEAMF_WIDTH(16),
+        .SAMPLE_DEPTH(4096),
+        .VOXEL_GRID_X(32),
+        .VOXEL_GRID_Y(32)
+    ) u_pv_rxbf (
+        .clk_i           (clk_sys),
+        .rst_n_i         (rst_sys_n),
+        
+        // AXI4-Lite slave
+        .s_axi_awaddr    (bf_awaddr),
+        .s_axi_awvalid   (bf_awvalid),
+        .s_axi_awready   (bf_awready),
+        .s_axi_wdata     (bf_wdata),
+        .s_axi_wstrb     (bf_wstrb),
+        .s_axi_wvalid    (bf_wvalid),
+        .s_axi_wready    (bf_wready),
+        .s_axi_bresp     (),
+        .s_axi_bvalid    (),
+        .s_axi_bready    (1'b1),
+        .s_axi_araddr    (bf_araddr),
+        .s_axi_arvalid   (bf_arvalid),
+        .s_axi_arready   (bf_arready),
+        .s_axi_rdata     (bf_rdata),
+        .s_axi_rresp     (),
+        .s_axi_rvalid    (),
+        .s_axi_rready    (1'b1),
+        
+        // ADC sample input (from RX controller)
+        .adc_data_i      (adc_data_i),
+        .adc_channel_i   (adc_channel_o),
+        .adc_valid_i     (|adc_eoc_i),
+        
+        // Beamformed output
+        .voxel_intensity_o(bf_voxel_intensity),
+        .voxel_addr_o    (bf_voxel_addr),
+        .voxel_valid_o   (bf_voxel_valid),
+        
+        // Delay table SRAM
+        .dtbl_addr_o     (bf_dtbl_addr),
+        .dtbl_rd_en_o    (bf_dtbl_rd_en),
+        .dtbl_data_i     (bf_dtbl_data),
+        .dtbl_valid_i    (bf_dtbl_valid),
+        
+        // Control/Status
+        .bf_done_o       (bf_done),
+        .bf_busy_o       (bf_busy),
+        .bf_start_i      (bf_start)
+    );
+    
+    // Delay table SRAM (96 KB = 65536 × 12 bits → 32K × 24 bits)
+    beamform_delay_sram #(
+        .DATA_WIDTH(24),
+        .ADDR_WIDTH(15)
+    ) u_bf_delay_sram (
+        .clk_i           (clk_sys),
+        .addr_i          (bf_dtbl_addr),
+        .rd_en_i         (bf_dtbl_rd_en),
+        .rd_data_o       (bf_dtbl_data),
+        .rd_valid_o      (bf_dtbl_valid),
+        .wr_en_i         (1'b0),        // Delay table pre-loaded via AXI
+        .wr_data_i       (24'd0)
+    );
+    
+    // Route beamforming outputs to chip-level ports
+    assign voxel_intensity_o = bf_voxel_intensity;
+    assign voxel_addr_o      = bf_voxel_addr;
+    assign voxel_valid_o     = bf_voxel_valid;
+    assign irq_bf_done       = bf_done;
     
     //===========================================================
     // SRAM (32 KB)

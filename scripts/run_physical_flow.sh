@@ -38,6 +38,8 @@ RTL_FILES=(
     "$DIGITAL_DIR/tx_controller/tx_controller.sv"
     "$DIGITAL_DIR/rx_controller/rx_controller.sv"
     "$DIGITAL_DIR/pmu_controller/pmu_controller.sv"
+    "$DIGITAL_DIR/pv_rxbf/pv_rx_beamfocusing.sv"
+    "$DIGITAL_DIR/pv_rxbf/beamform_delay_sram.sv"
 )
 
 # Yosys synthesis script (generated for reproducibility)

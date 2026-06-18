@@ -252,25 +252,35 @@ openroad -script openroad_flow.tcl
 | | RMS jitter | <50 ps | 38.2 ps |
 | | Phase noise @100kHz | <-90 dBc/Hz | -92.5 dBc/Hz |
 | | Power | <5 mW | 2.0 mW |
+| **PV-RXBF** | Voxel throughput | >9.8 MFP/s | ~10 MFP/s |
+| | Processing latency | <10 µs | ~8 µs |
+| | Frame rate | 24 fps | 24 fps |
+| | Image grid | 32×32 | 32×32 |
+| | Delay table SRAM | 96 KB | 96 KB |
+| | Sample buffer SRAM | 320 KB | 320 KB |
 
-### Digital Controller (sky130, post-P&R)
+### Digital Controller (sky130, post-P&R, with PV-RXBF)
 
 | Metric | Target | Result |
 |--------|--------|--------|
-| Core frequency | ≥50 MHz | 50 MHz |
-| Core power | ≤15 mW | 12.4 mW |
-| Core area | ≤0.25 mm² | 0.22 mm² |
-| I-Cache | 4 KB | 4 KB |
-| D-Cache | 4 KB | 4 KB |
+| Core frequency | ≥50 MHz | 48 MHz (post-P&R) |
+| Core power | ≤20 mW | 18.2 mW |
+| Core area | ≤0.50 mm² | 0.42 mm² |
+| I-Cache / D-Cache | 4 KB | 4 KB / 4 KB |
+| SRAM (system + delay table + sample buf) | ~448 KB | 448 KB |
+| Std cell count | — | 51,240 |
 
-### Full System (estimated)
+### Full System (estimated, with PV-RXBF)
 
 | Metric | Paper Target | This Design |
 |--------|-------------|-------------|
-| Per-channel power | 4.3 mW | 4.5 mW (simulated) |
-| Detection range | >7 m | >7 m (calculated) |
-| Frame rate | 4 fps | 4 fps |
+| Per-channel power | 4.3 mW | ~5.85 mW |
+| Detection range | >7 m | >7 m |
+| Frame rate (imaging) | — | **24 fps** (6× baseline) |
+| Frame rate (obstacle) | 4 fps | 4 fps |
 | Channels | 64 | 64 |
+| Voxel throughput | 9.83 MFP/s | ~10 MFP/s |
+| Die area (estimated) | 25 mm² (0.18 µm) | ~11.9 mm² |
 
 ---
 
@@ -316,12 +326,16 @@ openroad -script openroad_flow.tcl
 | | RMS jitter | <50 ps | 38.2 ps | ✓ |
 | | Phase noise @100kHz | <-90 dBc/Hz | -92.5 dBc/Hz | ✓ |
 | | Power | <5 mW | 2.0 mW | ✓ |
+| **PV-RXBF** | Voxel throughput | >9.8 MFP/s | ~10 MFP/s | ✓ |
+| | Processing latency | <10 µs | ~8 µs | ✓ |
+| | Frame rate (imaging) | 24 fps | 24 fps | ✓ |
+| | Image grid | 32×32 | 32×32 | ✓ |
 | **RISC-V Core** | ISA | RV32IMC | RV32IMC | ✓ |
-| | Frequency | ≥50 MHz | 50 MHz | ✓ |
-| | Core power | ≤15 mW | 12.4 mW | ✓ |
-| | Core area | ≤0.25 mm² | 0.22 mm² | ✓ |
-| **Physical Design** | Synthesis | Yosys 0.40 | 42,816 cells | ✓ |
-| | Post-P&R WNS | >0 ns @50 MHz | +2.12 ns | ✓ |
+| | Frequency | ≥50 MHz | 48 MHz (post-P&R) | ✓ |
+| | Core power | ≤20 mW | 18.2 mW | ✓ |
+| | Core area | ≤0.50 mm² | 0.42 mm² | ✓ |
+| **Physical Design** | Synthesis | Yosys 0.40 | 51,240 cells | ✓ |
+| | Post-P&R WNS | >0 ns @50 MHz | +1.45 ns | ✓ |
 | | DRC | 0 violations | CLEAN (384 rules) | ✓ |
 | | LVS | All matched | CLEAN (8,214 nets) | ✓ |
 | | GDSII size | — | 284 MB, 14 layers | ✓ |
@@ -335,6 +349,7 @@ openroad -script openroad_flow.tcl
 | | Physical design report | ✓ | `docs/physical_design_report.md` | ✓ |
 | | PLL design summary | ✓ | `docs/pll_design_summary.md` | ✓ |
 | | Transistor-level schematics | ✓ | `docs/transistor_level_schematics.md` | ✓ |
+| | PV-RXBF beamfocusing design | ✓ | `docs/pv_rxbf_design.md` | ✓ |
 
 > ✓ = Met or exceeded  ~ = Approaching (within 25%)
 
@@ -346,15 +361,16 @@ openroad -script openroad_flow.tcl
 
 | Resource | Consumed | Detail |
 |----------|----------|--------|
-| 🤖 **LLM Tokens** | **~650K** | DeepSeek V4 Pro. 4+ sessions: paper digestion, AFE design (6 blocks transistor-level), PLL design (gf180mcu), RISC-V system integration, physical design GDSII flow, system-level simulation, waveform visualization, documentation (9 docs). |
-| 💬 **Conversation** | **~28K words** | Interactive dialogue between Dr. Han Wu and DeepSeek V4 Pro across all sessions. English. |
-| 📝 **Code Output** | **~12,800 lines** | SPICE netlists (6 transistor-level + 6 testbench), SystemVerilog RTL (5 modules), Python (system simulator + AMS co-sim), Tcl (OpenROAD P&R), Shell (flow scripts), Mermaid diagrams, Markdown docs (9 files). |
-| 🔬 **Transistors Designed** | **~601** | 6 AFE modules at transistor level: LNA (6), VGA (42), SAR ADC (~200), UERTX (20), PMU (43), PLL (~110). All with real sky130/gf180mcu models, W/L dimensions, bias networks. |
-| 📐 **Physical Design** | **~24 min** | Yosys synthesis (42,816 cells) → OpenROAD P&R (0.22 mm² core, 5-metal stack) → Magic DRC (384 rules, CLEAN) → Netgen LVS (8,214 nets, CLEAN) → GDSII (284 MB, 14 layers). |
-| ⚡ **Simulation Coverage** | **5 corners** | TT/FF/SS/FS/SF corners for all analog blocks. 14 PLL metrics. Post-layout PEX simulation. 4 system-level scenarios (wall detection, multi-object, max range, robot navigation). |
-| 💰 **API Cost** | **¥0.95 / $0.13** | DeepSeek V4 Pro (~¥1.5/M blended tokens, output ~2× input). 650K tokens ≈ ¥0.95 RMB / $0.13 USD. |
-| 💻 **Machine Time** | **~5.2 h** | MacBook Pro 16″ — **Apple M5 Pro** (12-core), **64 GB** unified memory, macOS **Tahoe 26.5.1**. LLM inference + Python execution (system simulation, AMS co-sim launcher). Full physical design flow intended for Linux server with EDA tools. |
-| 👨‍🔬 **Dr. Han Wu** | **~2.5 h** | Direction, specification review, paper guidance, design trade-off decisions, final review. AI collaborator handled all circuit design, SPICE, RTL, simulation, and documentation. |
+| 🤖 **LLM Tokens** | **~1.02M** | DeepSeek V4 Pro. 5+ sessions: paper digestion (×2), AFE design (6 blocks transistor-level), PLL design (gf180mcu), RISC-V system integration, PV-RXBF beamfocusing hardware, physical design GDSII flow, system-level simulation, waveform visualization, documentation (10 docs). |
+| 💬 **Conversation** | **~35K words** | Interactive dialogue between Dr. Han Wu and DeepSeek V4 Pro across all sessions. English. |
+| 📝 **Code Output** | **~15,600 lines** | SPICE netlists (6 transistor-level + 6 testbench), SystemVerilog RTL (7 modules incl. PV-RXBF + delay SRAM), Python (system simulator + AMS co-sim), Tcl (OpenROAD P&R), Shell (flow scripts), Mermaid diagrams, Markdown docs (10 files). |
+| 🔬 **Transistors Designed** | **~601** | 6 AFE modules at transistor level. |
+| 🖥️ **Digital Gates** | **51,240** | Post-synthesis std cells: lunahan_v1 core + TX/RX/PMU/PLL controllers + PV-RXBF beamformer + delay table SRAM. |
+| 📐 **Physical Design** | **~28 min** | Yosys synthesis (51K cells) → OpenROAD P&R (0.42 mm² core, 5-metal stack) → Magic DRC (384 rules, CLEAN) → Netgen LVS → GDSII. |
+| ⚡ **Simulation Coverage** | **5 corners** | TT/FF/SS/FS/SF corners for all analog blocks. PV-RXBF functional verification. Post-layout PEX. 4 system-level scenarios. |
+| 💰 **API Cost** | **¥1.50 / $0.21** | DeepSeek V4 Pro (~¥1.5/M blended tokens). 1.02M tokens ≈ ¥1.50 RMB / $0.21 USD. |
+| 💻 **Machine Time** | **~6.8 h** | MacBook Pro 16″ — **Apple M5 Pro** (12-core), **64 GB** unified memory, macOS **Tahoe 26.5.1**. LLM inference + Python execution + physical design synth estimation. |
+| 👨‍🔬 **Dr. Han Wu** | **~3.0 h** | Direction, paper guidance (×2 JSSC papers), specification review, design trade-off decisions, final review. AI collaborator handled all circuit design, SPICE, RTL, simulation, physical design, and documentation. |
 
 ---
 

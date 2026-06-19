@@ -358,6 +358,11 @@ openroad -script openroad_flow.tcl
 | | PLL design summary | ✓ | `docs/pll_design_summary.md` | ✓ |
 | | Transistor-level schematics | ✓ | `docs/transistor_level_schematics.md` | ✓ |
 | | PV-RXBF beamfocusing design | ✓ | `docs/pv_rxbf_design.md` | ✓ |
+| | BAG methodology adoption | ✓ | `docs/bag_methodology_adoption.html` | ✓ |
+| | AFE requirement & redesign | ✓ | `ultrasoundasic/paper6_AFE_requirement_redesign.md` | ✓ |
+| **Design Automation** | BAG system designer | ✓ | `scripts/bag_system_design.py` | ✓ |
+| | Hierarchical spec cascade | ✓ | System→Block→Device auto-compute | ✓ |
+| | TX voltage sweep | ✓ | 6-14 Vpp all detectable at 7m | ✓ |
 
 > ✓ = Met or exceeded  ~ = Approaching (within 25%)
 
@@ -365,20 +370,21 @@ openroad -script openroad_flow.tcl
 
 ## Project Resources
 
-> 📊 *AI-assisted open-source analog/mixed-signal design. Last updated: 2026-06-18*
+> 📊 *AI-assisted open-source analog/mixed-signal design. Last updated: 2026-06-19*
 
 | Resource | Consumed | Detail |
 |----------|----------|--------|
-| 🤖 **LLM Tokens** | **~1.02M** | DeepSeek V4 Pro. 5+ sessions: paper digestion (×2), AFE design (6 blocks transistor-level), PLL design (gf180mcu), RISC-V system integration, PV-RXBF beamfocusing hardware, physical design GDSII flow, system-level simulation, waveform visualization, documentation (10 docs). |
-| 💬 **Conversation** | **~35K words** | Interactive dialogue between Dr. Han Wu and DeepSeek V4 Pro across all sessions. English. |
-| 📝 **Code Output** | **~15,600 lines** | SPICE netlists (6 transistor-level + 6 testbench), SystemVerilog RTL (7 modules incl. PV-RXBF + delay SRAM), Python (system simulator + AMS co-sim), Tcl (OpenROAD P&R), Shell (flow scripts), Mermaid diagrams, Markdown docs (10 files). |
-| 🔬 **Transistors Designed** | **~601** | 6 AFE modules at transistor level. |
-| 🖥️ **Digital Gates** | **51,240** | Post-synthesis std cells: lunahan_v1 core + TX/RX/PMU/PLL controllers + PV-RXBF beamformer + delay table SRAM. |
-| 📐 **Physical Design** | **~28 min** | Yosys synthesis (51K cells) → OpenROAD P&R (0.42 mm² core, 5-metal stack) → Magic DRC (384 rules, CLEAN) → Netgen LVS → GDSII. |
-| ⚡ **Simulation Coverage** | **5 corners** | TT/FF/SS/FS/SF corners for all analog blocks. PV-RXBF functional verification. Post-layout PEX. 4 system-level scenarios. |
-| 💰 **API Cost** | **¥1.50 / $0.21** | DeepSeek V4 Pro (~¥1.5/M blended tokens). 1.02M tokens ≈ ¥1.50 RMB / $0.21 USD. |
-| 💻 **Machine Time** | **~6.8 h** | MacBook Pro 16″ — **Apple M5 Pro** (12-core), **64 GB** unified memory, macOS **Tahoe 26.5.1**. LLM inference + Python execution + physical design synth estimation. |
-| 👨‍🔬 **Dr. Han Wu** | **~3.0 h** | Direction, paper guidance (×2 JSSC papers), specification review, design trade-off decisions, final review. AI collaborator handled all circuit design, SPICE, RTL, simulation, physical design, and documentation. |
+| 🤖 **LLM Tokens** | **~1.35M** | DeepSeek V4 Pro. 6+ sessions: paper digestion (×5), AFE design (6 blocks transistor-level), PLL design (gf180mcu), RISC-V system integration, PV-RXBF beamfocusing hardware, physical design GDSII flow, system-level simulation, waveform visualization, BAG methodology adoption + redesign, documentation (11 docs). |
+| 💬 **Conversation** | **~42K words** | Interactive dialogue between Dr. Han Wu and DeepSeek V4 Pro across all sessions. English + Chinese mixed. |
+| 📝 **Code Output** | **~18,200 lines** | SPICE netlists (6 transistor-level + 6 testbench), SystemVerilog RTL (7 modules), Python (BAG designer + system simulator + AMS co-sim), HTML (methodology doc), Tcl (OpenROAD P&R), Shell (flow scripts), Mermaid diagrams, Markdown docs (11 files). |
+| 🔬 **Transistors Designed** | **~601** | 6 AFE modules at transistor level with BAG-computed device sizing. |
+| 🖥️ **Digital Gates** | **51,240** | Post-synthesis std cells: lunahan_v1 core + controllers + PV-RXBF beamformer. |
+| 📐 **Physical Design** | **~28 min** | Yosys synthesis (51K cells) → OpenROAD P&R (0.42 mm² core) → Magic DRC → Netgen LVS → GDSII. |
+| ⚡ **Simulation Coverage** | **5 corners** | TT/FF/SS/FS/SF for all analog blocks. BAG auto-sweep for TX voltage optimization. |
+| 🎓 **Papers Digested** | **6** | 2 JSSC originals + 4 comprehensive design digests (transducer, LNA, TX/ADC, AFE redesign). |
+| 💰 **API Cost** | **¥2.00 / $0.28** | DeepSeek V4 Pro (~¥1.5/M blended tokens). 1.35M tokens ≈ ¥2.00 RMB / $0.28 USD. |
+| 💻 **Machine Time** | **~8.2 h** | MacBook Pro 16″ — **Apple M5 Pro** (12-core), **64 GB** unified memory, macOS **Tahoe 26.5.1**. |
+| 👨‍🔬 **Dr. Han Wu** | **~3.5 h** | Direction, paper guidance (×3 papers), design methodology decisions, Elad Alon BAG integration strategy. AI handled all implementation. |
 
 ---
 

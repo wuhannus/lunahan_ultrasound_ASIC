@@ -1,0 +1,55 @@
+{
+  "LNA": {
+    "gain_db": 27.0,
+    "nf_db": 2.6999999999999997,
+    "irn_nv_rt_hz": 2.7,
+    "bw_khz": 150,
+    "power_uw": 492.5,
+    "corners_pass": "5/5 (TT,FF,SS,FS,SF)",
+    "pex_status": "EXTRACTED",
+    "lvs_status": "CLEAN"
+  },
+  "VGA": {
+    "gain_range_db": "0.0-46.0",
+    "bw_khz": 165.0,
+    "thd_pct": 0.5,
+    "power_uw": 1600.0,
+    "corners_pass": "5/5",
+    "pex_status": "EXTRACTED",
+    "lvs_status": "CLEAN"
+  },
+  "ADC": {
+    "enob_bits": 9.299999999999999,
+    "sndr_db": 59.0,
+    "fs_msps": 1.2,
+    "power_uw": 840.1,
+    "corners_pass": "5/5",
+    "pex_status": "EXTRACTED",
+    "lvs_status": "CLEAN"
+  },
+  "UERTX": {
+    "energy_save_pct": 44.2,
+    "efficiency_pct": 82.8,
+    "output_vpp": "6.0-14.1",
+    "corners_pass": "5/5",
+    "pex_status": "EXTRACTED",
+    "lvs_status": "CLEAN"
+  },
+  "PMU": {
+    "efficiency_pct": 75.3,
+    "ripple_mvpp": 12.0,
+    "rails": "1.80V, 1.80V, 6-14V",
+    "corners_pass": "5/5",
+    "pex_status": "EXTRACTED",
+    "lvs_status": "CLEAN"
+  },
+  "PLL": {
+    "lock_us": 36.4,
+    "jitter_ps_rms": 43.7,
+    "pn_dbchz": -92.5,
+    "power_mw": 2.25,
+    "corners_pass": "5/5",
+    "pex_status": "EXTRACTED",
+    "lvs_status": "CLEAN"
+  }
+}

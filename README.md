@@ -363,6 +363,13 @@ openroad -script openroad_flow.tcl
 | **Design Automation** | BAG system designer | ✓ | `scripts/bag_system_design.py` | ✓ |
 | | Hierarchical spec cascade | ✓ | System→Block→Device auto-compute | ✓ |
 | | TX voltage sweep | ✓ | 6-14 Vpp all detectable at 7m | ✓ |
+| | Complete BAG flow (6 phases) | ✓ | `scripts/bag_run_all.py` | ✓ |
+| | SPICE netlist generator | ✓ | `scripts/bag_spice_generator.py` | ✓ |
+| | Layout generator (OpenFASOC) | ✓ | `scripts/bag_layout_generator.py` | ✓ |
+| **BAG Flow Results** | Pre-layout sim | ✓ | 6 blocks, 5 corners, all PASS | ✓ |
+| | Layout | ✓ | 6 blocks, LVS CLEAN | ✓ |
+| | Post-layout PEX | ✓ | PEX extracted, all metrics within 15% | ✓ |
+| | System verification | ✓ | 6 scenarios, all PASS | ✓ |
 
 > ✓ = Met or exceeded  ~ = Approaching (within 25%)
 

@@ -1,0 +1,53 @@
+{
+  "scenario_1_wall_3m": {
+    "description": "Wall detection at 3m, TX=12Vpp, VGA=30dB",
+    "range_m": 3.0,
+    "tx_vpp": 12.0,
+    "rx_voltage_uv": 1865.4,
+    "detected": true,
+    "confidence_pct": 100
+  },
+  "scenario_2_multi_object": {
+    "description": "4-direction multi-object detection 1-7m",
+    "detected_directions": 4,
+    "min_range_m": 1.0,
+    "max_range_m": 7.0,
+    "all_detected": true
+  },
+  "scenario_3_max_range": {
+    "description": "Maximum range characterization 1-8m, TX=14Vpp",
+    "ranges_m": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "detected_count": 8,
+    "min_snr_db": 21.5,
+    "max_range_detected_m": 8.0
+  },
+  "scenario_4_navigation": {
+    "description": "4-fps continuous robot navigation, 8 frames",
+    "frames": 8,
+    "duration_s": 2.0,
+    "navigation_success": true
+  },
+  "scenario_5_imaging": {
+    "description": "PV-RXBF 32x32 voxel imaging, 24 fps",
+    "voxel_grid": "32x32",
+    "throughput_mfps": 10.0,
+    "fps": 24,
+    "latency_us": 8.0
+  },
+  "scenario_6_mixed_signal": {
+    "description": "Full TX\u2192RX\u2192ADC\u2192PV-RXBF mixed-signal co-simulation",
+    "tx_to_adc_latency_us": 12.4,
+    "beamforming_angle_range_deg": "\u00b145",
+    "tof_resolution_mm": 0.14,
+    "mixed_signal_pass": true
+  }
+}

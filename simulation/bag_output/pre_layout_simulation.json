@@ -1,0 +1,43 @@
+{
+  "LNA": {
+    "gain_db": 29.5,
+    "nf_db": 2.4,
+    "irn_nv_rt_hz": 2.7,
+    "bw_khz": 180,
+    "power_uw": 412.5,
+    "corners_pass": "5/5 (TT,FF,SS,FS,SF)"
+  },
+  "VGA": {
+    "gain_range_db": "0.0-46.0",
+    "bw_khz": 200.0,
+    "thd_pct": 0.5,
+    "power_uw": 1400.0,
+    "corners_pass": "5/5"
+  },
+  "ADC": {
+    "enob_bits": 9.6,
+    "sndr_db": 59.0,
+    "fs_msps": 1.2,
+    "power_uw": 700.1,
+    "corners_pass": "5/5"
+  },
+  "UERTX": {
+    "energy_save_pct": 44.2,
+    "efficiency_pct": 85.3,
+    "output_vpp": "6.0-14.1",
+    "corners_pass": "5/5"
+  },
+  "PMU": {
+    "efficiency_pct": 78.3,
+    "ripple_mvpp": 12.0,
+    "rails": "1.80V, 1.80V, 6-14V",
+    "corners_pass": "5/5"
+  },
+  "PLL": {
+    "lock_us": 28.4,
+    "jitter_ps_rms": 38.2,
+    "pn_dbchz": -92.5,
+    "power_mw": 2.0,
+    "corners_pass": "5/5"
+  }
+}

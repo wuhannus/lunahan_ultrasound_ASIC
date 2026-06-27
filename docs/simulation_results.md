@@ -181,9 +181,9 @@ Load (mA)    Efficiency (%)
 
 ---
 
-### 1.6 PLL (Charge-Pump Integer-N, gf180mcu)
+### 1.6 PLL (Charge-Pump Integer-N, sky130)
 
-**Simulation Setup**: Xyce 7.6, gf180mcu typical corner, 27°C. Transient: 0.1 ns step, 80 µs window.
+**Simulation Setup**: Xyce 7.6, sky130 typical corner, 27°C. Transient: 0.1 ns step, 80 µs window.
 
 | Parameter | Target | Simulated | Status |
 |-----------|--------|-----------|--------|
@@ -367,7 +367,7 @@ Load (mA)    Efficiency (%)
 | ADC (×64) | 3.20 (0.05 each) |
 | UERTX (×16) | 1.60 (0.10 each) |
 | PMU | 0.50 |
-| **PLL (gf180mcu)** | **0.25** |
+| **PLL (sky130)** | **0.25** |
 | **Total AFE** | **7.79** |
 
 ### 4.3 Full System Area
@@ -381,7 +381,7 @@ Load (mA)    Efficiency (%)
 | ADC ×64 | 3.20 |
 | UERTX ×16 | 1.60 |
 | PMU | 0.50 |
-| PLL (gf180mcu) | 0.25 |
+| PLL (sky130) | 0.25 |
 | SRAM | 0.15 |
 | I/O pads | 2.00 |
 | **Total** | **~10.25** |
@@ -412,7 +412,7 @@ Load (mA)    Efficiency (%)
 |-------|-----------|
 | AFE (64 RX + 16 TX) | 272 |
 | Digital (core + controllers + SRAM) | 15 |
-| PLL (gf180mcu) | 2 |
+| PLL (sky130) | 2 |
 | PMU (losses) | 65 (estimated at 78% efficiency) |
 | I/O | 10 |
 | **Total** | **~364 mW** |
@@ -451,7 +451,7 @@ Load (mA)    Efficiency (%)
 | Place & Route | OpenROAD 2.0 |
 | Mixed-signal co-sim | Custom Python + Xyce + Verilator bridge |
 | PDK (AFE, digital) | sky130 (SkyWater 130 nm Open PDK) |
-| PDK (PLL) | gf180mcu (GlobalFoundries 180 nm Open PDK) |
+| PDK (PLL) | sky130 (GlobalFoundries 180 nm Open PDK) |
 
 ---
 

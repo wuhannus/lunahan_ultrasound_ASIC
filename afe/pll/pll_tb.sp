@@ -2,7 +2,7 @@
 * lunahan_ultrasound_ASIC — Charge-Pump Integer-N PLL
 *===========================================================
 * Architecture: Type-II charge-pump PLL with ring VCO
-* Technology:    gf180mcu (GlobalFoundries 180nm open PDK)
+* Technology:    sky130 (SkyWater 130 nm) — SINGLE PDK
 * Reference:     16 MHz external crystal → ÷4 → 4 MHz PFD
 * VCO:           200 MHz ring oscillator (3-stage current-starved)
 * Feedback:      N = 50 (200 / 4 = 50)
@@ -19,9 +19,9 @@
 *   Supply:          1.8V (analog) / 1.8V (digital)
 *===========================================================
 
-* --- PDK Device Models (gf180mcu) ---
-.lib /path/to/gf180mcu/libs.tech/ngspice/gf180mcu.lib.spice typical
-.include /path/to/gf180mcu/libs.tech/ngspice/corners/typical.spice
+* --- PDK Device Models (sky130 — unified single PDK) ---
+.lib /path/to/sky130/libs.tech/ngspice/sky130.lib.spice tt
+.include /path/to/sky130/libs.tech/ngspice/corners/tt.spice
 
 .options TEMP=27 RELTOL=1e-6 VNTOL=1e-8 ABSTOL=1e-12 POST=2
 .options METHOD=GEAR MAXORD=2    ; Better for oscillator convergence
@@ -134,10 +134,10 @@ C2 VCTRL VSS 12p
 * Current-starved inverter stage
 .SUBCKT INV_STARVED IN OUT VCTRL VDD VSS
 * PMOS current source (controlled by Vctrl)
-MP VDD_CS VCTRL VDD VDD gf180mcu_pfet W=4u L=0.18u
+MP VDD_CS VCTRL VDD VDD sky130_fd_pr__pfet_01v8 W=4u L=0.18u
 * Inverter
-MP1 OUT IN VDD_CS VDD gf180mcu_pfet W=2u L=0.18u
-MN1 OUT IN VSS VSS gf180mcu_nfet W=1u L=0.18u
+MP1 OUT IN VDD_CS VDD sky130_fd_pr__pfet_01v8 W=2u L=0.18u
+MN1 OUT IN VSS VSS sky130_fd_pr__nfet_01v8 W=1u L=0.18u
 * Load capacitance (includes parasitics + next stage)
 CL OUT VSS 15f
 .ENDS INV_STARVED
@@ -149,8 +149,8 @@ XSTAGE3 VCO_N1 VCO_N3 VCTRL VDD VSS INV_STARVED
 
 * Output buffer (isolates VCO from load)
 .SUBCKT BUF INV OUT VDD VSS
-MPB OUT INV VDD VDD gf180mcu_pfet W=8u L=0.18u
-MNB OUT INV VSS VSS gf180mcu_nfet W=4u L=0.18u
+MPB OUT INV VDD VDD sky130_fd_pr__pfet_01v8 W=8u L=0.18u
+MNB OUT INV VSS VSS sky130_fd_pr__nfet_01v8 W=4u L=0.18u
 .ENDS BUF
 
 XBUF VCO_N1 OUT VDD VSS BUF

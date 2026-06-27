@@ -64,13 +64,13 @@ Output: 0 to VDDHV → Vpp = VDDHV
 
 ### 1.3 Energy Recycling (UERTX — Wu 2022)
 
-Adds an LC tank and recycling diode to the H-bridge:
+Adds an storage capacitor and recycling diode to the H-bridge:
 
 ```
         VDDHV
          │
     ┌────┴────┐         ┌──────────┐
-    │ H-BRIDGE│─────────┤│ LREC    │
+    │ H-BRIDGE│─────────┤│ CSTORE    │
     │  (4 FET)│         ││ 330 µH  │
     └────┬────┘         └────┬─────┘
          │                   │
@@ -81,7 +81,7 @@ Adds an LC tank and recycling diode to the H-bridge:
                               │
                          VDDHV (energy returned!)
 
-During dead-time: transducer C0 resonates with LREC
+During dead-time: transducer C0 charges CSTORE
 → energy flows back to VDDHV through DREC
 → 44% power saving vs conventional class-D
 ```

@@ -49,7 +49,7 @@ class BAGLayoutGenerator:
     1. Same parameter dict drives both schematic and layout
     2. Common-centroid matching for differential pairs
     3. Guard rings around sensitive analog blocks
-    4. Technology-portable: same params work across sky130/gf180mcu
+    4. Technology-portable: same params work across sky130/sky130
     """
 
     # sky130 design rules (for reference)

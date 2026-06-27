@@ -5,7 +5,7 @@
 # Generates GDSII for the digital core using open-source PDK
 # Flow: Yosys (synth) → OpenROAD (P&R) → Magic (DRC) → Netgen (LVS)
 #
-# Target: sky130 (SkyWater 130 nm) + gf180mcu PLL macro
+# Target: sky130 (SkyWater 130 nm) + sky130 PLL macro
 # Output: GDSII, DEF, SPEF, post-P&R netlist, timing reports
 #===========================================================
 
@@ -22,7 +22,7 @@ mkdir -p "$OUTPUT_DIR" "$REPORT_DIR"
 
 echo "╔══════════════════════════════════════════════════════════╗"
 echo "║  lunahan_ultrasound_ASIC — Physical Design Flow         ║"
-echo "║  Target: sky130 + gf180mcu (open PDK)                   ║"
+echo "║  Target: sky130 + sky130 (open PDK)                   ║"
 echo "║  Flow:  RTL → GDSII (open-source toolchain)             ║"
 echo "╚══════════════════════════════════════════════════════════╝"
 echo ""
@@ -34,7 +34,7 @@ echo "═══ Step 1/6: Logic Synthesis (Yosys) ═══"
 
 RTL_FILES=(
     "$DIGITAL_DIR/lunahan_core/ultrasound_top.sv"
-    "$DIGITAL_DIR/lunahan_core/gf180_pll.sv"
+    "$DIGITAL_DIR/lunahan_core/sky130_pll.sv"
     "$DIGITAL_DIR/tx_controller/tx_controller.sv"
     "$DIGITAL_DIR/rx_controller/rx_controller.sv"
     "$DIGITAL_DIR/pmu_controller/pmu_controller.sv"
@@ -46,7 +46,7 @@ RTL_FILES=(
 cat > "$OUTPUT_DIR/synth.ys" << 'YOSYS_SCRIPT'
 # Read RTL
 read_verilog -sv -D SYNTHESIS ../digital/lunahan_core/ultrasound_top.sv
-read_verilog -sv -D SYNTHESIS ../digital/lunahan_core/gf180_pll.sv
+read_verilog -sv -D SYNTHESIS ../digital/lunahan_core/sky130_pll.sv
 read_verilog -sv -D SYNTHESIS ../digital/tx_controller/tx_controller.sv
 read_verilog -sv -D SYNTHESIS ../digital/rx_controller/rx_controller.sv
 read_verilog -sv -D SYNTHESIS ../digital/pmu_controller/pmu_controller.sv

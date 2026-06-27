@@ -117,7 +117,7 @@ module ultrasound_asic_top #(
     wire                            bf_dtbl_valid;
     
     //===========================================================
-    // PLL: 16 MHz → 50 MHz + 1.2 MHz (gf180mcu open PDK)
+    // PLL: 16 MHz → 50 MHz + 1.2 MHz (sky130 open PDK)
     //===========================================================
     // Architecture: Type-II charge-pump integer-N PLL
     //   PFD: 4 MHz (ref ÷ 4)
@@ -126,7 +126,7 @@ module ultrasound_asic_top #(
     //   See: afe/pll/pll_tb.sp for analog simulation
     //        docs/pll_design_summary.md for full design details
     //===========================================================
-    gf180_pll #(
+    sky130_pll #(
         .REF_FREQ_MHZ(16),
         .OUT_FREQ_MHZ(50),
         .REF_DIV(4),

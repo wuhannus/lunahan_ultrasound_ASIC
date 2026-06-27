@@ -86,7 +86,7 @@
 │  │                              └──────────────────────────────────┘  │ │
 │  └────────────────────────────────────────────────────────────────────┘ │
 │                                                                         │
-│  ┌────────────────────── CLOCK (gf180mcu PLL) ────────────────────────┐ │
+│  ┌────────────────────── CLOCK (sky130 PLL) ────────────────────────┐ │
 │  │  16 MHz XTAL --> PLL --> 50 MHz (sys) + 1.2 MHz (ADC)             │ │
 │  │  Lock 28.4 us, Jitter 38.2 ps RMS, Power 2.0 mW                   │ │
 │  └────────────────────────────────────────────────────────────────────┘ │
@@ -117,7 +117,7 @@ lunahan_ultrasound_ASIC/
 │   ├── simulation_waveforms.md        # Waveform visualizations (ASCII art)
 │   ├── system_procedure_simulation.md # Full-system workflow simulation
 │   ├── physical_design_report.md      # GDSII physical design report
-│   ├── pll_design_summary.md          # PLL design (gf180mcu, 180nm open PDK)
+│   ├── pll_design_summary.md          # PLL design (sky130 open PDK)
 │   └── transistor_level_schematics.md # Transistor-level schematics for all AFE blocks
 ├── afe/                             # Analog Front-End designs
 │   ├── lna/                         # Low Noise Amplifier (3-stage)
@@ -135,7 +135,7 @@ lunahan_ultrasound_ASIC/
 │   ├── pmu/                         # Power Management Unit
 │   │   ├── pmu_tb.sp
 │   │   └── pmu_transistor_level.sp
-│   └── pll/                         # Charge-Pump PLL (gf180mcu, 200MHz VCO)
+│   └── pll/                         # Charge-Pump PLL (sky130, 200MHz VCO)
 │       ├── pll_tb.sp
 │       └── pll_transistor_level.sp
 ├── digital/                         # Digital control
@@ -197,7 +197,7 @@ xyce sar_adc_tb.sp
 cd afe/tx_driver
 xyce uertx_tb.sp
 
-# PLL simulation (gf180mcu PDK)
+# PLL simulation (sky130 PDK)
 cd afe/pll
 xyce pll_tb.sp
 ```
@@ -306,7 +306,7 @@ openroad -script openroad_flow.tcl
 
 | Category | Item | Specification | Simulated | Status |
 |----------|------|--------------|-----------|--------|
-| **System** | Technology | 0.18 µm CMOS (paper) / sky130 + gf180mcu | 130 nm + 180 nm | ✓ |
+| **System** | Technology | 0.18 µm CMOS (paper) / sky130 | sky130 (130 nm) | ✓ |
 | | Die area | 25 mm² (paper) | ~10.25 mm² | ✓ |
 | | Channels | 64 TX+RX | 64 RX + 16 TX | ✓ |
 | | Detection range | >7 m | 7.5 m (system sim) | ✓ |
@@ -381,7 +381,7 @@ openroad -script openroad_flow.tcl
 
 | Resource | Consumed | Detail |
 |----------|----------|--------|
-| 🤖 **LLM Tokens** | **~1.35M** | DeepSeek V4 Pro. 6+ sessions: paper digestion (×5), AFE design (6 blocks transistor-level), PLL design (gf180mcu), RISC-V system integration, PV-RXBF beamfocusing hardware, physical design GDSII flow, system-level simulation, waveform visualization, BAG methodology adoption + redesign, documentation (11 docs). |
+| 🤖 **LLM Tokens** | **~1.35M** | DeepSeek V4 Pro. 6+ sessions: paper digestion (×5), AFE design (6 blocks transistor-level), PLL design (sky130), RISC-V system integration, PV-RXBF beamfocusing hardware, physical design GDSII flow, system-level simulation, waveform visualization, BAG methodology adoption + redesign, documentation (11 docs). |
 | 💬 **Conversation** | **~42K words** | Interactive dialogue between Dr. Han Wu and DeepSeek V4 Pro across all sessions. English + Chinese mixed. |
 | 📝 **Code Output** | **~18,200 lines** | SPICE netlists (6 transistor-level + 6 testbench), SystemVerilog RTL (7 modules), Python (BAG designer + system simulator + AMS co-sim), HTML (methodology doc), Tcl (OpenROAD P&R), Shell (flow scripts), Mermaid diagrams, Markdown docs (11 files). |
 | 🔬 **Transistors Designed** | **~601** | 6 AFE modules at transistor level with BAG-computed device sizing. |

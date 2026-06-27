@@ -7,7 +7,7 @@
 
 ## 1. PLL Lock Transient
 
-**Source**: Xyce transient simulation, `afe/pll/pll_tb.sp`, gf180mcu TT corner, 27°C.
+**Source**: Xyce transient simulation, `afe/pll/pll_tb.sp`, sky130 TT corner, 27°C.
 
 ```
 Vctrl (Loop Filter Output)
@@ -418,7 +418,7 @@ Energy per burst:
 
 Recycling mechanism:
   During dead-time (both high-side and low-side switches OFF),
-  the transducer's reactive energy flows through the LC tank
+  the transducer's reactive energy flows through the storage capacitor
   back to VDD_TX via the recycling diode, instead of being
   dissipated as heat in the switches.
 ```

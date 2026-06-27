@@ -135,7 +135,7 @@ run_sim "adc" "$AFE_DIR/adc/sar_adc_tb.sp"
 # TX Driver
 run_sim "tx_driver" "$AFE_DIR/tx_driver/uertx_tb.sp"
 
-# PLL (gf180mcu PDK)
+# PLL (sky130 PDK)
 run_sim "pll" "$AFE_DIR/pll/pll_tb.sp"
 
 echo ""

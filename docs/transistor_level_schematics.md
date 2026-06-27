@@ -2,7 +2,7 @@
 
 > **lunahan_ultrasound_ASIC** — Module-by-module transistor-level schematic diagrams
 >
-> All schematics use real foundry transistor models (sky130 / gf180mcu open PDKs).
+> All schematics use real foundry transistor models (sky130 / sky130 open PDKs).
 > Corresponding SPICE netlists in `afe/*/` directories.
 
 ---
@@ -317,7 +317,7 @@ SAR Logic (10-bit asynchronous):
               │            │            │  │
          ┌────┴────┐  ┌────┴────┐       │  │
          │  MLS_P  │  │  MLS_N  │  ┌────┴──┴────┐
-         │W=1000/  │  │W=1000/  │  │ LREC 330µH │ off-chip
+         │W=1000/  │  │W=1000/  │  │ CSTORE 330µH │ off-chip
          │  0.5    │  │  0.5    │  │  inductor  │
          │  NMOS   │  │  NMOS   │  └────┬───────┘
          └────┬────┘  └────┬────┘       │
@@ -372,7 +372,7 @@ Dead-Time Control:
 Recycling operation:
    1. Normal drive: H-bridge drives 40 kHz PWM to transducer
    2. Dead-time: Both HS and LS off → transducer capacitance
-      resonates with LREC → energy flows back to VDDHV via DREC
+      charges CSTORE → energy flows back to VDDHV via DREC
    3. Result: 44.2% energy saved vs conventional class-D
 ```
 
@@ -500,7 +500,7 @@ LDO Detail (Analog 1.8V):
 
 ```
                          ┌──────────────────────────────────────────┐
-                         │              gf180mcu PLL                 │
+                         │              sky130 PLL                 │
    REF_CLK (16MHz)       │                                          │
        │                 │  ┌──────┐    ┌──────┐    ┌───────────┐  │
        └─────┬───────────┼─→│ ÷REF ├───→│ PFD  ├───→│ CP (25µA) │  │
@@ -615,7 +615,7 @@ Feedback Divider ÷50:
 | PMU | `afe/pmu/pmu_transistor_level.sp` |
 | PLL | `afe/pll/pll_transistor_level.sp` |
 
-All netlists reference real foundry transistor models from the sky130 (SkyWater 130nm) and gf180mcu (GlobalFoundries 180nm) open-source PDKs. Every active device uses physical transistor dimensions (W/L). Passive components use realistic values (MIM capacitors, poly resistors, spiral inductors).
+All netlists reference real foundry transistor models from the sky130 (SkyWater 130nm) and sky130 (GlobalFoundries 180nm) open-source PDKs. Every active device uses physical transistor dimensions (W/L). Passive components use realistic values (MIM capacitors, poly resistors, spiral inductors).
 
 ---
 

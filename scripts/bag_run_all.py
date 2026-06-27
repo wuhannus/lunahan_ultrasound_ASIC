@@ -370,7 +370,7 @@ This flow implements Prof. Elad Alon's BAG (Berkeley Analog Generator)
 4. ✅ Automated Verification — 5 corners, 6 scenarios auto-run
 5. ✅ Design Space Exploration — TX voltage sweep (6-14Vpp)
 6. ✅ LVS-Clean by Construction — Layout from schematic params
-7. ✅ Technology Portability — Abstract params → sky130/gf180mcu
+7. ✅ Technology Portability — Abstract params → sky130/sky130
 
 ---
 *BAG Complete Flow · lunahan_ultrasound_ASIC · June 2026*

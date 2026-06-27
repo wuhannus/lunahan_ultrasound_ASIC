@@ -1,9 +1,9 @@
 //===========================================================
 // lunahan_ultrasound_ASIC — Charge-Pump Integer-N PLL
 //===========================================================
-// gf180mcu Digital PLL Clock Generator
+// sky130 Digital PLL Clock Generator (using sky130 PDK)
 //
-// Architecture: Type-II charge-pump PLL
+// Architecture: Type-II charge-pump PLL (sky130 PDK)
 //   Ref:      16 MHz (external crystal)
 //   PFD freq: = 4 MHz (ref ÷ 4)
 //   VCO:      200 MHz (ring oscillator, topology below)
@@ -24,7 +24,7 @@
 
 `timescale 1ns / 1ps
 
-module gf180_pll #(
+module sky130_pll #(
     parameter real    REF_FREQ_MHZ   = 16.0,      // Reference clock (MHz)
     parameter real    OUT_FREQ_MHZ   = 50.0,      // Target output (MHz)
     parameter integer REF_DIV        = 4,         // Reference divider
@@ -99,7 +99,7 @@ module gf180_pll #(
     assign reset_pfd = up_reg & dn_reg;
     
     // Output with programmable delay for anti-dead-zone
-    wire #(0.5) up_delayed = up_reg;   // ~0.5 ns delay in gf180mcu
+    wire #(0.5) up_delayed = up_reg;   // ~0.5 ns delay in sky130
     wire #(0.5) dn_delayed = dn_reg;
     
     assign pll_up_o = up_delayed;

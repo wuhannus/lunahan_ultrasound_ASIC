@@ -116,7 +116,7 @@
   <li><span class="warn">✗</span> No automated design space exploration (manually tried a few values)</li>
   <li><span class="warn">✗</span> Testbenches static &mdash; corners run manually</li>
   <li><span class="warn">✗</span> No automated layout generation &mdash; layout estimated, not generated</li>
-  <li><span class="warn">✗</span> No technology portability layer &mdash; tied to sky130/gf180mcu</li>
+  <li><span class="warn">✗</span> No technology portability layer &mdash; tied to sky130/sky130</li>
 </ul>
 </div>
 
@@ -196,10 +196,10 @@ results = tb.run()</pre>
 <pre># tech_config_sky130.yaml
 nmos_1v8: sky130_fd_pr__nfet_01v8
 mim_cap: sky130_fd_pr__cap_mim_m4m5
-# tech_config_gf180.yaml
-nmos_1v8: gf180mcu_nfet
-mim_cap: gf180mcu_cap_mim</pre>
-<p><strong>Benefit:</strong> Same design works on sky130, gf180mcu, or any future open PDK.</p>
+# tech_config_sky130.yaml
+nmos_1v8: sky130_nfet
+mim_cap: sky130_cap_mim</pre>
+<p><strong>Benefit:</strong> Same design works on sky130, sky130, or any future open PDK.</p>
 </div>
 </div>
 
@@ -336,7 +336,7 @@ mim_cap: gf180mcu_cap_mim</pre>
   <li><strong>Hierarchy matters:</strong> System-level spec cascade (range → link budget → block specs → device sizes) eliminates manual calculation errors and enables what-if analysis.</li>
   <li><strong>Automation scales:</strong> With 64 channels, manual design is impractical. BAG-style automation makes multi-channel AFE design manageable.</li>
   <li><strong>Design space exploration finds better points:</strong> Simple Pareto sweeps discovered a design point 7% lower power than the original hand-calculated design.</li>
-  <li><strong>Open-source synergy:</strong> BAG + OpenFASOC + sky130/gf180mcu PDKs + Xyce = fully open-source automated analog design flow.</li>
+  <li><strong>Open-source synergy:</strong> BAG + OpenFASOC + sky130/sky130 PDKs + Xyce = fully open-source automated analog design flow.</li>
 </ol>
 
 <hr>

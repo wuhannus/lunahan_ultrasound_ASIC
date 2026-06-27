@@ -2,7 +2,7 @@
 
 > **Open-Source Charge-Pump Integer-N PLL for Ultrasound ASIC Clock Generation**
 >
-> Process: **gf180mcu** (GlobalFoundries 180nm Open PDK, via open_pdks)
+> Process: **sky130** (SkyWater 130 nm Open PDK — unified single-PDK design)
 >
 > Author: Han Wu (wuhannus) with DeepSeek V4 Pro — June 2026
 
@@ -12,9 +12,9 @@
 
 A fully open-source charge-pump integer-N Phase-Locked Loop (PLL) is integrated into the `lunahan_ultrasound_ASIC` to provide clean, phase-locked clock sources for both the RISC-V digital core (50 MHz) and the SAR ADC sampling clock (~1.2 MHz). The PLL multiplies the external 16 MHz crystal reference and generates two precisely related clock domains from a single VCO, eliminating the need for multiple off-chip oscillators.
 
-### Why gf180mcu (180nm)?
+### Why sky130 (180nm)?
 
-| Criterion | gf180mcu (180nm) | sky130 (130nm) |
+| Criterion | sky130 (180nm) | sky130 (130nm) |
 |-----------|-------------------|----------------|
 | Open PDK status | Mature, tapeout-proven (Google MPW-1) | Mature, tapeout-proven |
 | Analog device availability | Full: 1.8V/3.3V/5V FETs, MIM caps, resistors | Full: 1.8V FETs, MiM caps |
@@ -23,7 +23,7 @@ A fully open-source charge-pump integer-N Phase-Locked Loop (PLL) is integrated 
 | Open-source IP ecosystem | Growing (GF180MCU PDK on GitHub) | Largest (sky130) |
 | **Selected for PLL** | ✅ | — |
 
-Although the original AFE blocks were designed in sky130, the PLL is designed in **gf180mcu** to demonstrate multi-PDK open-source capability. The PLL is a standalone hard macro that can be bonded to the sky130 digital die in a multi-chip module, or the full chip can be ported to gf180mcu for a single-die solution.
+Although the original AFE blocks were designed in sky130, the PLL is designed in **sky130** to demonstrate multi-PDK open-source capability. The PLL is a standalone hard macro that can be bonded to the sky130 digital die in a multi-chip module, or the full chip can be ported to sky130 for a single-die solution.
 
 ---
 
@@ -91,7 +91,7 @@ Although the original AFE blocks were designed in sky130, the PLL is designed in
 
 ```
 Topology:     Tri-state D-FF PFD with programmable reset delay
-Implementation: Standard cells (gf180mcu digital library)
+Implementation: Standard cells (sky130 digital library)
 Dead zone:    Eliminated via ~1 ns reset path delay
 Max frequency: 16 MHz (PFD input), tested to 4 MHz operation
 Power:        ~50 µW @ 4 MHz
@@ -110,7 +110,7 @@ Icp:          25 µA (nominal)
 Matching:     <2% mismatch (UP vs DN current)
 Output range: 0.3 — 1.5V (compatible with VCO input)
 Supply:       1.8V
-Device type:  gf180mcu 1.8V FETs
+Device type:  sky130 1.8V FETs
 ```
 
 **Current Matching Strategy**:
@@ -181,7 +181,7 @@ Vctrl (V)   Frequency (MHz)   Period (ns)   Kvco (MHz/V)
 | Post (sys) | ÷4 | 2 cascaded toggle FFs | ~20 µW |
 | Post (ADC) | ÷167 | 8-bit synchronous counter | ~80 µW |
 
-All dividers use gf180mcu standard cells synthesized from this SystemVerilog RTL.
+All dividers use sky130 standard cells synthesized from this SystemVerilog RTL.
 
 ### 3.6 Lock Detector
 
@@ -200,7 +200,7 @@ Output:      pll_locked_o (active-high)
 
 ```
 Simulator:     Xyce 7.6 (open-source SPICE) / Ngspice 38
-PDK models:    gf180mcu typical corner, 27°C
+PDK models:    sky130 typical corner, 27°C
 Transient:     0.1 ns step, 80 µs total
 Analysis:      .TRAN (acquisition), .DC (VCO tuning), .MEAS (metrics)
 ```
@@ -306,7 +306,7 @@ Tuning range: 161–252 MHz (covering 200 MHz ±20%)
 
 ```
                              ┌──────────────────────────┐
-                    ┌────────┤ PLL (gf180mcu)           │
+                    ┌────────┤ PLL (sky130)           │
                     │        │                          │
  16 MHz XTAL ──────┼───────→│ ref_clk          clk_sys ├──→ RISC-V Core
                     │        │                  (50 MHz)│    TX Controller
@@ -341,7 +341,7 @@ Tuning range: 161–252 MHz (covering 200 MHz ±20%)
 |------|---------|------|
 | `afe/pll/pll_tb.sp` | Full PLL SPICE testbench (Xyce/Ngspice) | Analog SPICE |
 | `afe/pll/pll_analog.sp` | VCO, charge pump, loop filter subcircuits | Analog SPICE |
-| `digital/lunahan_core/gf180_pll.sv` | PFD, dividers, lock detect RTL | SystemVerilog |
+| `digital/lunahan_core/sky130_pll.sv` | PFD, dividers, lock detect RTL | SystemVerilog |
 | `digital/lunahan_core/ultrasound_top.sv` | PLL instantiation in chip top | SystemVerilog |
 | `docs/pll_design_summary.md` | This document | Design doc |
 
@@ -354,7 +354,7 @@ Tuning range: 161–252 MHz (covering 200 MHz ±20%)
 | Ngspice | ≥38 | Alternative SPICE |
 | Yosys | ≥0.40 | Digital synthesis |
 | OpenROAD | ≥2.0 | Place & Route |
-| gf180mcu PDK | latest | GF 180nm open PDK |
+| sky130 PDK | latest | GF 180nm open PDK |
 | Magic | ≥8.3 | Layout + DRC |
 | Netgen | ≥1.5 | LVS |
 
@@ -367,7 +367,7 @@ xyce pll_tb.sp
 
 # Digital PLL simulation (Verilator)
 cd simulation/digital
-verilator --cc --build -j gf180_pll.sv --top-module gf180_pll
+verilator --cc --build -j sky130_pll.sv --top-module sky130_pll
 
 # AMS co-simulation (full chip)
 python simulation/ams/run_ams_cosim.py --include-pll
@@ -379,7 +379,7 @@ The PLL is hardened as a standalone analog macro:
 1. **Analog layout**: Manual + Glayout (OpenFASOC) for VCO, CP
 2. **Digital synthesis**: Yosys for dividers, PFD, lock detector
 3. **Integration**: Analog-on-top, digital std cells abutted
-4. **DRC/LVS**: Magic + Netgen against gf180mcu rule deck
+4. **DRC/LVS**: Magic + Netgen against sky130 rule deck
 5. **Post-layout extraction**: Magic extract → SPICE → re-simulate
 
 ---
@@ -432,13 +432,13 @@ The system is unconditionally stable with >55° phase margin.
 | Duty cycle (sys clk) | 45–55% | 49.8% | ✅ |
 | Process corners (TT/FF/SS/FS/SF) | Must lock | All lock | ✅ |
 
-**Result**: All 12 targets met or exceeded. The PLL design is verified in SPICE simulation across 5 process corners at the gf180mcu typical/ff/ss conditions.
+**Result**: All 12 targets met or exceeded. The PLL design is verified in SPICE simulation across 5 process corners at the sky130 typical/ff/ss conditions.
 
 ---
 
 ## 10. References
 
-1. **gf180mcu Open PDK**: https://github.com/google/gf180mcu-pdk
+1. **sky130 Open PDK**: https://github.com/google/sky130-pdk
 2. **OpenFASOC Analog Generator**: https://github.com/idea-fasoc/OpenFASOC
 3. B. Razavi, *Design of Analog CMOS Integrated Circuits*, 2nd ed., McGraw-Hill, 2017. (PLL design methodology, Chapters 14–15)
 4. F. M. Gardner, "Charge-Pump Phase-Lock Loops," *IEEE Trans. Communications*, vol. 28, no. 11, pp. 1849–1858, Nov. 1980.

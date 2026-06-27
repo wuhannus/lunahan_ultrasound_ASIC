@@ -2,7 +2,7 @@
 
 > **GDSII Generation Report**
 >
-> Target: sky130 (SkyWater 130 nm) + gf180mcu (180 nm PLL macro)
+> Target: sky130 (SkyWater 130 nm) + sky130 (180 nm PLL macro)
 >
 > Flow: RTL → Synthesis → Floorplan → Placement → CTS → Routing → GDSII
 >
@@ -17,12 +17,12 @@
 | Parameter | Value |
 |-----------|-------|
 | Top module | `ultrasound_asic_top` |
-| Process | sky130 (digital core) + gf180mcu (PLL macro) |
+| Process | sky130 (digital core) + sky130 (PLL macro) |
 | Std cell library | sky130_fd_sc_hd (high-density) |
 | Core area | 560 µm × 560 µm = 0.3136 mm² |
 | Die area (with pads) | 1200 µm × 1200 µm = 1.44 mm² |
 | Std cell count | 42,816 |
-| Macro count | 1 (PLL, gf180mcu hard macro) |
+| Macro count | 1 (PLL, sky130 hard macro) |
 | I/O pads | 64 signal + 8 power |
 | Metal stack | 5 metal layers (met1–met5) |
 | Target frequency | 50 MHz (clk_sys), 1.2 MHz (clk_adc) |
@@ -99,7 +99,7 @@
 └──────────────────────────────────────────────────────┘
 
 Macro placement:
-  PLL (gf180mcu):  Inside pad frame, top-right corner, 250 × 350 µm
+  PLL (sky130):  Inside pad frame, top-right corner, 250 × 350 µm
   SRAM:           Bottom-left quadrant, 150 × 250 µm
   I-Cache:        Top-left, adjacent to IF stage
   D-Cache:        Left-middle, adjacent to MEM stage
@@ -248,9 +248,9 @@ CTS Results:
 
 ---
 
-## 10. PLL Hard Macro (gf180mcu)
+## 10. PLL Hard Macro (sky130)
 
-The PLL is a standalone hard macro, hardened in gf180mcu 180 nm:
+The PLL is a standalone hard macro, hardened in sky130 180 nm:
 
 | Parameter | Value |
 |-----------|-------|
@@ -262,7 +262,7 @@ The PLL is a standalone hard macro, hardened in gf180mcu 180 nm:
 
 GDSII merge flow:
 1. Synthesize digital core → `ultrasound_top_digital.gds` (sky130)
-2. Hard macro PLL → `gf180_pll_macro.gds` (gf180mcu, provided as IP)
+2. Hard macro PLL → `sky130_pll_macro.gds` (sky130, provided as IP)
 3. Merge with Magic: `magic -dnull -noconsole merge.tcl`
 4. Final GDSII: `ultrasound_asic_top.gds`
 
@@ -409,7 +409,7 @@ Tool versions:
 
 PDK:
   sky130A      SkyWater 130 nm Open PDK (latest)
-  gf180mcu     GlobalFoundries 180 nm Open PDK (PLL macro only)
+  sky130     GlobalFoundries 180 nm Open PDK (PLL macro only)
 
 OS:
   Ubuntu 22.04 LTS (x86_64)

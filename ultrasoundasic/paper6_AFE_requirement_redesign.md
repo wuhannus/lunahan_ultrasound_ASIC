@@ -19,7 +19,7 @@
 | RX channels | 64 (4×4 × 4 directions) | Paper 1 |
 | Frame rate | 4 fps (obstacle) / 24 fps (imaging) | Papers 1 & 2 |
 | Speed of sound | 343 m/s (20°C air) | Physics |
-| Die process | sky130 (130 nm) + gf180mcu (PLL) | This project |
+| Die process | sky130 (130 nm) + sky130 (PLL) | This project |
 
 ---
 

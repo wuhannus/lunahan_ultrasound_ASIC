@@ -229,11 +229,11 @@ PMU Controller ──→ SPI ──→ PMU analog (voltage configuration)
 
 ## 5. Clock Architecture
 
-The clock tree is driven by an open-source **charge-pump integer-N PLL** designed in the **gf180mcu** (GlobalFoundries 180nm) open PDK. The PLL multiplies the 16 MHz crystal reference to a 200 MHz VCO, then divides down to produce two clock domains.
+The clock tree is driven by an open-source **charge-pump integer-N PLL** designed in the **sky130** (GlobalFoundries 180nm) open PDK. The PLL multiplies the 16 MHz crystal reference to a 200 MHz VCO, then divides down to produce two clock domains.
 
 ```
                          ┌─────────────────────────────────┐
-                         │   gf180mcu Charge-Pump PLL       │
+                         │   sky130 Charge-Pump PLL       │
                          │                                  │
   XTAL ─────────────────→│  ref=16MHz     ÷4 → 4 MHz PFD   │
   16 MHz                 │                                  │

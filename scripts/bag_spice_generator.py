@@ -68,7 +68,7 @@ class BAGParams:
     tx_energy_save_pct:  float = 44.2
     tx_efficiency_pct:   float = 85.3
     tx_dead_time_ns:     float = 120.0
-    tx_lrec_uh:          float = 330.0
+    tx_cstore_nf:        float = 100.0   # Storage capacitor (NOT inductor)
 
     # PMU
     pmu_vana_v:          float = 1.80

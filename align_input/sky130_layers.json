@@ -1,0 +1,74 @@
+{
+  "layer_properties": {
+    "M1": {
+      "layer": 71,
+      "direction": "h",
+      "min_width": 0.14,
+      "min_spacing": 0.14,
+      "unit_resistance": 0.125
+    },
+    "M2": {
+      "layer": 72,
+      "direction": "v",
+      "min_width": 0.14,
+      "min_spacing": 0.14,
+      "unit_resistance": 0.125
+    },
+    "M3": {
+      "layer": 73,
+      "direction": "h",
+      "min_width": 0.3,
+      "min_spacing": 0.3,
+      "unit_resistance": 0.047
+    },
+    "V1": {
+      "layer": 73,
+      "min_width": 0.15,
+      "min_spacing": 0.15
+    }
+  },
+  "design_rules": {
+    "Poly": {
+      "min_width": 0.15,
+      "min_spacing": 0.21,
+      "gate_extension": 0.25
+    },
+    "Diffusion": {
+      "min_width": 0.15,
+      "min_spacing": 0.17
+    },
+    "Nwell": {
+      "min_width": 0.43,
+      "min_spacing": 0.43,
+      "enclosure_diffusion": 0.43
+    },
+    "Contact": {
+      "width": 0.17,
+      "spacing": 0.17,
+      "enclosure_active": 0.06,
+      "enclosure_poly": 0.07,
+      "enclosure_metal": 0.06
+    },
+    "Via1": {
+      "width": 0.15,
+      "spacing": 0.17,
+      "enclosure_bottom": 0.05,
+      "enclosure_top": 0.05
+    },
+    "Metal1": {
+      "min_width": 0.14,
+      "min_spacing": 0.14,
+      "min_area": 0.083
+    },
+    "Metal2": {
+      "min_width": 0.14,
+      "min_spacing": 0.14,
+      "min_area": 0.083
+    },
+    "Metal3": {
+      "min_width": 0.3,
+      "min_spacing": 0.3,
+      "min_area": 0.25
+    }
+  }
+}

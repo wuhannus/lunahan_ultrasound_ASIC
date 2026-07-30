@@ -6,19 +6,20 @@
 * All devices: real foundry transistor models
 * Bias: PTAT constant-gm reference (temperature-compensated)
 *
-* REDESIGNED SPECS (based on comprehensive literature survey):
-*   Gain:        >30 dB (vs original 22.4 dB)
-*   NF:          <2.5 dB (vs original 3.8 dB)
-*   IRN:         <2.0 nV/sqrt(Hz) at 40 kHz (vs 3.2)
+* YAOHUA ZHANG LNA DESIGN (July 2026 simulation results):
+*   Gain:        40 dB at 1.5V supply (vs target 30 dB)
+*   NF:          <2.5 dB
+*   IRN:         <2.0 nV/sqrt(Hz) at 40 kHz
 *   Bandwidth:   10 kHz — 200 kHz
 *   Power:       <1 mW
+*   Supply:      1.5V
 *   Cascode:     YES (improved reverse isolation)
 *   Input device: 40-finger layout for low Rg
 *
 * Key changes from original:
 *   1. M1: 40 fingers × 5µm (vs 4 fingers) → lower gate resistance
 *   2. Cascode device added for isolation
-*   3. Lload: Tuned for 30 dB total gain
+*   3. Optimized bias for 40 dB gain at 1.5V (Yaohua Zhang)
 *   4. PTAT bias for temperature-stable gain
 *===========================================================
 

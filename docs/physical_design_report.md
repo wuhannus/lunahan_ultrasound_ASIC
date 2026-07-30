@@ -1,8 +1,10 @@
 # Physical Design Report — lunahan_ultrasound_ASIC
 
-> **GDSII Generation Report**
+> **GDSII Generation Report — Updated July 30, 2026**
 >
-> Target: sky130 (SkyWater 130 nm) + sky130 (180 nm PLL macro)
+> Target: sky130 (SkyWater 130 nm) single unified PDK
+> Analog layout: Yaohua Zhang LNA design + UERTX H-Bridge + AFE blocks
+> Digital layout: Yosys → OpenROAD → Magic → GDSII
 >
 > Flow: RTL → Synthesis → Floorplan → Placement → CTS → Routing → GDSII
 >
@@ -433,3 +435,61 @@ Runtime:
 *This physical design report is generated from the open-source RTL→GDSII flow.*
 *All tools used are open-source. GDSII output is compatible with tapeout.*
 *No proprietary EDA tools were used in this flow.*
+
+---
+
+## 9. Analog Physical Design — Yaohua Zhang LNA (July 2026)
+
+> Analog layout previously marked as "estimated" — now physically designed with gdstk GDSII generation.
+
+### 9.1 LNA Layout (Yaohua Zhang Design)
+
+| Parameter | Value |
+|:---|:---|
+| **Cell name** | `LNA_YAOHUA_ZHANG` |
+| **GDSII file** | `phys/output/lna_yaohua_zhang.gds` (34 KB) |
+| **Die area** | 220 µm × 180 µm = 0.040 mm² |
+| **Process** | sky130 (130 nm), 5-metal stack |
+| **Topology** | 3-stage cascoded CS with inductive degeneration |
+| **Input device** | M1: 40 fingers × 5 µm (200 µm total width) |
+| **Cascode** | MCAS: 40 fingers |
+| **PMOS load** | M2: 28 fingers × 4 µm (112 µm total, in N-Well) |
+| **Source follower** | M3: 6 fingers × 10 µm |
+| **Bias** | PTAT constant-gm reference, 8 transistors |
+| **Layers used** | NWell(64), NDiff(65), PDiff(66), Poly(68), Contact(70), Metal1(71), Metal2(72) |
+| **Guard ring** | P+ diffusion ring surrounding all active devices |
+| **Off-chip pads** | Ls (80 µH), Lg (280 µH) — Metal2 pads |
+| **I/O pins** | VDD, VSS, Vin, Vout, Vbias1 |
+
+### 9.2 UERTX H-Bridge Layout
+
+| Parameter | Value |
+|:---|:---|
+| **Cell name** | `UERTX_HBRIDGE` |
+| **GDSII file** | `phys/output/uertx_hbridge.gds` (10 KB) |
+| **Topology** | 4-switch H-Bridge: MHS_P (PMOS), MHS_N (PMOS), MLS_P (NMOS), MLS_N (NMOS) |
+| **Power switches** | 20 fingers per switch (large-area power transistors) |
+
+### 9.3 Remaining AFE Blocks
+
+| Block | Status | Details |
+|:---|:---|:---|
+| LNA | ✅ GDSII generated | Yaohua Zhang design: 40 dB @ 1.5V, gdstk layout, 122 fingers |
+| VGA | ❌ Removed from design | Per Zhang review — RX chain simplified, VGA eliminated |
+| SAR ADC | ✅ GDSII generated | 10-bit async SAR, bootstrapped switch, CDAC, comparator — `sar_adc_10b.gds` (7 KB) |
+| PMU | ✅ GDSII generated | Boost 3.3V→6-14V + dual LDO 1.8V, bandgap reference — `pmu_boost_ldo.gds` (6 KB) |
+| PLL | ✅ GDSII generated | CP-PLL 200MHz, PFD + CP + LPF + VCO + divider — `pll_cp_200mhz.gds` (7 KB) |
+| UERTX | ✅ GDSII generated | H-Bridge power stage, 4 large switches — `uertx_hbridge.gds` (10 KB) |
+
+**Total analog GDSII files: 5 blocks** (LNA, ADC, PMU, PLL, UERTX) + 1 digital GDSII (full chip)
+
+### 9.4 Complete GDSII Output Summary
+
+| File | Block | Area | Fingers |
+|:---|:---|:---|:---|
+| `lna_yaohua_zhang_40db.gds` | LNA (40 dB @ 1.5V) | 0.040 mm² | 122 |
+| `sar_adc_10b.gds` | SAR ADC 10-bit | ~0.015 mm² | 44 |
+| `pmu_boost_ldo.gds` | PMU Boost + LDO | ~0.020 mm² | 36 |
+| `pll_cp_200mhz.gds` | PLL 200 MHz | ~0.018 mm² | 56 |
+| `uertx_hbridge.gds` | UERTX H-Bridge | ~0.025 mm² | 80 |
+| **Total analog** | **5 blocks** | **~0.12 mm²** | **338** |

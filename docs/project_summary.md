@@ -310,13 +310,18 @@ ls phys/output/
 
 ## 10. Limitations and Future Work
 
+*Reviewed by Dr. Zhang Yaohua (UCL, July 2026)*
+
 ### Current Limitations
 
-1. **Not silicon-proven**: All results are from simulation only
-2. **Power discrepancy**: Our estimation (5.35 mW/ch) is ~24% higher than the paper's 4.3 mW/ch
-3. **Simplified transistor models**: Some blocks use behavioral/ideal models for simulation speed
-4. **Missing on-chip calibration**: The original paper includes auto-calibration circuits not yet implemented
-5. **Analog P&R not automated**: The analog layout is estimated; full OpenFASOC-based automated analog P&R is future work
+1. **Not silicon-proven**: All results are from simulation only. No tapeout or silicon measurement data.
+2. **Power discrepancy**: Our estimation (5.85 mW/ch) is ~36% higher than the paper's 4.3 mW/ch — attributed to general-purpose analog topologies vs. hand-optimized commercial designs.
+3. **Simplified transistor models**: Some analog blocks use behavioral/ideal models for simulation speed rather than full transistor-level simulation across all corners.
+4. **Missing on-chip calibration**: The original paper includes auto-calibration circuits (offset, gain trimming) not yet implemented.
+5. **Analog P&R not automated**: Analog layout is manually parameterized; full OpenFASOC-based automated analog P&R is future work.
+6. **Process node mismatch**: Original fabricated in 0.18 µm CMOS; this re-implementation uses sky130 (130 nm), introducing modeling differences.
+7. **No inductor UERTX verification gap**: Capacitor-only UERTX depends on off-chip CSTORE (100 nF) performance not verified in simulation.
+8. **Simulation-only AMS co-simulation**: Full-extracted post-layout mixed-signal verification with realistic parasitics is pending.
 
 ### Future Work
 
@@ -326,6 +331,16 @@ ls phys/output/
 4. **On-chip DSP**: Add hardware FFT/beamforming accelerator for faster 3-D reconstruction
 5. **lunahan_v2 integration**: Upgrade to `lunahan_v2` RISC-V core for AI-enhanced obstacle classification
 6. **Complete AMS verification**: Full-extracted post-layout mixed-signal simulation
+
+### Dr. Zhang Yaohua's Contributions
+
+Zhang contributed manuscript revisions for the IEEE CAS Magazine submission:
+- Broadened subtitle to general mixed-signal ASIC (not ultrasound-specific)
+- Updated transducer reference [15] to Z. Shao et al. (IEEE J. MEMS, 2021)
+- Identified and deleted unverifiable reference [8] (Edwards 2021); renumbered [9]–[17] → [8]–[16]
+- Added explicit inline citation numbers throughout all sections
+- Applied academic manuscript formatting and grammar corrections
+- Added UCL Institute for Materials Discovery affiliation
 
 ---
 

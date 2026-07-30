@@ -10,7 +10,7 @@
 
 ## Project Status
 
-⚠️ **This project is generated under the guidance of Dr. Han Wu (wuhannus), co-working with his AI collaborator DeepSeek V4 Pro. The AFE designs and simulation results presented here are synthesized from open-source analog methodologies and have not been silicon-proven. This is a flow demonstration and open-source design exercise.**
+⚠️ **This work is in progress under the guidance of Dr. Han Wu and Dr. Yaohua Zhang, with the assistance of AI tools. All results presented are based on pre-layout simulation only; post-layout simulation and silicon validation have not yet been completed. Please contact Dr. Han Wu or Dr. Yaohua Zhang for the latest progress and status before adopting or citing any results.**
 
 ---
 
@@ -375,9 +375,63 @@ openroad -script openroad_flow.tcl
 
 ---
 
+## Limitations and Future Work
+
+This project has been reviewed by **Dr. Zhang Yaohua** (UCL, Department of Electronic & Electrical Engineering and Institute for Materials Discovery). The following limitations were identified:
+
+### Current Limitations
+
+1. **Not silicon-proven**: All results are from simulation only. No tapeout or silicon measurement data exists.
+2. **Simulation-only verification**: Analog/mixed-signal co-simulation uses ideal behavioral models for some blocks. Full-extracted post-layout mixed-signal verification is pending.
+3. **Power discrepancy**: Per-channel power (5.85 mW) is ~36% higher than the JSSC paper's 4.3 mW — attributed to general-purpose analog topologies vs. hand-optimized commercial designs.
+4. **Process node mismatch**: The original chip was fabricated in 0.18 µm CMOS; this re-implementation uses sky130 (130 nm), introducing modeling differences.
+5. **Simplified transistor models**: Some analog blocks use behavioral/ideal models for simulation speed rather than full transistor-level simulation across all corners.
+6. **Missing on-chip calibration**: The original paper includes auto-calibration circuits (offset, gain trimming) not yet implemented in the open-source version.
+7. **Analog P&R not automated**: Analog layout is manually parameterized; full OpenFASOC-based automated analog P&R is future work.
+8. **No inductor UERTX verification gap**: The UERTX design is capacitor-only (no inductor) — while this matches the JSSC 2022 paper, off-chip CSTORE (100 nF) performance depends on external component selection not verified in simulation.
+9. **Reference [8] (Edwards 2021 SSC Mag) not found**: The cited reference "T. Edwards, Open-source PDK and EDA tools for IC design, IEEE SSC Mag., 2021" could not be verified in academic databases — has been deleted in later revisions.
+10. **Manuscript subtitle narrowed to ultrasound**: The original subtitle focused exclusively on ultrasound ASIC, limiting broader mixed-signal ASIC readership. Corrected by Zhang to: *"A Practical Tutorial Using Fully Open-Source EDA Tools for Custom Mixed-Signal Integrated Circuit Design."*
+
+### Future Work
+
+1. **Tapeout**: Target Google/Efabless MPW shuttle for silicon validation
+2. **Automated analog layout**: Port all analog blocks to OpenFASOC Glayout generators
+3. **Power optimization**: Reduce per-channel power closer to paper's 4.3 mW target
+4. **On-chip DSP**: Add hardware FFT/beamforming accelerator for faster 3-D reconstruction
+5. **lunahan_v2 integration**: Upgrade to `lunahan_v2` RISC-V core for AI-enhanced obstacle classification
+6. **Complete AMS verification**: Full-extracted post-layout mixed-signal simulation with realistic parasitics
+
+---
+
+## Dr. Zhang Yaohua's Contributions
+
+Dr. Zhang Yaohua (UCL) contributed the following revisions to the CAS Magazine manuscript (`Open-source mix-signal ASIC design flow 20260712 YHZ.docx`):
+
+| Contribution | Detail |
+|:---|:---|
+| **Subtitle revision** | Broadened from ultrasound-specific to general mixed-signal ASIC: "A Practical Tutorial Using Fully Open-Source EDA Tools for Custom Mixed-Signal Integrated Circuit Design" |
+| **Affiliation added** | Added "Institute for Materials Discovery, University College London, UK" as secondary affiliation |
+| **Reference [15] updated** | Replaced Manthey transducer reference with Z. Shao et al., "Bimorph Pinned Piezoelectric Micromachined Ultrasonic Transducers for Space Imaging Applications," IEEE J. MEMS, vol. 30, no. 4, 2021 |
+| **Reference [8] deleted** | Identified and removed unverifiable Edwards 2021 reference; renumbered references [9]–[17] → [8]–[16] |
+| **Citation inline completion** | Added explicit inline citation numbers ([1], [2], etc.) throughout all manuscript sections |
+| **Reference renumbering** | Reorganized 16 references for consistency with IEEE CAS Magazine style |
+| **Section 3.3 revision** | Changed "re-implements" → "examines" for softer academic tone |
+| **Grammar and formatting** | Applied academic manuscript conventions across all sections |
+| **Manuscript build** | Created final merged `.docx` with Figure 1 (six-phase design flow), 16 references, justified text, and planned figures/tables appendix |
+
+### Manuscript Files
+
+| File | Date | Description |
+|:---|:---|:---|
+| `Open-source mix-signal ASIC design flow YHZ_ORIGIN.docx` | Jul 12 | Zhang's original draft (77 paragraphs, ~2379 words) |
+| `Open-source mix-signal ASIC design flow YHZ_with annotations.docx` | Jul 2 | Annotated version with review comments |
+| `Open-source mix-signal ASIC design flow 20260712 YHZ.docx` | Jul 12 23:00 | Final merged manuscript with Figure 1, 16 refs, justified text |
+
+---
+
 ## Project Resources
 
-> 📊 *AI-assisted open-source analog/mixed-signal design. Last updated: 2026-06-19*
+> 📊 *AI-assisted open-source analog/mixed-signal design. Last updated: 2026-07-30*
 
 | Resource | Consumed | Detail |
 |----------|----------|--------|
@@ -392,10 +446,11 @@ openroad -script openroad_flow.tcl
 | 💰 **API Cost** | **¥2.00 / $0.28** | DeepSeek V4 Pro (~¥1.5/M blended tokens). 1.35M tokens ≈ ¥2.00 RMB / $0.28 USD. |
 | 💻 **Machine Time** | **~8.2 h** | MacBook Pro 16″ — **Apple M5 Pro** (12-core), **64 GB** unified memory, macOS **Tahoe 26.5.1**. |
 | 👨‍🔬 **Dr. Han Wu** | **~3.5 h** | Direction, paper guidance (×3 papers), design methodology decisions, Elad Alon BAG integration strategy. AI handled all implementation. |
+| 👩‍🔬 **Dr. Zhang Yaohua** | **~5 h** | Manuscript revisions (subtitle, references, citations), limitations identification (10 items), figure quality review, CAS Magazine submission preparation, UCL affiliation additions. |
 
 ---
 
-*June 2026 · Dr. Han Wu + DeepSeek V4 Pro · Apache 2.0 License*
+*June–July 2026 · Dr. Han Wu + Dr. Zhang Yaohua + DeepSeek V4 Pro · Apache 2.0 License*
 
 ## License
 

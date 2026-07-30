@@ -46,9 +46,9 @@
 │  ┌─────────────────── ANALOG FRONT-END (AFE, sky130) ──────────────┐ │
 │  │                                                                    │ │
 │  │  ┌──────┐    ┌──────┐    ┌──────┐    ┌──────────┐                │ │
-│  │  │ LNA  │───▶│ VGA  │───▶│ BPF  │───▶│ SAR ADC  │                │ │
-│  │  │22.4dB│    │-2~42│    │40kHz │    │10b 1.2M  │                │ │
-│  │  │3.8NF │    │  dB  │    │BW=10k│    │ENOB 9.6  │                │ │
+│  │  │ LNA  │──────────▶│ BPF  │───▶│ SAR ADC  │                      │ │
+│  │  │ 40dB │            │40kHz │    │10b 1.2M  │                      │ │
+│  │  │2.5NF │            │BW=10k│    │ENOB 9.6  │                      │ │
 │  │  └──┬───┘    └──────┘    └──────┘    └────┬─────┘                │ │
 │  │     │                                     │                       │ │
 │  │     │     RX x 64 channels                │  10-bit parallel     │ │
@@ -185,10 +185,6 @@ lunahan_ultrasound_ASIC/
 cd afe/lna
 xyce lna_tb.sp
 
-# VGA simulation
-cd afe/vga
-xyce vga_tb.sp
-
 # ADC simulation
 cd afe/adc
 xyce sar_adc_tb.sp
@@ -235,14 +231,11 @@ openroad -script openroad_flow.tcl
 
 | Block | Metric | Target | Simulated |
 |-------|--------|--------|-----------|
-| **LNA** | Gain | >20 dB | 22.4 dB |
-| | Noise Figure | <4 dB | 3.8 dB |
-| | Input-referred noise | <5 nV/√Hz | 3.2 nV/√Hz |
+| **LNA** | Gain @ 1.5V | >30 dB | 40 dB |
+| | Noise Figure | <4 dB | 2.5 dB |
+| | Input-referred noise | <5 nV/√Hz | 2.0 nV/√Hz |
 | | Bandwidth | >100 kHz | 120 kHz |
 | | Power | <1 mW | 0.85 mW |
-| **VGA** | Gain range | 0-40 dB | -2 to 42 dB |
-| | Bandwidth | >100 kHz | 180 kHz |
-| | Power | <2 mW | 1.6 mW |
 | **SAR ADC** | Resolution | 10 bits | 9.6 ENOB |
 | | Sampling rate | >1 MS/s | 1.2 MS/s |
 | | SNDR | >56 dB | 58.7 dB |
@@ -314,12 +307,11 @@ openroad -script openroad_flow.tcl
 | | Frame rate (imaging) | 24 fps | 24 fps (via PV-RXBF) | ✓ |
 | | System power | 0.28 W (paper) | ~0.38 W | ✓ |
 | | Per-channel power | 4.3 mW | ~5.85 mW | ~ |
-| **LNA** | Gain | >30 dB (redesigned) | 30.0 dB | ✓ |
-| | Noise figure | <2.5 dB (redesigned) | 2.5 dB | ✓ |
-| | Input-referred noise | <2.0 nV/√Hz (redesigned) | 2.0 nV/√Hz | ✓ |
+| **LNA (Yaohua Zhang)** | Gain @ 1.5V | >30 dB | 40.0 dB | ✓ |
+| | YZH Differential LNA | Xyce-verified | PR #1 merged | ✅ |
+| | Noise figure | <2.5 dB | 2.5 dB | ✓ |
+| | Input-referred noise | <2.0 nV/√Hz | 2.0 nV/√Hz | ✓ |
 | | Power | <1 mW | 0.95 mW | ✓ |
-| **VGA** | Gain range | 0–46 dB (redesigned) | 0 to 46 dB | ✓ |
-| | Bandwidth | >200 kHz | 200 kHz | ✓ |
 | **ADC** | Resolution | 10 bits | 9.6 ENOB | ✓ |
 | | Sampling rate | >1 MS/s | 1.2 MS/s | ✓ |
 | | SNDR | >56 dB | 58.7 dB | ✓ |

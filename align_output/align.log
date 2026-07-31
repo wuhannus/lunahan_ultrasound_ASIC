@@ -1,0 +1,33 @@
+[32malign.main INFO : Reading netlist: /Users/wuhan0515/opencode/lunahan_ultrasound_ASIC/align_input/lna_yaohua_zhang.sp subckt=LNA_YAOHUA_ZHANG, flat=0[0m
+[32malign.compiler.compiler INFO : Starting topology identification...[0m
+[32malign.compiler.user_const INFO : Reading constraint file: [PosixPath('/Users/wuhan0515/opencode/lunahan_ultrasound_ASIC/align_input/lna_yaohua_zhang.const.json')][0m
+[32malign.compiler.preprocess INFO : Flattening dummy hierarchy PMOS_20U_1U_M2[0m
+[32malign.compiler.preprocess INFO : Removing hierarchy PMOS_20U_1U_M2 from ['NMOS_5U_0U5_M40', 'NMOS_10U_0U5_M6', 'NMOS_2U_2U_M2', 'NMOS_4U_1U_M16', 'NMOS_4U_2U_M4', 'PMOS_4U_0U5_M28', 'PMOS_4U_1U_M4', 'PMOS_20U_1U_M2', 'PMOS_4U_2U_M4', 'LNA_YAOHUA_ZHANG'][0m
+[32malign.compiler.preprocess INFO : Flattening dummy hierarchy PMOS_4U_1U_M4[0m
+[32malign.compiler.preprocess INFO : Removing hierarchy PMOS_4U_1U_M4 from ['NMOS_5U_0U5_M40', 'NMOS_10U_0U5_M6', 'NMOS_2U_2U_M2', 'NMOS_4U_1U_M16', 'NMOS_4U_2U_M4', 'PMOS_4U_0U5_M28', 'PMOS_4U_1U_M4', 'PMOS_4U_2U_M4', 'LNA_YAOHUA_ZHANG'][0m
+[32malign.compiler.preprocess INFO : Flattening dummy hierarchy NMOS_4U_1U_M16[0m
+[32malign.compiler.preprocess INFO : Removing hierarchy NMOS_4U_1U_M16 from ['NMOS_5U_0U5_M40', 'NMOS_10U_0U5_M6', 'NMOS_2U_2U_M2', 'NMOS_4U_1U_M16', 'NMOS_4U_2U_M4', 'PMOS_4U_0U5_M28', 'PMOS_4U_2U_M4', 'LNA_YAOHUA_ZHANG'][0m
+[32malign.compiler.preprocess INFO : Flattening dummy hierarchy PMOS_4U_0U5_M28[0m
+[32malign.compiler.preprocess INFO : Removing hierarchy PMOS_4U_0U5_M28 from ['NMOS_5U_0U5_M40', 'NMOS_10U_0U5_M6', 'NMOS_2U_2U_M2', 'NMOS_4U_2U_M4', 'PMOS_4U_0U5_M28', 'PMOS_4U_2U_M4', 'LNA_YAOHUA_ZHANG'][0m
+[32malign.compiler.preprocess INFO : Flattening dummy hierarchy NMOS_10U_0U5_M6[0m
+[32malign.compiler.preprocess INFO : Removing hierarchy NMOS_10U_0U5_M6 from ['NMOS_5U_0U5_M40', 'NMOS_10U_0U5_M6', 'NMOS_2U_2U_M2', 'NMOS_4U_2U_M4', 'PMOS_4U_2U_M4', 'LNA_YAOHUA_ZHANG'][0m
+[32malign.compiler.preprocess INFO : Flattening dummy hierarchy NMOS_2U_2U_M2[0m
+[32malign.compiler.preprocess INFO : Removing hierarchy NMOS_2U_2U_M2 from ['NMOS_5U_0U5_M40', 'NMOS_2U_2U_M2', 'NMOS_4U_2U_M4', 'PMOS_4U_2U_M4', 'LNA_YAOHUA_ZHANG'][0m
+[32malign.compiler.preprocess INFO : Flattening dummy hierarchy PMOS_4U_2U_M4[0m
+[32malign.compiler.preprocess INFO : Removing hierarchy PMOS_4U_2U_M4 from ['NMOS_5U_0U5_M40', 'NMOS_4U_2U_M4', 'PMOS_4U_2U_M4', 'LNA_YAOHUA_ZHANG'][0m
+[32malign.compiler.preprocess INFO : Flattening dummy hierarchy NMOS_5U_0U5_M40[0m
+[32malign.compiler.preprocess INFO : Removing hierarchy NMOS_5U_0U5_M40 from ['NMOS_5U_0U5_M40', 'NMOS_4U_2U_M4', 'LNA_YAOHUA_ZHANG'][0m
+[32malign.compiler.preprocess INFO : Flattening dummy hierarchy NMOS_4U_2U_M4[0m
+[32malign.compiler.preprocess INFO : Removing hierarchy NMOS_4U_2U_M4 from ['NMOS_4U_2U_M4', 'LNA_YAOHUA_ZHANG'][0m
+[32malign.compiler.compiler INFO : Completed topology identification.[0m
+[32mgen_param INFO : gen_param MOS: SCM_PMOS_81693909 w=1.0u l=1.0u m=1[0m
+[32mgen_param INFO : gen_param MOS: SCM_PMOS_9526559 w=1.0u l=1.0u m=1[0m
+[32mgen_param INFO : gen_param MOS: DCL_NMOS_S_19697000 w=1.0u l=1.0u m=1[0m
+[32mgen_param INFO : gen_param MOS: DCL_PMOS_S_91929563 w=1.0u l=1.0u m=1[0m
+[32mgen_param INFO : gen_param MOS: NMOS_S_2091674 w=1.0u l=1.0u m=1[0m
+[32mgen_param INFO : gen_param MOS: DCL_NMOS_15725543 w=1.0u l=1.0u m=1[0m
+[32mgen_param INFO : gen_param MOS: NMOS_4T_28313292 w=1.0u l=1.0u m=1[0m
+[32mgen_param INFO : gen_param MOS: NMOS_4T_94702724 w=1.0u l=1.0u m=1[0m
+[32mgen_param INFO : gen_param MOS: NMOS_4T_96028469 w=1.0u l=1.0u m=1[0m
+[31malign.cell_fabric.remove_duplicates ERROR : Found errors: SHORT: 0 OPEN: 30612239 DIFFERENT WIDTH: 0[0m
+[31malign.cell_fabric.drc ERROR : Found errors: DRC 30603710[0m

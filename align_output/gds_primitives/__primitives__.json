@@ -1,0 +1,434 @@
+{
+  "NMOS_5U_0U5_M40": {
+    "bbox": [
+      0,
+      0,
+      208000,
+      5000
+    ],
+    "terminals": [
+      {
+        "layer": "M1",
+        "netName": "S",
+        "rect": [
+          0,
+          -2500,
+          208000,
+          -2220
+        ]
+      },
+      {
+        "layer": "M1",
+        "netName": "D",
+        "rect": [
+          0,
+          2220,
+          208000,
+          2500
+        ]
+      },
+      {
+        "layer": "Po",
+        "netName": "G",
+        "rect": [
+          0,
+          -2750,
+          208000,
+          2750
+        ]
+      }
+    ],
+    "width": 208000,
+    "height": 5500,
+    "parameters": {
+      "W": 5,
+      "L": 0.5,
+      "M": 40,
+      "type": "NMOS"
+    }
+  },
+  "NMOS_10U_0U5_M6": {
+    "bbox": [
+      0,
+      0,
+      61200,
+      10000
+    ],
+    "terminals": [
+      {
+        "layer": "M1",
+        "netName": "S",
+        "rect": [
+          0,
+          -5000,
+          61200,
+          -4720
+        ]
+      },
+      {
+        "layer": "M1",
+        "netName": "D",
+        "rect": [
+          0,
+          4720,
+          61200,
+          5000
+        ]
+      },
+      {
+        "layer": "Po",
+        "netName": "G",
+        "rect": [
+          0,
+          -5250,
+          61200,
+          5250
+        ]
+      }
+    ],
+    "width": 61200,
+    "height": 10500,
+    "parameters": {
+      "W": 10,
+      "L": 0.5,
+      "M": 6,
+      "type": "NMOS"
+    }
+  },
+  "NMOS_2U_2U_M2": {
+    "bbox": [
+      0,
+      0,
+      4400,
+      2000
+    ],
+    "terminals": [
+      {
+        "layer": "M1",
+        "netName": "S",
+        "rect": [
+          0,
+          -1000,
+          4400,
+          -720
+        ]
+      },
+      {
+        "layer": "M1",
+        "netName": "D",
+        "rect": [
+          0,
+          720,
+          4400,
+          1000
+        ]
+      },
+      {
+        "layer": "Po",
+        "netName": "G",
+        "rect": [
+          0,
+          -1250,
+          4400,
+          1250
+        ]
+      }
+    ],
+    "width": 4400,
+    "height": 2500,
+    "parameters": {
+      "W": 2,
+      "L": 2,
+      "M": 2,
+      "type": "NMOS"
+    }
+  },
+  "NMOS_4U_1U_M16": {
+    "bbox": [
+      0,
+      0,
+      67200,
+      4000
+    ],
+    "terminals": [
+      {
+        "layer": "M1",
+        "netName": "S",
+        "rect": [
+          0,
+          -2000,
+          67200,
+          -1720
+        ]
+      },
+      {
+        "layer": "M1",
+        "netName": "D",
+        "rect": [
+          0,
+          1720,
+          67200,
+          2000
+        ]
+      },
+      {
+        "layer": "Po",
+        "netName": "G",
+        "rect": [
+          0,
+          -2250,
+          67200,
+          2250
+        ]
+      }
+    ],
+    "width": 67200,
+    "height": 4500,
+    "parameters": {
+      "W": 4,
+      "L": 1,
+      "M": 16,
+      "type": "NMOS"
+    }
+  },
+  "NMOS_4U_2U_M4": {
+    "bbox": [
+      0,
+      0,
+      16800,
+      4000
+    ],
+    "terminals": [
+      {
+        "layer": "M1",
+        "netName": "S",
+        "rect": [
+          0,
+          -2000,
+          16800,
+          -1720
+        ]
+      },
+      {
+        "layer": "M1",
+        "netName": "D",
+        "rect": [
+          0,
+          1720,
+          16800,
+          2000
+        ]
+      },
+      {
+        "layer": "Po",
+        "netName": "G",
+        "rect": [
+          0,
+          -2250,
+          16800,
+          2250
+        ]
+      }
+    ],
+    "width": 16800,
+    "height": 4500,
+    "parameters": {
+      "W": 4,
+      "L": 2,
+      "M": 4,
+      "type": "NMOS"
+    }
+  },
+  "PMOS_4U_0U5_M28": {
+    "bbox": [
+      0,
+      0,
+      117600,
+      4000
+    ],
+    "terminals": [
+      {
+        "layer": "M1",
+        "netName": "S",
+        "rect": [
+          0,
+          -2000,
+          117600,
+          -1720
+        ]
+      },
+      {
+        "layer": "M1",
+        "netName": "D",
+        "rect": [
+          0,
+          1720,
+          117600,
+          2000
+        ]
+      },
+      {
+        "layer": "Po",
+        "netName": "G",
+        "rect": [
+          0,
+          -2250,
+          117600,
+          2250
+        ]
+      }
+    ],
+    "width": 117600,
+    "height": 4500,
+    "parameters": {
+      "W": 4,
+      "L": 0.5,
+      "M": 28,
+      "type": "PMOS"
+    }
+  },
+  "PMOS_4U_1U_M4": {
+    "bbox": [
+      0,
+      0,
+      16800,
+      4000
+    ],
+    "terminals": [
+      {
+        "layer": "M1",
+        "netName": "S",
+        "rect": [
+          0,
+          -2000,
+          16800,
+          -1720
+        ]
+      },
+      {
+        "layer": "M1",
+        "netName": "D",
+        "rect": [
+          0,
+          1720,
+          16800,
+          2000
+        ]
+      },
+      {
+        "layer": "Po",
+        "netName": "G",
+        "rect": [
+          0,
+          -2250,
+          16800,
+          2250
+        ]
+      }
+    ],
+    "width": 16800,
+    "height": 4500,
+    "parameters": {
+      "W": 4,
+      "L": 1,
+      "M": 4,
+      "type": "PMOS"
+    }
+  },
+  "PMOS_20U_1U_M2": {
+    "bbox": [
+      0,
+      0,
+      40400,
+      20000
+    ],
+    "terminals": [
+      {
+        "layer": "M1",
+        "netName": "S",
+        "rect": [
+          0,
+          -10000,
+          40400,
+          -9720
+        ]
+      },
+      {
+        "layer": "M1",
+        "netName": "D",
+        "rect": [
+          0,
+          9720,
+          40400,
+          10000
+        ]
+      },
+      {
+        "layer": "Po",
+        "netName": "G",
+        "rect": [
+          0,
+          -10250,
+          40400,
+          10250
+        ]
+      }
+    ],
+    "width": 40400,
+    "height": 20500,
+    "parameters": {
+      "W": 20,
+      "L": 1,
+      "M": 2,
+      "type": "PMOS"
+    }
+  },
+  "PMOS_4U_2U_M4": {
+    "bbox": [
+      0,
+      0,
+      16800,
+      4000
+    ],
+    "terminals": [
+      {
+        "layer": "M1",
+        "netName": "S",
+        "rect": [
+          0,
+          -2000,
+          16800,
+          -1720
+        ]
+      },
+      {
+        "layer": "M1",
+        "netName": "D",
+        "rect": [
+          0,
+          1720,
+          16800,
+          2000
+        ]
+      },
+      {
+        "layer": "Po",
+        "netName": "G",
+        "rect": [
+          0,
+          -2250,
+          16800,
+          2250
+        ]
+      }
+    ],
+    "width": 16800,
+    "height": 4500,
+    "parameters": {
+      "W": 4,
+      "L": 2,
+      "M": 4,
+      "type": "PMOS"
+    }
+  }
+}

@@ -1,0 +1,177 @@
+{
+  "XMT": {
+    "abstract_template_name": "XMT",
+    "concrete_template_name": "XMT",
+    "primitive": "MOS",
+    "width": 1603200,
+    "height": 2700,
+    "bbox": [
+      0,
+      0,
+      1603200,
+      2700
+    ],
+    "terminals": [
+      {
+        "layer": "M1",
+        "netName": "S",
+        "rect": [
+          0,
+          -900,
+          1603200,
+          0
+        ]
+      },
+      {
+        "layer": "M1",
+        "netName": "D",
+        "rect": [
+          0,
+          900,
+          1603200,
+          2700
+        ]
+      }
+    ]
+  },
+  "XM1": {
+    "abstract_template_name": "XM1",
+    "concrete_template_name": "XM1",
+    "primitive": "MOS",
+    "width": 3206400,
+    "height": 2700,
+    "bbox": [
+      0,
+      0,
+      3206400,
+      2700
+    ],
+    "terminals": [
+      {
+        "layer": "M1",
+        "netName": "S",
+        "rect": [
+          0,
+          -900,
+          3206400,
+          0
+        ]
+      },
+      {
+        "layer": "M1",
+        "netName": "D",
+        "rect": [
+          0,
+          900,
+          3206400,
+          2700
+        ]
+      }
+    ]
+  },
+  "XM2": {
+    "abstract_template_name": "XM2",
+    "concrete_template_name": "XM2",
+    "primitive": "MOS",
+    "width": 3206400,
+    "height": 2700,
+    "bbox": [
+      0,
+      0,
+      3206400,
+      2700
+    ],
+    "terminals": [
+      {
+        "layer": "M1",
+        "netName": "S",
+        "rect": [
+          0,
+          -900,
+          3206400,
+          0
+        ]
+      },
+      {
+        "layer": "M1",
+        "netName": "D",
+        "rect": [
+          0,
+          900,
+          3206400,
+          2700
+        ]
+      }
+    ]
+  },
+  "XMNL": {
+    "abstract_template_name": "XMNL",
+    "concrete_template_name": "XMNL",
+    "primitive": "MOS",
+    "width": 300600,
+    "height": 8700,
+    "bbox": [
+      0,
+      0,
+      300600,
+      8700
+    ],
+    "terminals": [
+      {
+        "layer": "M1",
+        "netName": "S",
+        "rect": [
+          0,
+          -2900,
+          300600,
+          0
+        ]
+      },
+      {
+        "layer": "M1",
+        "netName": "D",
+        "rect": [
+          0,
+          2900,
+          300600,
+          8700
+        ]
+      }
+    ]
+  },
+  "XMNR": {
+    "abstract_template_name": "XMNR",
+    "concrete_template_name": "XMNR",
+    "primitive": "MOS",
+    "width": 300600,
+    "height": 8700,
+    "bbox": [
+      0,
+      0,
+      300600,
+      8700
+    ],
+    "terminals": [
+      {
+        "layer": "M1",
+        "netName": "S",
+        "rect": [
+          0,
+          -2900,
+          300600,
+          0
+        ]
+      },
+      {
+        "layer": "M1",
+        "netName": "D",
+        "rect": [
+          0,
+          2900,
+          300600,
+          8700
+        ]
+      }
+    ]
+  }
+}

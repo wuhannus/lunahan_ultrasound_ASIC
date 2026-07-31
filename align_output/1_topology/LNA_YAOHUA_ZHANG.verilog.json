@@ -1,0 +1,267 @@
+{
+  "modules": [
+    {
+      "name": "LNA_YAOHUA_ZHANG",
+      "parameters": [
+        "VIN",
+        "VOUT",
+        "VDD",
+        "VSS"
+      ],
+      "constraints": [
+        {
+          "constraint": "PowerPorts",
+          "ports": [
+            "VDD"
+          ],
+          "propagate": true
+        },
+        {
+          "constraint": "GroundPorts",
+          "ports": [
+            "VSS"
+          ],
+          "propagate": true
+        },
+        {
+          "constraint": "SameTemplate",
+          "instances": [
+            "X_XBIAS3",
+            "X_XBIAS4"
+          ]
+        },
+        {
+          "constraint": "SameTemplate",
+          "instances": [
+            "X_XM1",
+            "X_XMCAS"
+          ]
+        },
+        {
+          "constraint": "SameTemplate",
+          "instances": [
+            "X_XMB_CAS",
+            "X_XM2_XMB_P",
+            "X_XMB_SF"
+          ]
+        }
+      ],
+      "instances": [
+        {
+          "abstract_template_name": "SCM_PMOS_81693909",
+          "instance_name": "X_XBIAS1_XBIAS2",
+          "fa_map": [
+            {
+              "formal": "DA",
+              "actual": "NET_B1"
+            },
+            {
+              "formal": "DB",
+              "actual": "IBIAS"
+            },
+            {
+              "formal": "S",
+              "actual": "VDD"
+            }
+          ]
+        },
+        {
+          "abstract_template_name": "SCM_PMOS_9526559",
+          "instance_name": "X_XM2_XMB_P",
+          "fa_map": [
+            {
+              "formal": "DA",
+              "actual": "NET_B_P"
+            },
+            {
+              "formal": "DB",
+              "actual": "NET_D2"
+            },
+            {
+              "formal": "S",
+              "actual": "VDD"
+            }
+          ]
+        },
+        {
+          "abstract_template_name": "DCL_NMOS_S_19697000",
+          "instance_name": "X_XMB_CAS2",
+          "fa_map": [
+            {
+              "formal": "D",
+              "actual": "NET_B_CAS"
+            },
+            {
+              "formal": "S",
+              "actual": "VSS"
+            }
+          ]
+        },
+        {
+          "abstract_template_name": "DCL_PMOS_S_91929563",
+          "instance_name": "X_XMB_CAS",
+          "fa_map": [
+            {
+              "formal": "D",
+              "actual": "NET_B_CAS"
+            },
+            {
+              "formal": "S",
+              "actual": "VDD"
+            }
+          ]
+        },
+        {
+          "abstract_template_name": "DCL_PMOS_S_91929563",
+          "instance_name": "X_XMB_SF",
+          "fa_map": [
+            {
+              "formal": "D",
+              "actual": "NET_B_SF"
+            },
+            {
+              "formal": "S",
+              "actual": "VDD"
+            }
+          ]
+        },
+        {
+          "abstract_template_name": "NMOS_S_2091674",
+          "instance_name": "X_XBIAS4",
+          "fa_map": [
+            {
+              "formal": "D",
+              "actual": "NET_B2"
+            },
+            {
+              "formal": "G",
+              "actual": "NET_B1"
+            },
+            {
+              "formal": "S",
+              "actual": "VSS"
+            }
+          ]
+        },
+        {
+          "abstract_template_name": "DCL_NMOS_15725543",
+          "instance_name": "X_XBIAS3",
+          "fa_map": [
+            {
+              "formal": "B",
+              "actual": "VSS"
+            },
+            {
+              "formal": "D",
+              "actual": "NET_B1"
+            },
+            {
+              "formal": "S",
+              "actual": "NET_B2"
+            }
+          ]
+        },
+        {
+          "abstract_template_name": "NMOS_4T_28313292",
+          "instance_name": "X_XM1",
+          "fa_map": [
+            {
+              "formal": "B",
+              "actual": "VSS"
+            },
+            {
+              "formal": "D",
+              "actual": "NET_D1"
+            },
+            {
+              "formal": "G",
+              "actual": "VIN"
+            },
+            {
+              "formal": "S",
+              "actual": "NET_S1"
+            }
+          ]
+        },
+        {
+          "abstract_template_name": "NMOS_4T_94702724",
+          "instance_name": "X_XM3",
+          "fa_map": [
+            {
+              "formal": "B",
+              "actual": "VSS"
+            },
+            {
+              "formal": "D",
+              "actual": "VOUT"
+            },
+            {
+              "formal": "G",
+              "actual": "NET_B_SF"
+            },
+            {
+              "formal": "S",
+              "actual": "NET_S3"
+            }
+          ]
+        },
+        {
+          "abstract_template_name": "NMOS_4T_28313292",
+          "instance_name": "X_XMCAS",
+          "fa_map": [
+            {
+              "formal": "B",
+              "actual": "VSS"
+            },
+            {
+              "formal": "D",
+              "actual": "NET_D2"
+            },
+            {
+              "formal": "G",
+              "actual": "NET_B_CAS"
+            },
+            {
+              "formal": "S",
+              "actual": "NET_D1"
+            }
+          ]
+        },
+        {
+          "abstract_template_name": "NMOS_4T_96028469",
+          "instance_name": "X_XMLOAD",
+          "fa_map": [
+            {
+              "formal": "B",
+              "actual": "VSS"
+            },
+            {
+              "formal": "D",
+              "actual": "VDD"
+            },
+            {
+              "formal": "G",
+              "actual": "NET_B_LOAD"
+            },
+            {
+              "formal": "S",
+              "actual": "NET_S3"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "global_signals": [
+    {
+      "prefix": "global_power",
+      "formal": "supply0",
+      "actual": "VSS"
+    },
+    {
+      "prefix": "global_power",
+      "formal": "supply1",
+      "actual": "VDD"
+    }
+  ]
+}

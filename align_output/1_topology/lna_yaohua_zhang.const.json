@@ -1,0 +1,183 @@
+[
+  {
+    "constraint": "PowerPorts",
+    "ports": [
+      "VDD"
+    ],
+    "propagate": true
+  },
+  {
+    "constraint": "GroundPorts",
+    "ports": [
+      "VSS"
+    ],
+    "propagate": true
+  },
+  {
+    "constraint": "SameTemplate",
+    "instances": [
+      "X_XBIAS3",
+      "X_XBIAS4"
+    ]
+  },
+  {
+    "constraint": "SameTemplate",
+    "instances": [
+      "X_XM1",
+      "X_XMCAS"
+    ]
+  },
+  {
+    "constraint": "SameTemplate",
+    "instances": [
+      "X_XMB_CAS",
+      "X_XM2_XMB_P",
+      "X_XMB_SF"
+    ]
+  },
+  {
+    "constraint": "GroupBlocks",
+    "instance_name": "X_XBIAS1_XBIAS2",
+    "instances": [
+      "XBIAS1",
+      "XBIAS2"
+    ],
+    "template_name": "SCM_PMOS",
+    "generator": {
+      "name": "MOS",
+      "parameters": null
+    },
+    "constraints": null
+  },
+  {
+    "constraint": "GroupBlocks",
+    "instance_name": "X_XM2_XMB_P",
+    "instances": [
+      "XM2",
+      "XMB_P"
+    ],
+    "template_name": "SCM_PMOS",
+    "generator": {
+      "name": "MOS",
+      "parameters": null
+    },
+    "constraints": null
+  },
+  {
+    "constraint": "GroupBlocks",
+    "instance_name": "X_XMB_CAS2",
+    "instances": [
+      "XMB_CAS2"
+    ],
+    "template_name": "DCL_NMOS_S",
+    "generator": {
+      "name": "MOS",
+      "parameters": null
+    },
+    "constraints": null
+  },
+  {
+    "constraint": "GroupBlocks",
+    "instance_name": "X_XMB_CAS",
+    "instances": [
+      "XMB_CAS"
+    ],
+    "template_name": "DCL_PMOS_S",
+    "generator": {
+      "name": "MOS",
+      "parameters": null
+    },
+    "constraints": null
+  },
+  {
+    "constraint": "GroupBlocks",
+    "instance_name": "X_XMB_SF",
+    "instances": [
+      "XMB_SF"
+    ],
+    "template_name": "DCL_PMOS_S",
+    "generator": {
+      "name": "MOS",
+      "parameters": null
+    },
+    "constraints": null
+  },
+  {
+    "constraint": "GroupBlocks",
+    "instance_name": "X_XBIAS4",
+    "instances": [
+      "XBIAS4"
+    ],
+    "template_name": "NMOS_S",
+    "generator": {
+      "name": "MOS",
+      "parameters": null
+    },
+    "constraints": null
+  },
+  {
+    "constraint": "GroupBlocks",
+    "instance_name": "X_XBIAS3",
+    "instances": [
+      "XBIAS3"
+    ],
+    "template_name": "DCL_NMOS",
+    "generator": {
+      "name": "MOS",
+      "parameters": null
+    },
+    "constraints": null
+  },
+  {
+    "constraint": "GroupBlocks",
+    "instance_name": "X_XM1",
+    "instances": [
+      "XM1"
+    ],
+    "template_name": "NMOS_4T",
+    "generator": {
+      "name": "MOS",
+      "parameters": null
+    },
+    "constraints": null
+  },
+  {
+    "constraint": "GroupBlocks",
+    "instance_name": "X_XM3",
+    "instances": [
+      "XM3"
+    ],
+    "template_name": "NMOS_4T",
+    "generator": {
+      "name": "MOS",
+      "parameters": null
+    },
+    "constraints": null
+  },
+  {
+    "constraint": "GroupBlocks",
+    "instance_name": "X_XMCAS",
+    "instances": [
+      "XMCAS"
+    ],
+    "template_name": "NMOS_4T",
+    "generator": {
+      "name": "MOS",
+      "parameters": null
+    },
+    "constraints": null
+  },
+  {
+    "constraint": "GroupBlocks",
+    "instance_name": "X_XMLOAD",
+    "instances": [
+      "XMLOAD"
+    ],
+    "template_name": "NMOS_4T",
+    "generator": {
+      "name": "MOS",
+      "parameters": null
+    },
+    "constraints": null
+  }
+]

@@ -1,43 +1,37 @@
 """sky130 parameter generation for ALIGN."""
-import math
+import json, logging, math
+from copy import deepcopy
+logger = logging.getLogger(__name__)
 
-def gen_param(model, w, l, nfin):
-    """
-    Generate ALIGN device parameters from SPICE W/L/nfin.
-    sky130: planar CMOS (nfin = number of fingers)
-    """
-    unit_size = 12
+def gen_param(subckt, primitives, pdk_dir):
+    """Generate primitive parameters from subcircuit definition."""
+    for inst in subckt.elements:
+        if inst.model.lower().startswith('nmos') or inst.model.lower().startswith('nm'):
+            model = 'nmos_rvt'
+            device = 'NMOS'
+        elif inst.model.lower().startswith('pmos') or inst.model.lower().startswith('pm'):
+            model = 'pmos_rvt'
+            device = 'PMOS'
+        else:
+            continue
+        
+        # Extract W, L from instance parameters
+        w = float(str(inst.parameters.get('w', '1u')).replace('u',''))
+        l = float(str(inst.parameters.get('l', '1u')).replace('u',''))
+        nf = int(inst.parameters.get('nf', 1))
+        
+        primitive = {
+            'name': inst.name,
+            'DeviceType': device,
+            'NF': nf,
+            'STACK': 1,
+            'W': w,
+            'L': l,
+            'model': model
+        }
+        primitives[inst.name] = primitive
     
-    # Width per finger in µm -> ALIGN units
-    w_um = w if isinstance(w, (int, float)) else float(str(w).replace('u',''))
-    l_nm = l * 1000 if isinstance(l, (int, float)) else float(str(l).replace('u','')) * 1000
-    
-    # Number of fingers
-    nf = max(1, nfin)
-    
-    # Device width in ALIGN units (multiples of unit_size)
-    width_units = max(1, int(w_um * 1000 / unit_size))
-    
-    # MOS stack: sky130 uses single-stack (no FinFET fins)
-    stack = 1
-    
-    return {
-        'w': w_um,
-        'l': l,
-        'nf': nf,
-        'stack': stack,
-        'parallel': 1,
-        'model': model
-    }
+    return primitives
 
 def get_MosParameters(model, w, l, nfin):
-    """Convert to ALIGN PrimitiveCell format."""
-    params = gen_param(model, w, l, nfin)
-    return {
-        'DeviceType': 'NMOS' if 'n' in model.lower() else 'PMOS',
-        'STACK': params['stack'],
-        'NFIN': params['nf'],
-        'NF': params['nf'],
-        'W': params['w'],
-        'L': params['l'],
-    }
+    return {'DeviceType': 'NMOS' if 'n' in model else 'PMOS', 'NF': max(1, nfin), 'STACK': 1, 'W': w, 'L': l}

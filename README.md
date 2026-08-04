@@ -128,7 +128,12 @@ lunahan_ultrasound_ASIC/
 │   │   └── vga_transistor_level.sp
 │   ├── adc/                         # 10-bit SAR ADC (1 MS/s)
 │   │   ├── sar_adc_tb.sp
-│   │   └── sar_adc_transistor_level.sp
+│   │   ├── sar_adc_transistor_level.sp
+│   │   └── redesign/                #   SAR ADC redesign (pre+post layout)
+│   │       ├── adc_core.sp          #   comparator + CDAC core
+│   │       ├── adc_harness.py      #   SAR co-sim + metrics
+│   │       ├── gen_adc_cmp_layout.py #  comparator layout (glayout flow)
+│   │       └── adc_report.md        #   pre vs post metric table
 │   ├── tx_driver/                   # UERTX Driver (class-D + recycling)
 │   │   ├── uertx_tb.sp
 │   │   └── uertx_transistor_level.sp

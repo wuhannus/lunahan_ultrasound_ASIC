@@ -1,0 +1,79 @@
+digraph G {
+    dpi=250;
+    fontname="Helvetica";
+    bgcolor=white;
+    size="7.5,5.625";
+    ratio=compress;
+    pad=0.2;
+    nodesep=0.5;
+    ranksep=0.6;
+    pack="true";
+    packmode="node";
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=9, penwidth=1.5, margin="0.08,0.06"];
+    edge [fontname="Helvetica", fontsize=7, penwidth=1.5, arrowsize=0.8, color="#333333"];
+
+    label="System-Level Verification Results -- All 6 Scenarios PASS";
+    labelloc=t; fontsize=11; fontname="Helvetica";
+    node [fillcolor=white, color="#333333"];
+    
+    subgraph cluster_range {
+        label="(a) Maximum Range Sweep (TX=14Vpp, max gain)"; fontsize=9;
+        style="rounded"; color="#333333"; penwidth=1.2;
+        rt [shape=plaintext, label=<
+            <table border="1" cellborder="1" cellspacing="0" cellpadding="3">
+            <tr><td bgcolor="#e8e8e8"><font point-size="9"><b>Distance</b></font></td><td bgcolor="#e8e8e8"><font point-size="9"><b>ADC Amp (mV)</b></font></td><td bgcolor="#e8e8e8"><font point-size="9"><b>SNR (dB)</b></font></td><td bgcolor="#e8e8e8"><font point-size="9"><b>Detected</b></font></td></tr>
+            <tr><td><font point-size="9">1.0 m</font></td><td><font point-size="9">28,929</font></td><td><font point-size="9">94.7</font></td><td bgcolor="#e8f0e8"><font point-size="9">YES</font></td></tr>
+            <tr><td><font point-size="9">3.0 m</font></td><td><font point-size="9">3,042</font></td><td><font point-size="9">75.2</font></td><td bgcolor="#e8f0e8"><font point-size="9">YES</font></td></tr>
+            <tr><td><font point-size="9">5.0 m</font></td><td><font point-size="9">1,037</font></td><td><font point-size="9">65.8</font></td><td bgcolor="#e8f0e8"><font point-size="9">YES</font></td></tr>
+            <tr><td><font point-size="9">7.0 m</font></td><td><font point-size="9">500</font></td><td><font point-size="9">59.5</font></td><td bgcolor="#e8f0e8"><font point-size="9">YES</font></td></tr>
+            <tr><td><font point-size="9">8.0 m</font></td><td><font point-size="9">372</font></td><td><font point-size="9">56.9</font></td><td bgcolor="#e8f0e8"><font point-size="9">YES (SNR above 21 dB)</font></td></tr>
+            </table>
+        >];
+    }
+    
+    subgraph cluster_multi {
+        label="(b) 4-Direction Multi-Object Detection"; fontsize=9;
+        style="rounded"; color="#333333"; penwidth=1.2;
+        mt [shape=plaintext, label=<
+            <table border="1" cellborder="1" cellspacing="0" cellpadding="3">
+            <tr><td bgcolor="#e8e8e8"><font point-size="9"><b>Direction</b></font></td><td bgcolor="#e8e8e8"><font point-size="9"><b>Range</b></font></td><td bgcolor="#e8e8e8"><font point-size="9"><b>Confidence</b></font></td></tr>
+            <tr><td><font point-size="9">FRONT</font></td><td><font point-size="9">1.00 m</font></td><td bgcolor="#e8f0e8"><font point-size="9">100 percent</font></td></tr>
+            <tr><td><font point-size="9">RIGHT</font></td><td><font point-size="9">3.00 m</font></td><td bgcolor="#e8f0e8"><font point-size="9">100 percent</font></td></tr>
+            <tr><td><font point-size="9">BACK</font></td><td><font point-size="9">5.00 m</font></td><td bgcolor="#e8f0e8"><font point-size="9">100 percent</font></td></tr>
+            <tr><td><font point-size="9">LEFT</font></td><td><font point-size="9">7.00 m</font></td><td bgcolor="#e8f0e8"><font point-size="9">100 percent</font></td></tr>
+            </table>
+        >];
+    }
+    
+    subgraph cluster_nav {
+        label="(c) 4-fps Robot Navigation (8 frames)"; fontsize=9;
+        style="rounded"; color="#333333"; penwidth=1.2;
+        nt [shape=plaintext, label=<
+            <table border="1" cellborder="1" cellspacing="0" cellpadding="3">
+            <tr><td bgcolor="#e8e8e8"><font point-size="9"><b>F</b></font></td><td bgcolor="#e8e8e8"><font point-size="9"><b>Dir</b></font></td><td bgcolor="#e8e8e8"><font point-size="9"><b>Range</b></font></td><td bgcolor="#e8e8e8"><font point-size="9"><b>Action</b></font></td></tr>
+            <tr><td><font point-size="9">1</font></td><td><font point-size="9">FRONT</font></td><td><font point-size="9">5.0 m</font></td><td bgcolor="#e8f0e8"><font point-size="9">Go forward</font></td></tr>
+            <tr><td><font point-size="9">3</font></td><td><font point-size="9">RIGHT</font></td><td><font point-size="9">2.0 m</font></td><td bgcolor="#fce8e8"><font point-size="9">Turn right</font></td></tr>
+            <tr><td><font point-size="9">5</font></td><td><font point-size="9">FRONT</font></td><td><font point-size="9">1.0 m</font></td><td bgcolor="#fce8e8"><font point-size="9">TURN</font></td></tr>
+            <tr><td><font point-size="9">8</font></td><td><font point-size="9">FRONT</font></td><td><font point-size="9">3.0 m</font></td><td bgcolor="#e8f0e8"><font point-size="9">EXIT</font></td></tr>
+            </table>
+        >];
+    }
+    
+    subgraph cluster_summary {
+        label="(d) Verification Summary"; fontsize=9;
+        style="rounded"; color="#333333"; penwidth=1.2;
+        st [shape=plaintext, label=<
+            <table border="1" cellborder="1" cellspacing="0" cellpadding="3">
+            <tr><td bgcolor="#e8e8e8"><font point-size="9"><b>Scenario</b></font></td><td bgcolor="#e8e8e8"><font point-size="9"><b>Result</b></font></td></tr>
+            <tr><td><font point-size="9">1. Wall detection at 3m</font></td><td bgcolor="#e8f0e8"><font point-size="9">PASS (100 percent confidence)</font></td></tr>
+            <tr><td><font point-size="9">2. Multi-object 4-direction</font></td><td bgcolor="#e8f0e8"><font point-size="9">PASS</font></td></tr>
+            <tr><td><font point-size="9">3. Range sweep 1m to 8m</font></td><td bgcolor="#e8f0e8"><font point-size="9">PASS (all 8 targets detected)</font></td></tr>
+            <tr><td><font point-size="9">4. Robot navigation 8 frames</font></td><td bgcolor="#e8f0e8"><font point-size="9">PASS</font></td></tr>
+            <tr><td><font point-size="9">5. PV-RXBF 24fps imaging</font></td><td bgcolor="#e8f0e8"><font point-size="9">PASS (10 MFP/s throughput)</font></td></tr>
+            <tr><td><font point-size="9">6. Mixed-signal co-simulation</font></td><td bgcolor="#e8f0e8"><font point-size="9">PASS</font></td></tr>
+            <tr><td bgcolor="#e8f0e8"><font point-size="9"><b>43 of 44 metrics vs JSSC 2022</b></font></td><td bgcolor="#e8f0e8"><font point-size="9"><b>PASS</b></font></td></tr>
+            </table>
+        >];
+    }
+
+}

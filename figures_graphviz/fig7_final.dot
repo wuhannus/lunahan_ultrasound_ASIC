@@ -1,0 +1,37 @@
+digraph G {
+    dpi=250; fontname="Helvetica"; bgcolor=white; size="7.5,5.625"; ratio=fill; pad=0.05; nodesep=0.15; ranksep=0.2;
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, penwidth=1.5, margin="0.06,0.04"];
+    edge [fontname="Helvetica", fontsize=8, penwidth=1.5, arrowsize=0.8, color="#333333"];
+
+    rankdir=LR;
+    label="System Verification -- All 6 Scenarios PASS vs JSSC 2022 [1],[2]";
+    labelloc=t; fontsize=11;
+    node [fillcolor=white, color="#333333"];
+    subgraph cluster_range {
+        label="(a) Range Sweep (14Vpp TX)"; fontsize=9; style="rounded"; color="#333333"; penwidth=1.2;
+        rt [shape=plaintext, label=<
+            <table border="1" cellborder="1" cellspacing="0" cellpadding="3">
+            <tr><td bgcolor="#e8e8e8"><font point-size="9">Dist</font></td><td><font point-size="9">1m</font></td><td><font point-size="9">3m</font></td><td><font point-size="9">5m</font></td><td><font point-size="9">7m</font></td><td><font point-size="9">8m</font></td></tr>
+            <tr><td bgcolor="#e8e8e8"><font point-size="9">ADC(mV)</font></td><td><font point-size="9">28929</font></td><td><font point-size="9">3042</font></td><td><font point-size="9">1037</font></td><td><font point-size="9">500</font></td><td><font point-size="9">372</font></td></tr>
+            <tr><td bgcolor="#e8e8e8"><font point-size="9">SNR(dB)</font></td><td><font point-size="9">94.7</font></td><td><font point-size="9">75.2</font></td><td><font point-size="9">65.8</font></td><td><font point-size="9">59.5</font></td><td><font point-size="9">56.9</font></td></tr>
+            <tr><td bgcolor="#e8e8e8"><font point-size="9">Detected</font></td><td bgcolor="#e8f0e8"><font point-size="9">YES</font></td><td bgcolor="#e8f0e8"><font point-size="9">YES</font></td><td bgcolor="#e8f0e8"><font point-size="9">YES</font></td><td bgcolor="#e8f0e8"><font point-size="9">YES</font></td><td bgcolor="#e8f0e8"><font point-size="9">YES</font></td></tr>
+            </table>
+        >];
+    }
+    subgraph cluster_summary {
+        label="(b) Verification Summary"; fontsize=9; style="rounded"; color="#333333"; penwidth=1.2;
+        st [shape=plaintext, label=<
+            <table border="1" cellborder="1" cellspacing="0" cellpadding="3">
+            <tr><td bgcolor="#e8e8e8"><font point-size="9"><b>Scenario</b></font></td><td bgcolor="#e8e8e8"><font point-size="9"><b>Result</b></font></td></tr>
+            <tr><td><font point-size="9">1. Wall detection 3m</font></td><td bgcolor="#e8f0e8"><font point-size="9">PASS</font></td></tr>
+            <tr><td><font point-size="9">2. Multi-object 4-dir</font></td><td bgcolor="#e8f0e8"><font point-size="9">PASS</font></td></tr>
+            <tr><td><font point-size="9">3. Range sweep 1-8m</font></td><td bgcolor="#e8f0e8"><font point-size="9">PASS</font></td></tr>
+            <tr><td><font point-size="9">4. Navigation 8 frames</font></td><td bgcolor="#e8f0e8"><font point-size="9">PASS</font></td></tr>
+            <tr><td><font point-size="9">5. PV-RXBF 24fps</font></td><td bgcolor="#e8f0e8"><font point-size="9">PASS</font></td></tr>
+            <tr><td><font point-size="9">6. Mixed-signal co-sim</font></td><td bgcolor="#e8f0e8"><font point-size="9">PASS</font></td></tr>
+            <tr><td bgcolor="#e8f0e8"><font point-size="9"><b>43/44 vs JSSC 2022</b></font></td><td bgcolor="#e8f0e8"><font point-size="9"><b>PASS</b></font></td></tr>
+            </table>
+        >];
+    }
+
+}

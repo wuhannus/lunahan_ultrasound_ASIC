@@ -1,0 +1,98 @@
+// Figure 3: LNA Transistor-Level Schematic
+digraph lna_schematic {
+    dpi=200; fontname="Helvetica"; bgcolor=white;
+    label="LNA Transistor-Level Schematic — BAG-Computed Device Sizes";
+    labelloc=t; fontsize=26;
+    rankdir=TB;
+    splines=polyline;
+
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=14, penwidth=3];
+    edge [fontname="Helvetica", fontsize=12, penwidth=3, arrowsize=1.0];
+
+    // Power rails
+    vdd [shape=plaintext, label="VDD = 1.8V", fontsize=16, fontcolor=red];
+    vss [shape=plaintext, label="VSS (GND)", fontsize=16];
+
+    // Input
+    input [shape=plaintext, label="INPUT\n(from transducer\nZ=50Ω)", fontsize=14];
+
+    subgraph cluster_stage1 {
+        label="STAGE 1: Input Matching + Cascode Gain";
+        fontsize=18; fontname="Helvetica";
+        style="rounded,filled"; fillcolor="#dce8fc"; color="#1446a0"; penwidth=3;
+        node [fillcolor=white, color="#1446a0", fontsize=14];
+
+        lg [label="Lg\n280 µH\n(off-chip)"];
+        m1  [label="M1 (Input NMOS)\nW=224 µm, L=0.15 µm\n40 fingers\nId=83.3 µA, gm=1.5 mS\n(gm/Id = 18 S/A)"];
+        ls  [label="Ls\n80 µH\n(on-chip spiral)\nCreates real Zin"];
+        mcasc [label="MCAS (Cascode)\nW=224 µm, L=0.18 µm\nBoosts gain\nImproves isolation"];
+        lload [label="LLOAD\n1.2 mH\n(ind. load)\nResonates at 40 kHz"];
+    }
+
+    subgraph cluster_stage2 {
+        label="STAGE 2: Voltage Gain";
+        fontsize=18; fontname="Helvetica";
+        style="rounded,filled"; fillcolor="#dce8fc"; color="#1446a0"; penwidth=3;
+        node [fillcolor=white, color="#1446a0", fontsize=14];
+
+        m2 [label="M2 (Gain NMOS)\nW=112 µm, L=0.15 µm\nId=200 µA"];
+        mload [label="MLOAD (PMOS load)\nW=45 µm, L=0.5 µm\nActive current source"];
+    }
+
+    subgraph cluster_stage3 {
+        label="STAGE 3: Output Buffer";
+        fontsize=18; fontname="Helvetica";
+        style="rounded,filled"; fillcolor="#dce8fc"; color="#1446a0"; penwidth=3;
+        node [fillcolor=white, color="#1446a0", fontsize=14];
+
+        m3 [label="M3 (Source Follower)\nW=60 µm, L=0.15 µm\nUnity gain\nLow Zout ~200Ω"];
+        msink [label="MSINK (Current sink)\nW=15 µm, L=0.5 µm"];
+    }
+
+    output [shape=plaintext, label="OUTPUT\n(to VGA input)", fontsize=14];
+
+    subgraph cluster_bias {
+        label="BIAS NETWORK";
+        fontsize=18; fontname="Helvetica";
+        style="rounded,filled"; fillcolor="#e8f0e8"; color="#1e6e1e"; penwidth=3;
+        node [fillcolor=white, color="#1e6e1e", fontsize=14];
+
+        bias [label="PTAT Constant-gm\nBias Reference\nTemperature-compensated\n5 corners all PASS"];
+    }
+
+    subgraph cluster_specs {
+        label="BAG-COMPUTED PERFORMANCE";
+        fontsize=18; fontname="Helvetica";
+        style="rounded,filled"; fillcolor="#f0f0f0"; color=gray; penwidth=3;
+        node [fillcolor=white, color=gray, fontsize=14];
+
+        specs [label="Gain = 29.5 dB\nNF = 2.4 dB\nIRN = 2.7 nV/√Hz\nBW = 180 kHz\nPower = 412.5 µW\nCascode isolation > 60 dB", shape=box];
+    }
+
+    // Signal flow connections
+    input -> lg;
+    lg -> m1 [label="AC coupled\n100 pF"];
+    m1 -> mcasc [label="Drain"];
+    mcasc -> m2 [label="AC coupled\n10 pF"];
+    m2 -> m3 [label="AC coupled\n10 pF"];
+    m3 -> output;
+    ls -> m1 [label="Source", dir=back];
+    lload -> mcasc [label="Drain load", dir=back];
+    mload -> m2 [label="Active load", dir=back];
+    msink -> m3 [label="Current sink", dir=back];
+    bias -> m1 [label="Gate bias\n0.6V DC", style=dashed];
+    bias -> m2 [label="Gate bias", style=dashed];
+    bias -> m3 [label="Gate bias", style=dashed];
+
+    // Legend
+    { rank=sink;
+      legend [shape=plaintext, label=<
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+        <tr><td bgcolor="#dce8fc"><font point-size="12">  Blue  </font></td><td><font point-size="12">NMOS amplifier stages</font></td></tr>
+        <tr><td bgcolor="#e8f0e8"><font point-size="12">  Green  </font></td><td><font point-size="12">Bias network</font></td></tr>
+        <tr><td><font point-size="12">  Dashed lines  </font></td><td><font point-size="12">DC bias connections</font></td></tr>
+        <tr><td><font point-size="12">  Solid arrows  </font></td><td><font point-size="12">Signal path</font></td></tr>
+        </table>
+      >];
+    }
+}

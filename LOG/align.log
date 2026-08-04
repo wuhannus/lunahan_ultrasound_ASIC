@@ -1,0 +1,19 @@
+2026-08-04 02:52:30 align.main INFO : Reading netlist: /work/align_input/lna_5t_align.sp subckt=LNA_5T_CORE, flat=0
+2026-08-04 02:52:30 align.compiler.compiler INFO : Starting topology identification...
+2026-08-04 02:52:31 align.compiler.compiler INFO : Power and ground nets not found. Power grid will not be constructed.
+2026-08-04 02:52:31 align.compiler.compiler INFO : Completed topology identification.
+2026-08-04 02:52:31 align.cmdline ERROR : Fatal Error. Cannot proceed
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/align/cmdline.py", line 197, in parse_args
+    return schematic2layout(**vars(arguments))
+  File "/usr/local/lib/python3.10/dist-packages/align/main.py", line 181, in schematic2layout
+    primitives = generate_primitives(primitive_lib, pdk_dir, primitive_dir, netlist_dir, blackbox_dir, scale)
+  File "/usr/local/lib/python3.10/dist-packages/align/primitive/main.py", line 156, in generate_primitives
+    uc = generate_primitive(block_name, primitive_def,  ** block_args,
+  File "/usr/local/lib/python3.10/dist-packages/align/primitive/main.py", line 215, in generate_primitive
+    uc, _ = generate_MOS_primitive(pdkdir, block_name, primitive, height, value, x_cells, y_cells,
+  File "/usr/local/lib/python3.10/dist-packages/align/primitive/main.py", line 50, in generate_MOS_primitive
+    uc = generator(pdk, height, fin, gate, gateDummy, shared_diff, stack, bodyswitch, primitive_parameters=parameters, primitive_constraints=primitive.constraints)
+  File "/ALIGN-public/pdks/Bulk65nm_Mock_PDK/mos.py", line 29, in __init__
+    assert exact_width % 2 ==0, f"Transistor width {exact_width} must be even"
+AssertionError: Transistor width 99999 must be even

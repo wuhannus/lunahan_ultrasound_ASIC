@@ -1,0 +1,70 @@
+
+digraph G {
+    dpi=250; fontname="Helvetica"; bgcolor=white; pad=0.3; rankdir=LR;
+    label="(a) PV-RXBF Pipeline         (b) SRAM Blocks         (c) Performance";
+    labelloc=t; fontsize=10; fontname="Helvetica";
+    compound=true;
+    
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=8, penwidth=1.2, margin="0.06,0.04"];
+    edge [fontname="Helvetica", fontsize=7, penwidth=1.5, arrowsize=0.7];
+    
+    // (a) Pipeline
+    subgraph cluster_pipe {
+        label="(a) Pipeline"; fontsize=9; fontname="Helvetica";
+        style="rounded"; color="#333333"; penwidth=1.2;
+        node [fillcolor=white, color="#333333"];
+        
+        adc [label="ADC Samples
+(64ch x 10b)", width=1.2];
+        delay [label="64-ch
+Delay Lines
+4096x10b", width=1.1];
+        apod [label="Apodization
+Hanning
+64x8b", width=1.0];
+        mac [label="Multiply-
+Accumulate
+64-stage", width=1.1];
+        out [label="Output
+16-bit", width=0.9];
+        
+        adc -> delay -> apod -> mac -> out [color="#2255aa"];
+    }
+    
+    // (b) SRAM
+    subgraph cluster_sram {
+        label="(b) SRAM Blocks"; fontsize=9; fontname="Helvetica";
+        style="rounded"; color="#333333"; penwidth=1.2;
+        node [fillcolor="#f0f0f0", color="#333333"];
+        
+        dtbl [label="Delay Table
+96 KB
+32x32x64x12b", width=1.3];
+        sbuf [label="Sample Buffer
+320 KB
+64x4096x10b", width=1.3];
+        seq [label="Voxel Sequencer
+32x32 raster", width=1.3];
+    }
+    
+    // (c) Performance
+    subgraph cluster_perf {
+        label="(c) Performance Summary"; fontsize=9; fontname="Helvetica";
+        style="rounded"; color="#333333"; penwidth=1.2;
+        
+        stats [shape=plaintext, label=<
+            <table border="1" cellborder="1" cellspacing="0" cellpadding="3">
+            <tr><td bgcolor="#e8e8e8"><font point-size="8"><b>Metric</b></font></td><td bgcolor="#e8e8e8"><font point-size="8"><b>Value</b></font></td></tr>
+            <tr><td><font point-size="8">Throughput</font></td><td><font point-size="8">~10 MFP/s</font></td></tr>
+            <tr><td><font point-size="8">Latency</font></td><td><font point-size="8">~8 us/voxel</font></td></tr>
+            <tr><td><font point-size="8">Frame Rate</font></td><td><font point-size="8">24 fps</font></td></tr>
+            <tr><td><font point-size="8">Grid</font></td><td><font point-size="8">32x32 voxels</font></td></tr>
+            </table>
+        >];
+    }
+    
+    // Connections
+    dtbl -> delay [style=dashed, color="#888888"];
+    sbuf -> delay [style=dashed, color="#888888", dir=back];
+    seq -> out [style=dashed, color="#888888"];
+}

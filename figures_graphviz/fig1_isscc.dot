@@ -1,0 +1,66 @@
+
+digraph G {
+    dpi=250; fontname="Helvetica"; bgcolor=white; pad=0.3; rankdir=LR;
+    label="(a) Six-Phase Design Flow                                     (b) Loop-Engineering Feedback";
+    labelloc=t; fontsize=10; fontname="Helvetica";
+    
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=8, penwidth=1.5, margin="0.08,0.05"];
+    edge [fontname="Helvetica", fontsize=7, penwidth=1.5, arrowsize=0.8];
+    
+    subgraph cluster_main {
+        label=""; style=invis;
+        
+        p1 [label="Phase 1
+System Spec
+Range, fps, ch
+Link Budget", fillcolor="#e8e8e8", color="#333333", width=1.3];
+        p2 [label="Phase 2
+Schematic &
+Pre-Layout Sim
+Xyce SPICE
+5 corners", fillcolor="#e8e8e8", color="#333333", width=1.3];
+        p3 [label="Phase 3
+Digital RTL
+& Verification
+Verilator
+51K cells", fillcolor="#e8e8e8", color="#333333", width=1.3];
+        p4 [label="Phase 4
+Layout &
+DRC/LVS
+Magic+Netgen
+0 violations", fillcolor="#e8e8e8", color="#333333", width=1.3];
+        p5 [label="Phase 5
+Post-Layout
+PEX Simulation
+Parasitic RC
+Re-simulate", fillcolor="#e8e8e8", color="#333333", width=1.3];
+        p6 [label="Phase 6
+System
+Verification
+6 scenarios
+All PASS", fillcolor="#e8e8e8", color="#333333", width=1.3];
+        
+        p1 -> p2 [color="#2255aa", penwidth=2];
+        p2 -> p3 [color="#2255aa", penwidth=2];
+        p3 -> p4 [color="#2255aa", penwidth=2];
+        p4 -> p5 [color="#2255aa", penwidth=2];
+        p5 -> p6 [color="#2255aa", penwidth=2];
+        
+        p6 -> p1 [color="#cc3333", style=dashed, penwidth=1.5, label="Re-design if fail", fontcolor="#cc3333", constraint=false];
+    }
+    
+    // Legend
+    { rank=sink;
+      legend [shape=plaintext, label=<
+        <table border="0" cellborder="0" cellspacing="0" cellpadding="2">
+        <tr><td><font color="#2255aa" point-size="8"><b>Blue solid:</b></font></td><td><font point-size="8">Forward design flow</font></td></tr>
+        <tr><td><font color="#cc3333" point-size="8"><b>Red dashed:</b></font></td><td><font point-size="8">BAG loop-engineering feedback [3]</font></td></tr>
+        </table>
+      >];
+    }
+    
+    // Tools bar
+    tools [shape=plaintext, label=<
+        <font point-size="7" color="#666666">Tools: Xyce [15] | Yosys [16] | OpenROAD [14] | Magic | Netgen | Verilator | sky130 PDK [13] | Python BAG [3]</font>
+    >];
+}

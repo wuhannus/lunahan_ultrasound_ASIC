@@ -1,0 +1,15 @@
+digraph G {
+    dpi=250;
+    fontname="Helvetica";
+    bgcolor=white;
+    size="7.5,5.625";
+    ratio=compress;
+    pad=0.2;
+    nodesep=0.5;
+    ranksep=0.6;
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=9, penwidth=1.5];
+    edge [fontname="Helvetica", fontsize=7, penwidth=1.5];
+    a [label="Test A", width=2];
+    b [label="Test B", width=2];
+    a -> b;
+}

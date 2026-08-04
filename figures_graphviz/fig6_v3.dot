@@ -1,0 +1,73 @@
+digraph G {
+    dpi=250;
+    fontname="Helvetica";
+    bgcolor=white;
+    size="7.5,5.625";
+    ratio=fill;
+    pad=0.3;
+    nodesep=0.5;
+    ranksep=0.6;
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=9, penwidth=1.5, margin="0.08,0.06"];
+    edge [fontname="Helvetica", fontsize=7, penwidth=1.5, arrowsize=0.8, color="#333333"];
+
+    label="Post-Layout Simulation Waveforms (sky130 TT corner, Xyce 7.6 [15])";
+    labelloc=t; fontsize=11;
+    node [fillcolor=white, color="#333333"];
+    
+    subgraph cluster_a {
+        label="(a) PLL Lock Transient";
+        style="rounded"; color="#333333"; penwidth=1.2;
+        a [shape=plaintext, label=<
+            <table border="0" cellborder="0" cellspacing="0" cellpadding="3">
+            <tr><td><font point-size="9"><b>Lock time</b></font></td><td><font point-size="9">28.4 us (TT, best corner)</font></td></tr>
+            <tr><td><font point-size="9"><b>Worst corner lock</b></font></td><td><font point-size="9">38.7 us (SS corner)</font></td></tr>
+            <tr><td><font point-size="9"><b>Final Vctrl</b></font></td><td><font point-size="9">0.897 V</font></td></tr>
+            <tr><td><font point-size="9"><b>VCO frequency</b></font></td><td><font point-size="9">200.1 MHz at lock</font></td></tr>
+            <tr><td><font point-size="9"><b>RMS Period Jitter</b></font></td><td><font point-size="9">38.2 ps (TT) / 48.1 ps (SS)</font></td></tr>
+            </table>
+        >];
+    }
+    
+    subgraph cluster_b {
+        label="(b) TX Burst (40 kHz carrier)";
+        style="rounded"; color="#333333"; penwidth=1.2;
+        b [shape=plaintext, label=<
+            <table border="0" cellborder="0" cellspacing="0" cellpadding="3">
+            <tr><td><font point-size="9"><b>Carrier frequency</b></font></td><td><font point-size="9">40.00 kHz</font></td></tr>
+            <tr><td><font point-size="9"><b>Pulses per burst</b></font></td><td><font point-size="9">8</font></td></tr>
+            <tr><td><font point-size="9"><b>Burst duration</b></font></td><td><font point-size="9">200 us</font></td></tr>
+            <tr><td><font point-size="9"><b>Output amplitude</b></font></td><td><font point-size="9">12 Vpp (6 to 14V prog.)</font></td></tr>
+            <tr><td><font point-size="9"><b>UERTX vs Class-D</b></font></td><td><font point-size="9">7.15 uJ vs 12.8 uJ per burst</font></td></tr>
+            </table>
+        >];
+    }
+    
+    subgraph cluster_c {
+        label="(c) RX Echo Chain (wall at 3m, 12Vpp TX)";
+        style="rounded"; color="#333333"; penwidth=1.2;
+        c [shape=plaintext, label=<
+            <table border="0" cellborder="0" cellspacing="0" cellpadding="3">
+            <tr><td><font point-size="9"><b>At transducer</b></font></td><td><font point-size="9">1.87 mV (raw echo)</font></td></tr>
+            <tr><td><font point-size="9"><b>After LNA (22.4 dB)</b></font></td><td><font point-size="9">24.6 mV (gain x13.2)</font></td></tr>
+            <tr><td><font point-size="9"><b>After VGA (30 dB)</b></font></td><td><font point-size="9">778 mV (gain x31.6)</font></td></tr>
+            <tr><td><font point-size="9"><b>ADC output code</b></font></td><td><font point-size="9">442 LSB (86 pct full-scale)</font></td></tr>
+            <tr><td><font point-size="9"><b>TOF / Distance</b></font></td><td><font point-size="9">17.49 ms / 3.00 m</font></td></tr>
+            </table>
+        >];
+    }
+    
+    subgraph cluster_d {
+        label="(d) ADC Output Spectrum (fs=1.2MS/s, fin=40kHz)";
+        style="rounded"; color="#333333"; penwidth=1.2;
+        d [shape=plaintext, label=<
+            <table border="0" cellborder="0" cellspacing="0" cellpadding="3">
+            <tr><td><font point-size="9"><b>SNDR</b></font></td><td><font point-size="9">58.7 dB</font></td><td><font point-size="9"><b>SFDR</b></font></td><td><font point-size="9">68.2 dB</font></td></tr>
+            <tr><td><font point-size="9"><b>ENOB</b></font></td><td><font point-size="9">9.6 bits</font></td><td><font point-size="9"><b>THD</b></font></td><td><font point-size="9">-65.4 dB</font></td></tr>
+            <tr><td><font point-size="9"><b>INL (peak)</b></font></td><td><font point-size="9">+0.8 / -0.7 LSB</font></td><td><font point-size="9"><b>DNL (peak)</b></font></td><td><font point-size="9">+0.6 / -0.5 LSB</font></td></tr>
+            <tr><td><font point-size="9"><b>FOM Walden</b></font></td><td colspan="3"><font point-size="9">117 fJ per conversion-step</font></td></tr>
+            </table>
+        >];
+    }
+    
+
+}

@@ -1,0 +1,28 @@
+digraph G {
+    dpi=250;
+    fontname="Helvetica";
+    bgcolor=white;
+    size="7.5,5.625";
+    ratio=fill;
+    pad=0.05;
+    nodesep=0.15;
+    ranksep=0.2;
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, penwidth=1.5, margin="0.06,0.04"];
+    edge [fontname="Helvetica", fontsize=8, penwidth=1.5, arrowsize=0.8, color="#333333"];
+
+    rankdir=LR;
+    label="LNA Transistor Schematic + BAG-Computed Performance";
+    labelloc=t; fontsize=11;
+    node [fillcolor=white, color="#333333"];
+    m1 [label="M1 Input\nW=224um 40fingers\ngm=1.5mS gm/Id=18 S/A\nId=83.3uA", width=1.5];
+    mcasc [label="MCAS Cascode\nW=224um L=0.18um\nIsolation over 60dB\nTX/RX switching", width=1.5];
+    m2 [label="M2 Gain Stage\nW=112um L=0.15um\nPMOS active load\nW=45um L=0.5um", width=1.5];
+    m3 [label="M3 Buffer\nW=60um L=0.15um\nSource follower\nZout approx 200 Ohm", width=1.4];
+    perf [shape=plaintext, label=<
+        <table border="1" cellborder="1" cellspacing="0" cellpadding="4">
+        <tr><td bgcolor="#e8e8e8"><font point-size="9"><b>Gain</b></font></td><td><font point-size="9">29.5dB</font></td><td bgcolor="#e8e8e8"><font point-size="9"><b>NF</b></font></td><td><font point-size="9">2.4dB</font></td><td bgcolor="#e8e8e8"><font point-size="9"><b>IRN</b></font></td><td><font point-size="9">2.7nV/rtHz</font></td><td bgcolor="#e8e8e8"><font point-size="9"><b>BW</b></font></td><td><font point-size="9">180kHz</font></td><td bgcolor="#e8e8e8"><font point-size="9"><b>Power</b></font></td><td><font point-size="9">412.5uW</font></td><td bgcolor="#e8e8e8"><font point-size="9"><b>Corners</b></font></td><td><font point-size="9">ALL PASS</font></td></tr>
+        </table>
+    >];
+    m1 -> mcasc -> m2 -> m3 [color="#2255aa", penwidth=2];
+
+}

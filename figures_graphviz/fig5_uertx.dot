@@ -1,0 +1,91 @@
+// Figure 5: UERTX Capacitor-Based Charge Recycling
+digraph uertx {
+    dpi=200; fontname="Helvetica"; bgcolor=white;
+    label="UERTX: Capacitor-Based Charge Recycling [1] — NO Inductor";
+    labelloc=t; fontsize=26;
+    rankdir=TB;
+
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=14, penwidth=3];
+    edge [fontname="Helvetica", fontsize=12, penwidth=3, arrowsize=1.0];
+
+    vddhv [shape=plaintext, label="VDDHV = 6-14V\n(programmable via PMU)", fontsize=16, fontcolor=red];
+    vss [shape=plaintext, label="VSS (GND)", fontsize=16];
+
+    subgraph cluster_hbridge {
+        label="H-Bridge Output Stage (sky130 HV FETs)";
+        fontsize=18; fontname="Helvetica";
+        style="rounded,filled"; fillcolor="#dce8fc"; color="#1446a0"; penwidth=3;
+        node [fillcolor=white, color="#1446a0", fontsize=14];
+
+        mhs_p [label="MHS_P (PMOS)\nW=2000/0.5\nHigh-side switch"];
+        mhs_n [label="MHS_N (PMOS)\nW=2000/0.5\nHigh-side switch"];
+        mls_p [label="MLS_P (NMOS)\nW=1000/0.5\nLow-side switch"];
+        mls_n [label="MLS_N (NMOS)\nW=1000/0.5\nLow-side switch"];
+    }
+
+    subgraph cluster_recycle {
+        label="Capacitor Charge Recycling (NO Inductor)";
+        fontsize=18; fontname="Helvetica";
+        style="rounded,filled"; fillcolor="#d8f0d8"; color="#1e8c1e"; penwidth=3;
+        node [fillcolor=white, color="#1e8c1e", fontsize=14];
+
+        cstore [label="CSTORE = 100 nF\nStorage Capacitor\n(off-chip, low-cost\nceramic capacitor)\nCaptures transducer\ncharge during dead-time"];
+        blocking_diode [label="Reverse Blocking\nSchottky Diode\nPrevents CSTORE\ndischarge to VDDHV"];
+    }
+
+    subgraph cluster_transducer {
+        label="Ultrasound Transducer (40 kHz)";
+        fontsize=18; fontname="Helvetica";
+        style="rounded,filled"; fillcolor="#f0f0f0"; color=gray; penwidth=3;
+        node [fillcolor=white, color=gray, fontsize=14];
+
+        xducer [label="Transducer Model\nLM = 120 mH (motional)\nCM = 132 pF (motional)\nRM = 500 Ω (radiation)\nCP = 2.5 nF (clamped)\nCP is the recycled charge source"];
+    }
+
+    subgraph cluster_control {
+        label="Control Logic";
+        fontsize=18; fontname="Helvetica";
+        style="rounded,filled"; fillcolor="#fde8d0"; color="#dc7814"; penwidth=3;
+        node [fillcolor=white, color="#dc7814", fontsize=14];
+
+        deadtime [label="Dead-Time Generator\n~120 ns delay\nSchmitt triggers\nNon-overlapping\ngate drive"];
+        level_shifter [label="Level Shifters\n1.8V logic → 14V gate\nCross-coupled PMOS\nlatch topology"];
+    }
+
+    // Operation principle
+    subgraph cluster_principle {
+        label="Operating Principle";
+        fontsize=18; fontname="Helvetica";
+        style="rounded,filled"; fillcolor="#f8d8d8"; color="#c82828"; penwidth=3;
+        node [fillcolor=white, color="#c82828", fontsize=14];
+
+        principle [label="1. Dead-time: HS FETs OFF → CP=2.5nF discharges\ninto CSTORE=100nF via charge-sharing switches\n2. Next TX phase: CSTORE provides partial drive\ncharge → reduces current from VDDHV\n3. Result: 44.2% energy saving vs conventional\nclass-D driver (verified by JSSC 2022 [1])\n4. NO inductor — pure capacitive recycling"];
+    }
+
+    // Connections
+    mhs_p -> xducer [label="OUT_P", color="#1446a0"];
+    mhs_n -> xducer [label="OUT_N", color="#1446a0"];
+    mls_p -> xducer [label="OUT_P", color="#1446a0", style=dashed];
+    mls_n -> xducer [label="OUT_N", color="#1446a0", style=dashed];
+    cstore -> mhs_p [label="Charge\nrecycle", color="#1e8c1e"];
+    blocking_diode -> cstore [label="← Blocks\nreverse\ncurrent", color="#1e8c1e"];
+    deadtime -> mls_p [label="Gate\ndrive", color="#dc7814"];
+    deadtime -> mls_n [label="Gate\ndrive", color="#dc7814"];
+    level_shifter -> mhs_p [label="14V gate", color="#dc7814"];
+    level_shifter -> mhs_n [label="14V gate", color="#dc7814"];
+    deadtime -> level_shifter [label="1.8V", color="#dc7814"];
+    cstore -> xducer [label="Charge path\n(dead-time)", color="#1e8c1e", style=dashed, dir=both];
+
+    // Legend
+    { rank=sink;
+      legend [shape=plaintext, label=<
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+        <tr><td bgcolor="#dce8fc"><font point-size="12">  Blue  </font></td><td><font point-size="12">H-Bridge power stage (sky130 HV FETs)</font></td></tr>
+        <tr><td bgcolor="#d8f0d8"><font point-size="12">  Green  </font></td><td><font point-size="12">Capacitor charge recycling (NO inductor)</font></td></tr>
+        <tr><td bgcolor="#fde8d0"><font point-size="12">  Orange  </font></td><td><font point-size="12">Control logic (dead-time, level shifters)</font></td></tr>
+        <tr><td bgcolor="#f8d8d8"><font point-size="12">  Red  </font></td><td><font point-size="12">Operating principle summary</font></td></tr>
+        <tr><td bgcolor="#f0f0f0"><font point-size="12">  Gray  </font></td><td><font point-size="12">Transducer model</font></td></tr>
+        </table>
+      >];
+    }
+}

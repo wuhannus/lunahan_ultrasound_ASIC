@@ -1,0 +1,70 @@
+
+digraph G {
+    dpi=250; fontname="Helvetica"; bgcolor=white; pad=0.3;
+    label="(a) LNA Schematic (BAG-Computed)                           (b) Performance Summary";
+    labelloc=t; fontsize=10; fontname="Helvetica";
+    rankdir=LR;
+    compound=true;
+    
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=8, penwidth=1.2, margin="0.06,0.04"];
+    edge [fontname="Helvetica", fontsize=7, penwidth=1.5, arrowsize=0.7];
+    
+    // (a) Schematic
+    subgraph cluster_sch {
+        label="(a) Transistor-Level Schematic"; fontsize=9; fontname="Helvetica";
+        style="rounded"; color="#333333"; penwidth=1.2;
+        
+        node [fillcolor=white, color="#333333"];
+        
+        input [shape=plaintext, label="IN
+(Z=50)"];
+        m1 [label="M1
+W=224u L=0.15u
+40 fingers
+gm=1.5mS", width=1.4];
+        mcasc [label="MCAS
+W=224u
+L=0.18u", width=1.2];
+        m2 [label="M2 (Gain)
+W=112u
+L=0.15u", width=1.2];
+        m3 [label="M3 (Buffer)
+W=60u
+L=0.15u", width=1.2];
+        output [shape=plaintext, label="OUT"];
+        
+        input -> m1 [label="Lg+Ls
+match", color="#2255aa"];
+        m1 -> mcasc [label="Drain", color="#2255aa"];
+        mcasc -> m2 [label="AC", color="#2255aa", style=dashed];
+        m2 -> m3 [label="AC", color="#2255aa", style=dashed];
+        m3 -> output [color="#2255aa"];
+    }
+    
+    // (b) Performance table
+    subgraph cluster_perf {
+        label="(b) BAG-Computed Performance"; fontsize=9; fontname="Helvetica";
+        style="rounded"; color="#333333"; penwidth=1.2;
+        
+        perf [shape=plaintext, label=<
+            <table border="1" cellborder="1" cellspacing="0" cellpadding="3">
+            <tr><td bgcolor="#e8e8e8"><font point-size="8"><b>Parameter</b></font></td>
+                <td bgcolor="#e8e8e8"><font point-size="8"><b>Value</b></font></td>
+                <td bgcolor="#e8e8e8"><font point-size="8"><b>Method</b></font></td></tr>
+            <tr><td><font point-size="8">Gain</font></td><td><font point-size="8">29.5 dB</font></td><td><font point-size="8">gm*Rload</font></td></tr>
+            <tr><td><font point-size="8">NF</font></td><td><font point-size="8">2.4 dB</font></td><td><font point-size="8">gm/Id=18 S/A</font></td></tr>
+            <tr><td><font point-size="8">IRN</font></td><td><font point-size="8">2.7 nV/rtHz</font></td><td><font point-size="8">4kT*gamma/gm</font></td></tr>
+            <tr><td><font point-size="8">BW</font></td><td><font point-size="8">180 kHz</font></td><td><font point-size="8">-3dB point</font></td></tr>
+            <tr><td><font point-size="8">Power</font></td><td><font point-size="8">412.5 uW</font></td><td><font point-size="8">1.8V*Id_total</font></td></tr>
+            <tr><td><font point-size="8">Corners</font></td><td><font point-size="8">TT/FF/SS/FS/SF</font></td><td><font point-size="8">ALL PASS</font></td></tr>
+            </table>
+        >];
+    }
+    
+    // Legend
+    { rank=sink;
+      lg [shape=plaintext, label=<
+        <font point-size="7" color="#666666">Solid: signal path | Dashed: AC coupling | All devices: sky130 1.8V FETs | Bias: PTAT constant-gm reference</font>
+      >];
+    }
+}

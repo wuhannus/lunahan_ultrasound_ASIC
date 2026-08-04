@@ -1,0 +1,69 @@
+
+digraph G {
+    dpi=250; fontname="Helvetica"; bgcolor=white; pad=0.3;
+    label="(a) UERTX Power Stage     (b) Timing      (c) Energy Comparison";
+    labelloc=t; fontsize=10; fontname="Helvetica";
+    compound=true;
+    
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=8, penwidth=1.2, margin="0.06,0.04"];
+    edge [fontname="Helvetica", fontsize=7, penwidth=1.5, arrowsize=0.7];
+    
+    // (a) Power Stage
+    subgraph cluster_ps {
+        label="(a) H-Bridge + Capacitor Recycling"; fontsize=9; fontname="Helvetica";
+        style="rounded"; color="#333333"; penwidth=1.2;
+        node [fillcolor=white, color="#333333"];
+        
+        vdd [shape=plaintext, label="VDDHV
+6-14V"];
+        mhs_p [label="MHS_P
+PMOS 2000/0.5", width=1.2];
+        mhs_n [label="MHS_N
+PMOS 2000/0.5", width=1.2];
+        mls_p [label="MLS_P
+NMOS 1000/0.5", width=1.2];
+        mls_n [label="MLS_N
+NMOS 1000/0.5", width=1.2];
+        cstore [label="CSTORE
+100nF", width=1.0, fillcolor="#e8f0e8"];
+        xducer [label="Transducer
+40kHz
+CP=2.5nF", width=1.1];
+        
+        mhs_p -> xducer [label="OUT_P", color="#2255aa"];
+        mhs_n -> xducer [label="OUT_N", color="#2255aa"];
+        cstore -> xducer [label="recycle", color="#228822", style=dashed];
+        mls_p -> xducer [style=invis];
+    }
+    
+    // (b) Timing
+    subgraph cluster_timing {
+        label="(b) Operation"; fontsize=9; fontname="Helvetica";
+        style="rounded"; color="#333333"; penwidth=1.2;
+        
+        timing [shape=plaintext, label=<
+            <table border="0" cellborder="0" cellspacing="0" cellpadding="3">
+            <tr><td><font point-size="8"><b>Phase 1 (TX):</b></font></td><td><font point-size="8">HS_P+LS_N ON, HS_N+LS_P OFF</font></td></tr>
+            <tr><td><font point-size="8"><b>Dead-time:</b></font></td><td><font point-size="8">All FETs OFF, CP to CSTORE</font></td></tr>
+            <tr><td><font point-size="8"><b>Phase 2 (TX):</b></font></td><td><font point-size="8">HS_N+LS_P ON, HS_P+LS_N OFF</font></td></tr>
+            <tr><td><font point-size="8"><b>Dead-time:</b></font></td><td><font point-size="8">All FETs OFF, CP to CSTORE</font></td></tr>
+            <tr><td colspan="2"><font point-size="7" color="#cc3333"><b>NO inductor - pure capacitive recycling</b></font></td></tr>
+            </table>
+        >];
+    }
+    
+    // (c) Energy
+    subgraph cluster_energy {
+        label="(c) Energy per Burst (8 pulses)"; fontsize=9; fontname="Helvetica";
+        style="rounded"; color="#333333"; penwidth=1.2;
+        
+        energy [shape=plaintext, label=<
+            <table border="1" cellborder="1" cellspacing="0" cellpadding="3">
+            <tr><td bgcolor="#e8e8e8"><font point-size="8"><b>Mode</b></font></td><td bgcolor="#e8e8e8"><font point-size="8"><b>Energy</b></font></td><td bgcolor="#e8e8e8"><font point-size="8"><b>Saving</b></font></td></tr>
+            <tr><td><font point-size="8">Class-D (conv.)</font></td><td><font point-size="8">12.8 uJ</font></td><td><font point-size="8">—</font></td></tr>
+            <tr><td><font point-size="8">Class-D (non-ovlp)</font></td><td><font point-size="8">11.2 uJ</font></td><td><font point-size="8">12.5%</font></td></tr>
+            <tr><td bgcolor="#e8f0e8"><font point-size="8"><b>UERTX (this work)</b></font></td><td bgcolor="#e8f0e8"><font point-size="8"><b>7.15 uJ</b></font></td><td bgcolor="#e8f0e8"><font point-size="8"><b>44.2%</b></font></td></tr>
+            </table>
+        >];
+    }
+}

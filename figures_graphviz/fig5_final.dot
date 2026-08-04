@@ -1,0 +1,40 @@
+digraph G {
+    dpi=250;
+    fontname="Helvetica";
+    bgcolor=white;
+    size="7.5,5.625";
+    ratio=fill;
+    pad=0.05;
+    nodesep=0.15;
+    ranksep=0.2;
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, penwidth=1.5, margin="0.06,0.04"];
+    edge [fontname="Helvetica", fontsize=8, penwidth=1.5, arrowsize=0.8, color="#333333"];
+
+    rankdir=LR;
+    label="UERTX: Capacitor-Based Charge Recycling [1] -- NO Inductor";
+    labelloc=t; fontsize=11;
+    node [fillcolor=white, color="#333333"];
+    subgraph cluster_ps {
+        label="(a) H-Bridge + CSTORE Recycling"; fontsize=9; style="rounded"; color="#333333"; penwidth=1.2;
+        hs_p [label="MHS_P\nPMOS\n2000/0.5", width=1.0];
+        hs_n [label="MHS_N\nPMOS\n2000/0.5", width=1.0];
+        cstore [label="CSTORE\n100 nF", width=1.0, fillcolor="#e8f0e8"];
+        xducer [label="Transducer\n40kHz\nCP=2.5nF", width=1.1];
+        deadtime [label="Dead-Time\napprox 120ns", width=1.1, fillcolor="#fce8e8"];
+        hs_p -> xducer [color="#2255aa"]; hs_n -> xducer [color="#2255aa"];
+        cstore -> xducer [color="#228822", style=dashed, dir=both];
+        deadtime -> xducer [color="#cc3333", style=dashed, constraint=false];
+    }
+    subgraph cluster_energy {
+        label="(b) Energy Comparison (8-pulse burst)"; fontsize=9; style="rounded"; color="#333333"; penwidth=1.2;
+        et [shape=plaintext, label=<
+            <table border="1" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr><td bgcolor="#e8e8e8"><font point-size="9"><b>Driver</b></font></td><td bgcolor="#e8e8e8"><font point-size="9"><b>Energy</b></font></td><td bgcolor="#e8e8e8"><font point-size="9"><b>Saving</b></font></td></tr>
+            <tr><td><font point-size="9">Class-D conventional</font></td><td><font point-size="9">12.8 uJ</font></td><td><font point-size="9">baseline</font></td></tr>
+            <tr><td><font point-size="9">Class-D non-overlap</font></td><td><font point-size="9">11.2 uJ</font></td><td><font point-size="9">12.5%</font></td></tr>
+            <tr><td bgcolor="#e8f0e8"><font point-size="9"><b>UERTX this work</b></font></td><td bgcolor="#e8f0e8"><font point-size="9"><b>7.15 uJ</b></font></td><td bgcolor="#e8f0e8"><font point-size="9"><b>44.2%</b></font></td></tr>
+            </table>
+        >];
+    }
+
+}

@@ -1,0 +1,82 @@
+// Figure 2: Ultrasound ASIC System Architecture
+digraph system_arch {
+    dpi=200; fontname="Helvetica"; bgcolor=white;
+    label="Ultrasound ASIC System Architecture (sky130 PDK)";
+    labelloc=t; fontsize=28;
+    rankdir=TB;
+
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=14, penwidth=3];
+    edge [fontname="Helvetica", fontsize=12, penwidth=3, arrowsize=1.0];
+
+    subgraph cluster_afe {
+        label="ANALOG FRONT-END (sky130 PDK)";
+        fontsize=22; fontname="Helvetica";
+        style="rounded,filled"; fillcolor="#dce8fc"; color="#1446a0"; penwidth=3;
+        node [fillcolor=white, color="#1446a0", fontsize=15];
+
+        transducer [label="4×4 Transducer\nArrays ×4 Directions", shape=box];
+        lna [label="LNA\n30 dB gain\n2.4 dB NF\n412 µW"];
+        vga [label="VGA\n0-46 dB\n64 steps\n1.4 mW"];
+        bpf [label="BPF\n40 kHz\nBW=10 kHz"];
+        adc [label="SAR ADC\n10-bit 1.2 MS/s\n9.6 ENOB\n700 µW"];
+        uertx [label="UERTX Driver\nH-Bridge + CSTORE\n44.2% energy saving\nNO inductor"];
+        pmu [label="PMU\nBoost 6-14V\nLDO 1.8V ×2\n78% efficiency"];
+
+        transducer -> lna [label="Echo (RX)"];
+        lna -> vga;
+        vga -> bpf;
+        bpf -> adc;
+        uertx -> transducer [label="TX burst\n6-14 Vpp", dir=back];
+    }
+
+    subgraph cluster_digital {
+        label="DIGITAL CONTROLLER (sky130 PDK)";
+        fontsize=22; fontname="Helvetica";
+        style="rounded,filled"; fillcolor="#fde8d0"; color="#dc7814"; penwidth=3;
+        node [fillcolor=white, color="#dc7814", fontsize=15];
+
+        core [label="lunahan_v1 RISC-V Core\nRV32IMC, 5-stage pipeline\n48 MHz, 18.2 mW"];
+        mem [label="Memory\nI-Cache 4KB, D-Cache 4KB\nSRAM 32KB + 416KB"];
+        tx_ctrl [label="TX Controller\nBeamforming\nPulse generation"];
+        rx_ctrl [label="RX Controller\nADC interface\nTOF calculation"];
+        pmu_ctrl [label="PMU Controller\nSPI master\nVoltage tuning"];
+        pv_rxbf [label="PV-RXBF Beamformer\n64-ch Delay & Sum\n32×32 grid, 24 fps"];
+
+        core -> tx_ctrl [label="MMIO"];
+        core -> rx_ctrl [label="MMIO"];
+        core -> pmu_ctrl [label="MMIO"];
+        core -> pv_rxbf [label="MMIO"];
+        rx_ctrl -> core [label="IRQ/Data", dir=back];
+        pv_rxbf -> core [label="Voxel stream", dir=back];
+        core -> mem [label="AXI4-Lite"];
+    }
+
+    subgraph cluster_clock {
+        label="CLOCK GENERATION (sky130 PLL)";
+        fontsize=22; fontname="Helvetica";
+        style="rounded,filled"; fillcolor="#e8d8f8"; color="#8232c8"; penwidth=3;
+        node [fillcolor=white, color="#8232c8", fontsize=15];
+        pll [label="Charge-Pump PLL\n16 MHz → 50 MHz\n+ 1.2 MHz (ADC)\nLock: 28.4 µs\nJitter: 38.2 ps RMS"];
+    }
+
+    subgraph cluster_io {
+        label="EXTERNAL I/O";
+        fontsize=22; fontname="Helvetica";
+        style="rounded,filled"; fillcolor="#d8f0d8"; color="#1e8c1e"; penwidth=3;
+        node [fillcolor=white, color="#1e8c1e", fontsize=14];
+        io [label="AXI4-Lite Bus | UART 115200 | SPI Mode 0 | GPIO 16-bit"];
+    }
+
+    // Cross-cluster connections
+    adc -> rx_ctrl [label="10-bit parallel", color="#1446a0", ltail=cluster_afe, lhead=cluster_digital, minlen=2];
+    adc -> pv_rxbf [label="Sample stream", color="#1446a0", minlen=2];
+    pmu -> lna [label="1.8V", color="#1446a0"];
+    pmu -> vga [label="1.8V", color="#1446a0"];
+    pmu -> adc [label="1.8V", color="#1446a0"];
+    pmu -> uertx [label="6-14V", color="#1446a0"];
+    pmu -> core [label="1.8V", color="#1446a0"];
+    tx_ctrl -> uertx [label="Pulse control", color="#dc7814"];
+    pmu_ctrl -> pmu [label="SPI", color="#dc7814"];
+    pll -> core [label="50 MHz", color="#8232c8"];
+    pll -> adc [label="1.2 MHz", color="#8232c8"];
+}

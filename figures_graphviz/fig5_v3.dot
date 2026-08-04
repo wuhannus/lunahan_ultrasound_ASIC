@@ -1,0 +1,56 @@
+digraph G {
+    dpi=250;
+    fontname="Helvetica";
+    bgcolor=white;
+    size="7.5,5.625";
+    ratio=fill;
+    pad=0.3;
+    nodesep=0.5;
+    ranksep=0.6;
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=9, penwidth=1.5, margin="0.08,0.06"];
+    edge [fontname="Helvetica", fontsize=7, penwidth=1.5, arrowsize=0.8, color="#333333"];
+
+    rankdir=LR;
+    label="UERTX: Capacitor-Based Charge Recycling [1] (NO Inductor)";
+    labelloc=t; fontsize=11;
+    node [fillcolor=white, color="#333333"];
+    
+    subgraph cluster_ps {
+        label="(a) H-Bridge Power Stage with CSTORE Recycling";
+        style="rounded"; color="#333333"; penwidth=1.2;
+        hs_p [label="MHS_P\nPMOS 2000/0.5", width=1.1];
+        hs_n [label="MHS_N\nPMOS 2000/0.5", width=1.1];
+        ls_p [label="MLS_P\nNMOS 1000/0.5", width=1.1];
+        ls_n [label="MLS_N\nNMOS 1000/0.5", width=1.1];
+        cstore [label="CSTORE = 100 nF\n(off-chip)", width=1.2, fillcolor="#e8f0e8"];
+        xducer [label="Transducer\n40kHz, CP=2.5nF", width=1.1];
+        deadtime [label="Dead-Time\nGen (~120ns)", width=1.1, fillcolor="#fce8e8"];
+    }
+    
+    subgraph cluster_energy {
+        label="(b) Energy Comparison (8-pulse burst)";
+        style="rounded"; color="#333333"; penwidth=1.2;
+        energy [shape=plaintext, label=<
+            <table border="1" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr><td bgcolor="#e8e8e8"><font point-size="9"><b>Driver</b></font></td><td bgcolor="#e8e8e8"><font point-size="9"><b>Energy</b></font></td><td bgcolor="#e8e8e8"><font point-size="9"><b>Saving</b></font></td></tr>
+            <tr><td><font point-size="9">Class-D (conv.)</font></td><td><font point-size="9">12.8 uJ</font></td><td><font point-size="9">baseline</font></td></tr>
+            <tr><td><font point-size="9">Class-D (non-ovlp)</font></td><td><font point-size="9">11.2 uJ</font></td><td><font point-size="9">12.5 pct</font></td></tr>
+            <tr><td bgcolor="#e8f0e8"><font point-size="9"><b>UERTX</b></font></td><td bgcolor="#e8f0e8"><font point-size="9"><b>7.15 uJ</b></font></td><td bgcolor="#e8f0e8"><font point-size="9"><b>44.2 pct</b></font></td></tr>
+            </table>
+        >];
+    }
+    
+    subgraph cluster_op {
+        label="(c) Principle";
+        style="rounded"; color="#333333"; penwidth=1.2;
+        op [shape=plaintext, label=<
+            <font point-size="8">
+            <b>Dead-time:</b> HS FETs OFF, CP=2.5nF discharges to CSTORE=100nF<br/>
+            <b>TX phase:</b> CSTORE supplies partial charge, reducing VDDHV current<br/>
+            <b>Result:</b> 44.2 pct energy saving vs conventional class-D<br/>
+            <b>Key:</b> NO inductor -- pure capacitive recycling [1]
+            </font>
+        >];
+    }
+
+}

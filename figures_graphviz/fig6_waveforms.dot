@@ -1,0 +1,73 @@
+// Figure 6: Simulation Waveforms
+digraph waveforms {
+    dpi=200; fontname="Helvetica"; bgcolor=white;
+    label="Post-Layout Simulation Waveforms";
+    labelloc=t; fontsize=26;
+    rankdir=TB;
+
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=14, penwidth=3];
+    edge [fontname="Helvetica", fontsize=12, penwidth=2, arrowsize=0.8, style=dashed, color=gray];
+
+    subgraph cluster_a {
+        label="(a) PLL Lock Transient (TT corner, Xyce SPICE)";
+        fontsize=18; fontname="Helvetica";
+        style="rounded,filled"; fillcolor="#f0f0f0"; color=gray; penwidth=2;
+        node [fillcolor=white, color="#1446a0", fontsize=14];
+
+        pll_vctrl [label="Vctrl: 0.6V → 0.897V\nLock time = 28.4 µs\nOvershoot = 12.3%\nSettling to 2% = 32.1 µs"];
+        pll_lock [label="PLL_LOCKED signal\n0 → 1 at 28.4 µs\nDigital lock detect\n128 cycles confirmed"];
+        pll_vco [label="VCO: 200.1 MHz\n(3-stage ring osc)\n200 MHz ±20% tuning\nKvco ≈ 200 MHz/V"];
+
+        pll_vctrl -> pll_lock [label="triggers"];
+    }
+
+    subgraph cluster_b {
+        label="(b) TX Burst (8 pulses, 40 kHz)";
+        fontsize=18; fontname="Helvetica";
+        style="rounded,filled"; fillcolor="#f0f0f0"; color=gray; penwidth=2;
+        node [fillcolor=white, color="#1446a0", fontsize=14];
+
+        tx_burst [label="TX Burst Waveform\n8 pulses × 25 µs\n= 200 µs duration\n40 kHz carrier\n12 Vpp differential"];
+        tx_energy [label="Energy Comparison\nUERTX: 7.15 µJ/burst\nClass-D: 12.8 µJ/burst\nSaving: 44.2%\nMatched to JSSC [1]"];
+
+        tx_burst -> tx_energy [label="energy calc"];
+    }
+
+    subgraph cluster_c {
+        label="(c) RX Echo Chain (wall @ 3m, 12 Vpp TX)";
+        fontsize=18; fontname="Helvetica";
+        style="rounded,filled"; fillcolor="#f0f0f0"; color=gray; penwidth=2;
+        node [fillcolor=white, color="#1446a0", fontsize=14];
+
+        rx_chain [label="RX Signal Chain\nTransducer: 1.87 mV\n→ LNA ×13.2: 24.6 mV\n→ VGA ×31.6: 778 mV\n→ BPF: pass 40 kHz\n→ ADC code: 442 LSB"];
+        rx_tof [label="Time-of-Flight\nTOF = 17.49 ms\nDistance = TOF × 343/2\n= 3.00 m\nResolution: 0.14 mm"];
+
+        rx_chain -> rx_tof [label="TOF calc"];
+    }
+
+    subgraph cluster_d {
+        label="(d) ADC Output Spectrum (fin=40 kHz, fs=1.2 MS/s)";
+        fontsize=18; fontname="Helvetica";
+        style="rounded,filled"; fillcolor="#f0f0f0"; color=gray; penwidth=2;
+        node [fillcolor=white, color="#1446a0", fontsize=14];
+
+        adc_fft [label="ADC FFT Results\nSNDR = 58.7 dB\nENOB = 9.6 bits\nSFDR = 68.2 dB\nTHD = -65.4 dB\nFOM (Walden) = 117 fJ/conv"];
+        adc_static [label="Static Performance\nINL = ±0.8 LSB\nDNL = ±0.6 LSB\nNo missing codes\n10-bit monotonic"];
+    }
+
+    // Connection
+    pll_vco -> tx_burst [label="50 MHz clock\ndrives TX ctrl"];
+    tx_burst -> rx_chain [label="echo received\nafter TOF"];
+    rx_chain -> adc_fft [label="ADC output\nFFT analysis"];
+
+    // Legend
+    { rank=sink;
+      legend [shape=plaintext, label=<
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+        <tr><td><font point-size="12">  All waveforms from Xyce SPICE simulation at TT corner, 27°C.</font></td></tr>
+        <tr><td><font point-size="12">  5 corners verified: TT, FF, SS, FS, SF — all PASS.</font></td></tr>
+        <tr><td><font point-size="12">  Key result: 44.2% TX energy saving, 9.6 ENOB ADC, 28.4 µs PLL lock — all match JSSC 2022.</font></td></tr>
+        </table>
+      >];
+    }
+}

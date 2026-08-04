@@ -1,0 +1,67 @@
+digraph G {
+    dpi=250;
+    fontname="Helvetica";
+    bgcolor=white;
+    size="7.5,5.625";
+    ratio=compress;
+    pad=0.2;
+    nodesep=0.5;
+    ranksep=0.6;
+    pack="true";
+    packmode="node";
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=9, penwidth=1.5, margin="0.08,0.06"];
+    edge [fontname="Helvetica", fontsize=7, penwidth=1.5, arrowsize=0.8, color="#333333"];
+
+    label="UERTX: Capacitor-Based Charge Recycling [1] (NO Inductor)";
+    labelloc=t; fontsize=11; fontname="Helvetica";
+    node [fillcolor=white, color="#333333"];
+    
+    subgraph cluster_ps {
+        label="(a) H-Bridge Power Stage with CSTORE Recycling"; fontsize=9;
+        style="rounded"; color="#333333"; penwidth=1.2;
+        hs_p [label="MHS_P\nPMOS 2000/0.5\nHigh-side switch", width=1.5];
+        ls_p [label="MLS_P\nNMOS 1000/0.5\nLow-side switch", width=1.5];
+        hs_n [label="MHS_N\nPMOS 2000/0.5\nHigh-side switch", width=1.5];
+        ls_n [label="MLS_N\nNMOS 1000/0.5\nLow-side switch", width=1.5];
+        cstore [label="CSTORE = 100 nF\nStorage Capacitor\n(off-chip ceramic)", width=1.8, fillcolor="#e8f0e8"];
+        xducer [label="Transducer (40 kHz)\nLM=120mH, CM=132pF\nRM=500, CP=2.5nF", width=1.8];
+        deadtime [label="Dead-Time Gen\napprox 120 ns\nSchmitt triggers", width=1.5, fillcolor="#fce8e8"];
+        
+        hs_p -> xducer [color="#2255aa", label="OUT_P"];
+        hs_n -> xducer [color="#2255aa", label="OUT_N"];
+        cstore -> xducer [color="#228822", style=dashed, dir=both, label="charge recycle"];
+        deadtime -> ls_p [color="#cc3333", style=dashed];
+        deadtime -> ls_n [color="#cc3333", style=dashed];
+    }
+    
+    subgraph cluster_energy {
+        label="(b) Energy Comparison per 8-Pulse Burst"; fontsize=9;
+        style="rounded"; color="#333333"; penwidth=1.2;
+        energy [shape=plaintext, label=<
+            <table border="1" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr><td bgcolor="#e8e8e8"><font point-size="9"><b>Driver Topology</b></font></td>
+                <td bgcolor="#e8e8e8"><font point-size="9"><b>Energy/Burst</b></font></td>
+                <td bgcolor="#e8e8e8"><font point-size="9"><b>Saving</b></font></td></tr>
+            <tr><td><font point-size="9">Class-D (conventional)</font></td><td><font point-size="9">12.8 uJ</font></td><td><font point-size="9">baseline</font></td></tr>
+            <tr><td><font point-size="9">Class-D (non-overlap switching)</font></td><td><font point-size="9">11.2 uJ</font></td><td><font point-size="9">12.5 percent</font></td></tr>
+            <tr><td bgcolor="#e8f0e8"><font point-size="9"><b>UERTX (this work)</b></font></td>
+                <td bgcolor="#e8f0e8"><font point-size="9"><b>7.15 uJ</b></font></td>
+                <td bgcolor="#e8f0e8"><font point-size="9"><b>44.2 percent</b></font></td></tr>
+            </table>
+        >];
+    }
+    
+    subgraph cluster_op {
+        label="(c) Capacitor Recycling Principle"; fontsize=9;
+        style="rounded"; color="#333333"; penwidth=1.2;
+        op [shape=plaintext, label=<
+            <font point-size="8">
+            <b>Dead-time:</b> All HS FETs OFF, transducer CP=2.5nF discharges to CSTORE=100nF<br/>
+            <b>TX Phase:</b> CSTORE provides partial drive charge, reducing VDDHV current<br/>
+            <b>Result:</b> 44.2 percent energy saving vs conventional class-D driver<br/>
+            <b>Key distinction:</b> NO inductor used -- pure capacitive charge recycling [1]
+            </font>
+        >];
+    }
+
+}

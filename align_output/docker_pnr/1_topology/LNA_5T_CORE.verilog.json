@@ -1,0 +1,134 @@
+{
+  "modules": [
+    {
+      "name": "LNA_5T_CORE",
+      "parameters": [
+        "VDDA",
+        "GND",
+        "VB2",
+        "GP",
+        "GN",
+        "NG",
+        "OP",
+        "ON"
+      ],
+      "constraints": [
+        {
+          "constraint": "SymmetricBlocks",
+          "pairs": [
+            [
+              "X_XM1_XM2"
+            ],
+            [
+              "X_XMNL_XMNR"
+            ]
+          ],
+          "direction": "V"
+        },
+        {
+          "constraint": "SymmetricNets",
+          "net1": "GN",
+          "net2": "GP",
+          "pins1": [
+            "X_XM1_XM2/GB",
+            "GN"
+          ],
+          "pins2": [
+            "X_XM1_XM2/GA",
+            "GP"
+          ],
+          "direction": "V"
+        },
+        {
+          "constraint": "SymmetricNets",
+          "net1": "ON",
+          "net2": "OP",
+          "pins1": [
+            "X_XMNL_XMNR/DB",
+            "X_XM1_XM2/DB",
+            "ON"
+          ],
+          "pins2": [
+            "X_XMNL_XMNR/DA",
+            "X_XM1_XM2/DA",
+            "OP"
+          ],
+          "direction": "V"
+        }
+      ],
+      "instances": [
+        {
+          "abstract_template_name": "CMC_NMOS_17160055",
+          "instance_name": "X_XMNL_XMNR",
+          "fa_map": [
+            {
+              "formal": "DA",
+              "actual": "OP"
+            },
+            {
+              "formal": "DB",
+              "actual": "ON"
+            },
+            {
+              "formal": "G",
+              "actual": "NG"
+            },
+            {
+              "formal": "S",
+              "actual": "GND"
+            }
+          ]
+        },
+        {
+          "abstract_template_name": "DP_PMOS_B_6668712",
+          "instance_name": "X_XM1_XM2",
+          "fa_map": [
+            {
+              "formal": "B",
+              "actual": "VDDA"
+            },
+            {
+              "formal": "DA",
+              "actual": "OP"
+            },
+            {
+              "formal": "DB",
+              "actual": "ON"
+            },
+            {
+              "formal": "GA",
+              "actual": "GP"
+            },
+            {
+              "formal": "GB",
+              "actual": "GN"
+            },
+            {
+              "formal": "S",
+              "actual": "TS"
+            }
+          ]
+        },
+        {
+          "abstract_template_name": "PMOS_S_29006041",
+          "instance_name": "X_XMT",
+          "fa_map": [
+            {
+              "formal": "D",
+              "actual": "TS"
+            },
+            {
+              "formal": "G",
+              "actual": "VB2"
+            },
+            {
+              "formal": "S",
+              "actual": "VDDA"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "global_signals": []
+}

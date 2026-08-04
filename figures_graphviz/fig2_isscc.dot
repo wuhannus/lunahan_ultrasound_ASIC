@@ -1,0 +1,76 @@
+
+digraph G {
+    dpi=250; fontname="Helvetica"; bgcolor=white; pad=0.3;
+    label="Ultrasound ASIC System Architecture (sky130 PDK)";
+    labelloc=t; fontsize=10; fontname="Helvetica";
+    compound=true;
+    
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=8, penwidth=1.2, margin="0.06,0.04"];
+    edge [fontname="Helvetica", fontsize=7, penwidth=1.5, arrowsize=0.7];
+    
+    subgraph cluster_afe {
+        label="ANALOG FRONT-END"; fontsize=9; fontname="Helvetica";
+        style="rounded,dashed"; color="#2255aa"; penwidth=1.5;
+        node [fillcolor=white, color="#333333"];
+        
+        lna [label="LNA
+30dB, 2.4dB NF", width=1.1];
+        vga [label="VGA
+0-46dB", width=1.0];
+        adc [label="SAR ADC
+10b, 1.2MS/s
+9.6 ENOB", width=1.1];
+        uertx [label="UERTX
+H-Bridge + CSTORE
+44.2% saving", width=1.3];
+        pmu [label="PMU
+Boost+LDOx2
+78% eff.", width=1.1];
+        
+        lna -> vga -> adc [color="#2255aa"];
+    }
+    
+    subgraph cluster_digital {
+        label="DIGITAL CONTROLLER"; fontsize=9; fontname="Helvetica";
+        style="rounded,dashed"; color="#2255aa"; penwidth=1.5;
+        node [fillcolor=white, color="#333333"];
+        
+        core [label="RISC-V RV32IMC
+48MHz, 18.2mW", width=1.3];
+        tx_ctrl [label="TX Ctrl", width=0.9];
+        rx_ctrl [label="RX Ctrl", width=0.9];
+        pmu_ctrl [label="PMU Ctrl", width=0.9];
+        pv_rxbf [label="PV-RXBF
+64ch, 24fps", width=1.1];
+        
+        core -> {tx_ctrl, rx_ctrl, pmu_ctrl, pv_rxbf} [color="#2255aa"];
+    }
+    
+    subgraph cluster_clock {
+        label="CLOCK"; fontsize=9; fontname="Helvetica";
+        style="rounded,dashed"; color="#2255aa"; penwidth=1.5;
+        node [fillcolor=white, color="#333333"];
+        pll [label="PLL
+16MHz->50MHz
+28.4us lock", width=1.2];
+    }
+    
+    // Cross-cluster connections
+    uertx -> lna [style=invis];
+    adc -> rx_ctrl [lhead=cluster_digital, color="#2255aa", penwidth=2];
+    adc -> pv_rxbf [lhead=cluster_digital, color="#2255aa", penwidth=2, style=dashed];
+    pmu -> {lna, vga, adc, core} [color="#888888", style=dashed, penwidth=1];
+    tx_ctrl -> uertx [color="#2255aa"];
+    pmu_ctrl -> pmu [color="#2255aa"];
+    pll -> core [color="#2255aa"];
+    
+    // Legend
+    { rank=sink;
+      lg [shape=plaintext, label=<
+        <table border="0" cellborder="0" cellspacing="0" cellpadding="2">
+        <tr><td><font color="#2255aa" point-size="7"><b>Blue:</b></font></td><td><font point-size="7">Signal/data path</font></td>
+        <td><font color="#888888" point-size="7"><b>Gray:</b></font></td><td><font point-size="7">Power supply</font></td></tr>
+        </table>
+      >];
+    }
+}

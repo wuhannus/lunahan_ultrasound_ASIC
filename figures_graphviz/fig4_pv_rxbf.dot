@@ -1,0 +1,70 @@
+// Figure 4: PV-RXBF Beamformer Pipeline
+digraph pv_rxbf {
+    dpi=200; fontname="Helvetica"; bgcolor=white;
+    label="PV-RXBF Beamformer Hardware Pipeline [2]";
+    labelloc=t; fontsize=26;
+    rankdir=LR;
+    compound=true;
+
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=14, penwidth=3];
+    edge [fontname="Helvetica", fontsize=12, penwidth=3, arrowsize=1.0];
+
+    // Pipeline stages
+    adc_in [label="ADC Samples\n(64 channels × 10-bit)", fillcolor="#dce8fc", color="#1446a0"];
+    delay [label="64-Channel Delay Lines\n(4096 × 10-bit SRAM\nring buffer per channel)", fillcolor="#dce8fc", color="#1446a0"];
+    apod [label="Apodization ROM\n(Hanning Window\n64 × 8-bit)", fillcolor="#dce8fc", color="#1446a0"];
+    mac [label="Multiply-Accumulate\n(64-stage pipeline\n16-bit accumulator)", fillcolor="#fde8d0", color="#dc7814"];
+    output [label="Output Register\n(16-bit intensity\nper voxel)", fillcolor="#d8f0d8", color="#1e8c1e"];
+
+    // SRAM blocks
+    subgraph cluster_sram {
+        label="SRAM Blocks";
+        fontsize=18; fontname="Helvetica";
+        style="rounded,filled"; fillcolor="#e8d8f8"; color="#8232c8"; penwidth=3;
+        node [fillcolor=white, color="#8232c8", fontsize=14];
+
+        delay_sram [label="Delay Table SRAM\n96 KB\n65,536 entries × 12-bit\nPre-computed acoustic\ndelays per voxel"];
+        sample_sram [label="Sample Buffer SRAM\n320 KB\n64 ch × 4096 × 10-bit\nADC sample ring buffer"];
+    }
+
+    subgraph cluster_control {
+        label="Control";
+        fontsize=18; fontname="Helvetica";
+        style="rounded,filled"; fillcolor="#d8f0d8"; color="#1e8c1e"; penwidth=3;
+        node [fillcolor=white, color="#1e8c1e", fontsize=14];
+
+        sequencer [label="Voxel Sequencer\n32×32 raster scan\n(x, y) coordinate gen\nSteps 0→1023"];
+    }
+
+    // Pipeline flow
+    adc_in -> delay [label="Sample stream\n1.2 MS/s"];
+    delay -> apod [label="Delayed samples\nper channel"];
+    apod -> mac [label="Weighted\nsamples"];
+    mac -> output [label="Summed\nintensity"];
+    output -> sequencer [label="Next voxel\ntrigger", style=dashed, dir=back];
+
+    // SRAM connections
+    delay_sram -> delay [label="Delay values\n(12-bit per ch)", style=dashed, color="#8232c8"];
+    sample_sram -> delay [label="Write ADC\nsamples", style=dashed, color="#8232c8", dir=back];
+    sequencer -> delay_sram [label="Voxel index\naddress", style=dashed, color="#1e8c1e"];
+
+    // Specs box
+    { rank=sink;
+      specs [shape=box, style=filled, fillcolor="#f0f0f0", color=gray, fontsize=14,
+             label="Performance:\nLatency: ~8 µs/voxel\nThroughput: ~10 MFP/s\nFrame Rate: 24 fps\nVoxel Grid: 32×32 = 1024 pts\nPipeline: Fetch→Apodize→MAC→Output"];
+    }
+
+    // Legend
+    { rank=sink;
+      legend [shape=plaintext, label=<
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+        <tr><td bgcolor="#dce8fc"><font point-size="12">  Blue  </font></td><td><font point-size="12">Pipeline stages</font></td></tr>
+        <tr><td bgcolor="#fde8d0"><font point-size="12">  Orange  </font></td><td><font point-size="12">Arithmetic unit (MAC)</font></td></tr>
+        <tr><td bgcolor="#d8f0d8"><font point-size="12">  Green  </font></td><td><font point-size="12">Output / Control</font></td></tr>
+        <tr><td bgcolor="#e8d8f8"><font point-size="12">  Purple  </font></td><td><font point-size="12">SRAM/Memory</font></td></tr>
+        <tr><td><font point-size="12">  Solid arrows  </font></td><td><font point-size="12">Data flow</font></td></tr>
+        <tr><td><font point-size="12">  Dashed arrows  </font></td><td><font point-size="12">Control / address</font></td></tr>
+        </table>
+      >];
+    }
+}

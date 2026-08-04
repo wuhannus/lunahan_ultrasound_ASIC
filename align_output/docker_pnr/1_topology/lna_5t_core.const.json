@@ -1,0 +1,85 @@
+[
+  {
+    "constraint": "GroupBlocks",
+    "instance_name": "X_XMNL_XMNR",
+    "instances": [
+      "XMNL",
+      "XMNR"
+    ],
+    "template_name": "CMC_NMOS",
+    "generator": {
+      "name": "MOS",
+      "parameters": null
+    },
+    "constraints": null
+  },
+  {
+    "constraint": "GroupBlocks",
+    "instance_name": "X_XM1_XM2",
+    "instances": [
+      "XM1",
+      "XM2"
+    ],
+    "template_name": "DP_PMOS_B",
+    "generator": {
+      "name": "MOS",
+      "parameters": null
+    },
+    "constraints": null
+  },
+  {
+    "constraint": "GroupBlocks",
+    "instance_name": "X_XMT",
+    "instances": [
+      "XMT"
+    ],
+    "template_name": "PMOS_S",
+    "generator": {
+      "name": "MOS",
+      "parameters": null
+    },
+    "constraints": null
+  },
+  {
+    "constraint": "SymmetricBlocks",
+    "pairs": [
+      [
+        "X_XM1_XM2"
+      ],
+      [
+        "X_XMNL_XMNR"
+      ]
+    ],
+    "direction": "V"
+  },
+  {
+    "constraint": "SymmetricNets",
+    "net1": "GN",
+    "net2": "GP",
+    "pins1": [
+      "X_XM1_XM2/GB",
+      "GN"
+    ],
+    "pins2": [
+      "X_XM1_XM2/GA",
+      "GP"
+    ],
+    "direction": "V"
+  },
+  {
+    "constraint": "SymmetricNets",
+    "net1": "ON",
+    "net2": "OP",
+    "pins1": [
+      "X_XMNL_XMNR/DB",
+      "X_XM1_XM2/DB",
+      "ON"
+    ],
+    "pins2": [
+      "X_XMNL_XMNR/DA",
+      "X_XM1_XM2/DA",
+      "OP"
+    ],
+    "direction": "V"
+  }
+]

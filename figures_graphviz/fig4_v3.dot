@@ -1,0 +1,54 @@
+digraph G {
+    dpi=250;
+    fontname="Helvetica";
+    bgcolor=white;
+    size="7.5,5.625";
+    ratio=fill;
+    pad=0.3;
+    nodesep=0.5;
+    ranksep=0.6;
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=9, penwidth=1.5, margin="0.08,0.06"];
+    edge [fontname="Helvetica", fontsize=7, penwidth=1.5, arrowsize=0.8, color="#333333"];
+
+    rankdir=LR;
+    label="PV-RXBF Beamformer Hardware Pipeline [2]";
+    labelloc=t; fontsize=11;
+    node [fillcolor=white, color="#333333"];
+    
+    adc [label="ADC Samples\n(64ch x 10b)", width=1.3];
+    delay [label="64-Channel\nDelay Lines\n(4096 x 10b SRAM)", width=1.5];
+    apod [label="Apodization\nROM\n(Hanning 64 x 8b)", width=1.4];
+    mac [label="Multiply-\nAccumulate\n(64-stage)", width=1.4];
+    out [label="Output\nRegister\n(16-bit)", width=1.2];
+    
+    adc -> delay -> apod -> mac -> out [color="#2255aa", penwidth=2];
+    
+    subgraph cluster_sram {
+        label="SRAM Blocks";
+        style="rounded,dashed"; color="#888888"; penwidth=1.2;
+        node [fillcolor="#f5f5f5", color="#333333"];
+        dtbl [label="Delay Table SRAM\n96 KB (65536 x 12b)", width=1.6];
+        sbuf [label="Sample Buffer SRAM\n320 KB (64 x 4096 x 10b)", width=1.7];
+        seq [label="Voxel Sequencer\n(32x32 raster scan)", width=1.6];
+        
+        dtbl -> delay [color="#888888", style=dashed, dir=both, constraint=false];
+        sbuf -> delay [color="#888888", style=dashed, constraint=false];
+        seq -> out [color="#888888", style=dashed, constraint=false];
+    }
+    
+    subgraph cluster_perf {
+        label="Performance";
+        style="rounded,dashed"; color="#888888"; penwidth=1.2;
+        metrics [shape=plaintext, label=<
+            <table border="1" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr><td bgcolor="#e8e8e8"><font point-size="9"><b>Metric</b></font></td><td bgcolor="#e8e8e8"><font point-size="9"><b>Value</b></font></td></tr>
+            <tr><td><font point-size="9">Throughput</font></td><td><font point-size="9">approx 10 MFP/s</font></td></tr>
+            <tr><td><font point-size="9">Latency/voxel</font></td><td><font point-size="9">approx 8 us</font></td></tr>
+            <tr><td><font point-size="9">Frame Rate</font></td><td><font point-size="9">24 fps</font></td></tr>
+            <tr><td><font point-size="9">Voxel Grid</font></td><td><font point-size="9">32 x 32 = 1024 points</font></td></tr>
+            <tr><td><font point-size="9">Channels</font></td><td><font point-size="9">64 (8x8 array)</font></td></tr>
+            </table>
+        >];
+    }
+
+}

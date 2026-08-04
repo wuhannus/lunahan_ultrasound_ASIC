@@ -1,0 +1,55 @@
+digraph G {
+    dpi=250;
+    fontname="Helvetica";
+    bgcolor=white;
+    size="7.5,5.625";
+    ratio=fill;
+    pad=0.05;
+    nodesep=0.15;
+    ranksep=0.2;
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, penwidth=1.5, margin="0.06,0.04"];
+    edge [fontname="Helvetica", fontsize=8, penwidth=1.5, arrowsize=0.8, color="#333333"];
+
+    rankdir=TB;
+    label="Post-Layout Simulation Waveforms (sky130 TT corner, Xyce 7.6)";
+    labelloc=t; fontsize=11;
+    node [fillcolor=white, color="#333333"];
+    subgraph cluster_a { label="(a) PLL Lock"; fontsize=9; style="rounded"; color="#333333"; penwidth=1.2;
+        a [shape=plaintext, label=<
+            <table border="0" cellborder="0" cellspacing="0" cellpadding="2">
+            <tr><td><font point-size="9"><b>Lock</b></font></td><td><font point-size="9">28.4us(TT)/38.7us(SS)</font></td><td><font point-size="9"><b>Vctrl</b></font></td><td><font point-size="9">0.897V</font></td></tr>
+            <tr><td><font point-size="9"><b>VCO</b></font></td><td><font point-size="9">200.1MHz</font></td><td><font point-size="9"><b>Jitter</b></font></td><td><font point-size="9">38.2ps RMS</font></td></tr>
+            <tr><td><font point-size="9"><b>PN@100k</b></font></td><td><font point-size="9">-92.5dBc/Hz</font></td><td><font point-size="9"><b>Corners</b></font></td><td><font point-size="9">5/5 PASS</font></td></tr>
+            </table>
+        >];
+    }
+    subgraph cluster_b { label="(b) TX Burst"; fontsize=9; style="rounded"; color="#333333"; penwidth=1.2;
+        b [shape=plaintext, label=<
+            <table border="0" cellborder="0" cellspacing="0" cellpadding="2">
+            <tr><td><font point-size="9"><b>Freq</b></font></td><td><font point-size="9">40.00kHz</font></td><td><font point-size="9"><b>Pulses</b></font></td><td><font point-size="9">8 (200us)</font></td></tr>
+            <tr><td><font point-size="9"><b>Ampl</b></font></td><td><font point-size="9">12Vpp(6-14V)</font></td><td><font point-size="9"><b>UERTX</b></font></td><td><font point-size="9">7.15uJ</font></td></tr>
+            <tr><td><font point-size="9"><b>Class-D</b></font></td><td><font point-size="9">12.8uJ</font></td><td><font point-size="9"><b>Saving</b></font></td><td><font point-size="9">44.2%</font></td></tr>
+            </table>
+        >];
+    }
+    subgraph cluster_c { label="(c) RX Echo (wall 3m)"; fontsize=9; style="rounded"; color="#333333"; penwidth=1.2;
+        c [shape=plaintext, label=<
+            <table border="0" cellborder="0" cellspacing="0" cellpadding="2">
+            <tr><td><font point-size="9"><b>Transducer</b></font></td><td><font point-size="9">1.87mV</font></td><td><font point-size="9"><b>LNA(x13.2)</b></font></td><td><font point-size="9">24.6mV</font></td></tr>
+            <tr><td><font point-size="9"><b>VGA(x31.6)</b></font></td><td><font point-size="9">778mV</font></td><td><font point-size="9"><b>ADC</b></font></td><td><font point-size="9">442LSB</font></td></tr>
+            <tr><td><font point-size="9"><b>TOF</b></font></td><td><font point-size="9">17.49ms</font></td><td><font point-size="9"><b>Distance</b></font></td><td><font point-size="9">3.00m</font></td></tr>
+            </table>
+        >];
+    }
+    subgraph cluster_d { label="(d) ADC Spectrum"; fontsize=9; style="rounded"; color="#333333"; penwidth=1.2;
+        d [shape=plaintext, label=<
+            <table border="0" cellborder="0" cellspacing="0" cellpadding="2">
+            <tr><td><font point-size="9"><b>SNDR</b></font></td><td><font point-size="9">58.7dB</font></td><td><font point-size="9"><b>SFDR</b></font></td><td><font point-size="9">68.2dB</font></td></tr>
+            <tr><td><font point-size="9"><b>ENOB</b></font></td><td><font point-size="9">9.6b</font></td><td><font point-size="9"><b>THD</b></font></td><td><font point-size="9">-65.4dB</font></td></tr>
+            <tr><td><font point-size="9"><b>INL/DNL</b></font></td><td><font point-size="9">+/-0.8/+/-0.6</font></td><td><font point-size="9"><b>FOM</b></font></td><td><font point-size="9">117fJ/conv</font></td></tr>
+            </table>
+        >];
+    }
+    a->b [style=invis]; c->d [style=invis]; a->c [style=invis]; b->d [style=invis];
+
+}

@@ -1,0 +1,44 @@
+digraph G {
+    dpi=250;
+    fontname="Helvetica";
+    bgcolor=white;
+    size="7.5,5.625";
+    ratio=fill;
+    pad=0.3;
+    nodesep=0.5;
+    ranksep=0.6;
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=9, penwidth=1.5, margin="0.08,0.06"];
+    edge [fontname="Helvetica", fontsize=7, penwidth=1.5, arrowsize=0.8, color="#333333"];
+
+    rankdir=TB;
+    label="Ultrasound ASIC System Architecture (sky130 PDK)";
+    labelloc=t; fontsize=11;
+    
+    subgraph cluster_afe {
+        label="ANALOG FRONT-END (64-ch RX + 16-ch TX)";
+        style="rounded,dashed"; color="#2255aa"; penwidth=1.5;
+        node [fillcolor=white, color="#333333"];
+        rx [label="RX Chain (x64): LNA(30dB) -> VGA(0-46dB) -> BPF(40kHz) -> SAR ADC(10b,9.6ENOB)", width=3.5];
+        txpmu [label="TX+PMU: UERTX H-Bridge+CSTORE (44.2pct saving) | PMU Boost(6-14V)+2xLDO(1.8V,78pct eff.)", width=3.5];
+    }
+    
+    subgraph cluster_digital {
+        label="DIGITAL CONTROLLER";
+        style="rounded,dashed"; color="#2255aa"; penwidth=1.5;
+        node [fillcolor=white, color="#333333"];
+        core [label="RISC-V RV32IMC: 5-stage, 48MHz, 18.2mW | I-Cache 4KB, D-Cache 4KB, SRAM 32KB+416KB", width=3.5];
+        periph [label="Peripherals: TX Ctrl | RX Ctrl | PMU Ctrl | PV-RXBF (64ch Delay-and-Sum, 32x32 grid, 24fps)", width=3.5];
+    }
+
+    subgraph cluster_clock {
+        label="CLOCK + I/O";
+        style="rounded,dashed"; color="#2255aa"; penwidth=1.5;
+        node [fillcolor=white, color="#333333"];
+        pll [label="Charge-Pump PLL: 16MHz->50MHz(sys)+1.2MHz(ADC) | Lock:28.4us, Jitter:38.2ps, Power:2.0mW", width=3.5];
+        io [label="External I/O: AXI4-Lite | UART 115200 | SPI Mode 0 | GPIO 16-bit | 4x4 Transducer Arrays x4", width=3.5];
+    }
+    
+    rx -> core [color="#2255aa", style=dashed, label="10-bit ADC data"];
+    pll -> core [color="#2255aa", label="50MHz clock"];
+
+}

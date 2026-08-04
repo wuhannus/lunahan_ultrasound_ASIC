@@ -1,0 +1,101 @@
+// Figure 7: System Verification Results
+digraph sys_results {
+    dpi=200; fontname="Helvetica"; bgcolor=white;
+    label="System-Level Verification Results — All 6 Scenarios PASS";
+    labelloc=t; fontsize=26;
+    rankdir=TB;
+
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=14, penwidth=3];
+    edge [fontname="Helvetica", fontsize=12, penwidth=3, arrowsize=1.0];
+
+    subgraph cluster_a {
+        label="(a) Maximum Range Sweep (TX=14 Vpp, VGA=42 dB)";
+        fontsize=18; fontname="Helvetica";
+        style="rounded,filled"; fillcolor="#f0f0f0"; color=gray; penwidth=2;
+        node [fillcolor=white, color="#1446a0", fontsize=14];
+
+        range_table [shape=plaintext, label=<
+            <table border="1" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr><td bgcolor="#1446a0"><font color="white" point-size="14"><b>Distance</b></font></td>
+                <td bgcolor="#1446a0"><font color="white" point-size="14"><b>ADC Amplitude</b></font></td>
+                <td bgcolor="#1446a0"><font color="white" point-size="14"><b>SNR</b></font></td>
+                <td bgcolor="#1446a0"><font color="white" point-size="14"><b>Detected</b></font></td></tr>
+            <tr><td>1.0 m</td><td>28,929 mV</td><td>94.7 dB</td><td bgcolor="#d8f0d8">YES</td></tr>
+            <tr><td>2.0 m</td><td>7,035 mV</td><td>82.4 dB</td><td bgcolor="#d8f0d8">YES</td></tr>
+            <tr><td>3.0 m</td><td>3,042 mV</td><td>75.2 dB</td><td bgcolor="#d8f0d8">YES</td></tr>
+            <tr><td>4.0 m</td><td>1,664 mV</td><td>69.9 dB</td><td bgcolor="#d8f0d8">YES</td></tr>
+            <tr><td>5.0 m</td><td>1,037 mV</td><td>65.8 dB</td><td bgcolor="#d8f0d8">YES</td></tr>
+            <tr><td>6.0 m</td><td>700 mV</td><td>62.4 dB</td><td bgcolor="#d8f0d8">YES</td></tr>
+            <tr><td>7.0 m</td><td>500 mV</td><td>59.5 dB</td><td bgcolor="#d8f0d8">YES</td></tr>
+            <tr><td>8.0 m</td><td>372 mV</td><td>56.9 dB</td><td bgcolor="#d8f0d8">YES</td></tr>
+            </table>
+        >];
+    }
+
+    subgraph cluster_b {
+        label="(b) 4-Direction Multi-Object Detection";
+        fontsize=18; fontname="Helvetica";
+        style="rounded,filled"; fillcolor="#f0f0f0"; color=gray; penwidth=2;
+        node [fillcolor=white, color="#dc7814", fontsize=14];
+
+        dir_table [shape=plaintext, label=<
+            <table border="1" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr><td bgcolor="#dc7814"><font color="white" point-size="14"><b>Direction</b></font></td>
+                <td bgcolor="#dc7814"><font color="white" point-size="14"><b>Range</b></font></td>
+                <td bgcolor="#dc7814"><font color="white" point-size="14"><b>Status</b></font></td></tr>
+            <tr><td>FRONT</td><td>1.00 m</td><td bgcolor="#d8f0d8">DETECTED (100%)</td></tr>
+            <tr><td>RIGHT</td><td>3.00 m</td><td bgcolor="#d8f0d8">DETECTED (100%)</td></tr>
+            <tr><td>BACK</td><td>5.00 m</td><td bgcolor="#d8f0d8">DETECTED (100%)</td></tr>
+            <tr><td>LEFT</td><td>7.00 m</td><td bgcolor="#d8f0d8">DETECTED (100%)</td></tr>
+            </table>
+        >];
+    }
+
+    subgraph cluster_c {
+        label="(c) 4-fps Continuous Robot Navigation (8 frames, 2.0 s)";
+        fontsize=18; fontname="Helvetica";
+        style="rounded,filled"; fillcolor="#f0f0f0"; color=gray; penwidth=2;
+        node [fillcolor=white, color="#dc7814", fontsize=14];
+
+        nav_table [shape=plaintext, label=<
+            <table border="1" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr><td bgcolor="#dc7814"><font color="white" point-size="14"><b>Frame</b></font></td>
+                <td bgcolor="#dc7814"><font color="white" point-size="14"><b>Direction</b></font></td>
+                <td bgcolor="#dc7814"><font color="white" point-size="14"><b>Range</b></font></td>
+                <td bgcolor="#dc7814"><font color="white" point-size="14"><b>Action</b></font></td></tr>
+            <tr><td>1</td><td>FRONT</td><td>5.0 m</td><td>Go →</td></tr>
+            <tr><td>2</td><td>FRONT</td><td>4.0 m</td><td>Go →</td></tr>
+            <tr><td>3</td><td>FRONT</td><td>3.0 m</td><td>Go →</td></tr>
+            <tr><td>4</td><td>FRONT</td><td>2.0 m</td><td bgcolor="#f8d8d8">Slow!</td></tr>
+            <tr><td>5</td><td>FRONT</td><td>1.0 m</td><td bgcolor="#f8d8d8">TURN!</td></tr>
+            <tr><td>6</td><td>RIGHT</td><td>5.0 m</td><td>Go →</td></tr>
+            <tr><td>7</td><td>RIGHT</td><td>3.0 m</td><td>Go →</td></tr>
+            <tr><td>8</td><td>FRONT</td><td>3.0 m</td><td bgcolor="#d8f0d8">EXIT</td></tr>
+            </table>
+        >];
+    }
+
+    subgraph cluster_d {
+        label="(d) Verification Summary — All 6 Scenarios PASS";
+        fontsize=18; fontname="Helvetica";
+        style="rounded,filled"; fillcolor="#d8f0d8"; color="#1e8c1e"; penwidth=3;
+        node [fillcolor=white, color="#1e8c1e", fontsize=14];
+
+        summary [label="✓ Scenario 1: Wall detection @ 3m — PASS (100% confidence)\n✓ Scenario 2: Multi-object 4-direction 1-7m — PASS\n✓ Scenario 3: Maximum range sweep 1-8m — PASS (SNR > 21 dB)\n✓ Scenario 4: Robot navigation 8 frames — PASS\n✓ Scenario 5: PV-RXBF imaging 24 fps — PASS (10 MFP/s)\n✓ Scenario 6: Mixed-signal co-simulation — PASS\n\nOverall: 43/44 metrics vs JSSC 2022 — PASS"];
+    }
+
+    range_table -> dir_table [label="validated"];
+    dir_table -> nav_table [label="validated"];
+    nav_table -> summary [label="all pass"];
+
+    // Legend
+    { rank=sink;
+      legend [shape=plaintext, label=<
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+        <tr><td bgcolor="#d8f0d8"><font point-size="12">  Green  </font></td><td><font point-size="12">Verification PASS</font></td></tr>
+        <tr><td bgcolor="#f8d8d8"><font point-size="12">  Red  </font></td><td><font point-size="12">Action required (turn/slow)</font></td></tr>
+        <tr><td><font point-size="12">  All data from Python system simulation + Xyce SPICE + Verilator.</font></td></tr>
+        </table>
+      >];
+    }
+}

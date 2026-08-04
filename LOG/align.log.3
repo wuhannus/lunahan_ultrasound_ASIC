@@ -1,0 +1,8 @@
+2026-08-04 02:51:46 align.main ERROR : Working directory /work/align_output/docker_pnr doesn't exist. Please enter a valid directory path.
+2026-08-04 02:51:46 align.cmdline ERROR : Fatal Error. Cannot proceed
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/align/cmdline.py", line 197, in parse_args
+    return schematic2layout(**vars(arguments))
+  File "/usr/local/lib/python3.10/dist-packages/align/main.py", line 141, in schematic2layout
+    raise FileNotFoundError(2, 'No such working directory', working_dir)
+FileNotFoundError: [Errno 2] No such working directory: PosixPath('/work/align_output/docker_pnr')

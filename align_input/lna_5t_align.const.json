@@ -1,0 +1,8 @@
+[
+  {"constraint": "PowerPorts", "ports": ["VDDA"]},
+  {"constraint": "GroundPorts", "ports": ["GND"]},
+  {"constraint": "GroupBlocks", "blocks": ["XM1", "XM2"], "name": "diff_pair"},
+  {"constraint": "SymmetricBlocks", "pairs": [["XM1", "XM2"]], "direction": "V"},
+  {"constraint": "AlignInOrder", "blocks": ["diff_pair", "XMT"], "direction": "top_to_bottom"},
+  {"constraint": "Order", "blocks": ["diff_pair", "XMNL", "XMNR"], "direction": "top_to_bottom"}
+]

@@ -1,0 +1,60 @@
+digraph G {
+    dpi=250; fontname="Helvetica"; bgcolor=white; pad=0.3;
+    label="Post-Layout Simulation Waveforms (sky130, TT corner)";
+    labelloc=t; fontsize=10; fontname="Helvetica";
+    compound=true;
+    
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=8, penwidth=1.2];
+    
+    subgraph cluster_a {
+        label="(a) PLL Lock Transient"; fontsize=9; fontname="Helvetica";
+        style="rounded"; color="#333333"; penwidth=1.2;
+        a [shape=plaintext, label=<
+            <table border="0" cellborder="0" cellspacing="0" cellpadding="3">
+            <tr><td><font point-size="8"><b>Lock time</b></font></td><td><font point-size="8">28.4 us (TT corner)</font></td></tr>
+            <tr><td><font point-size="8"><b>Final Vctrl</b></font></td><td><font point-size="8">0.897 V</font></td></tr>
+            <tr><td><font point-size="8"><b>Overshoot</b></font></td><td><font point-size="8">12.3 percent</font></td></tr>
+            <tr><td><font point-size="8"><b>VCO frequency</b></font></td><td><font point-size="8">200.1 MHz</font></td></tr>
+            <tr><td><font point-size="8"><b>RMS Jitter</b></font></td><td><font point-size="8">38.2 ps (TT corner)</font></td></tr>
+            </table>
+        >];
+    }
+    subgraph cluster_b {
+        label="(b) TX Burst (40 kHz)"; fontsize=9; fontname="Helvetica";
+        style="rounded"; color="#333333"; penwidth=1.2;
+        b [shape=plaintext, label=<
+            <table border="0" cellborder="0" cellspacing="0" cellpadding="3">
+            <tr><td><font point-size="8"><b>Frequency</b></font></td><td><font point-size="8">40.00 kHz</font></td></tr>
+            <tr><td><font point-size="8"><b>Pulses</b></font></td><td><font point-size="8">8 per burst</font></td></tr>
+            <tr><td><font point-size="8"><b>Duration</b></font></td><td><font point-size="8">200 us</font></td></tr>
+            <tr><td><font point-size="8"><b>Amplitude</b></font></td><td><font point-size="8">12 Vpp (6 to 14V)</font></td></tr>
+            <tr><td><font point-size="8"><b>UERTX energy</b></font></td><td><font point-size="8">7.15 uJ per burst</font></td></tr>
+            </table>
+        >];
+    }
+    subgraph cluster_c {
+        label="(c) RX Echo (wall at 3m)"; fontsize=9; fontname="Helvetica";
+        style="rounded"; color="#333333"; penwidth=1.2;
+        c [shape=plaintext, label=<
+            <table border="0" cellborder="0" cellspacing="0" cellpadding="3">
+            <tr><td><font point-size="8"><b>RX voltage</b></font></td><td><font point-size="8">1.87 mV (transducer)</font></td></tr>
+            <tr><td><font point-size="8"><b>After LNA x13.2</b></font></td><td><font point-size="8">24.6 mV</font></td></tr>
+            <tr><td><font point-size="8"><b>After VGA x31.6</b></font></td><td><font point-size="8">778 mV</font></td></tr>
+            <tr><td><font point-size="8"><b>ADC code</b></font></td><td><font point-size="8">442 LSB</font></td></tr>
+            <tr><td><font point-size="8"><b>TOF / Distance</b></font></td><td><font point-size="8">17.49 ms / 3.00 m</font></td></tr>
+            </table>
+        >];
+    }
+    subgraph cluster_d {
+        label="(d) ADC Spectrum (1.2MS/s, 40kHz)"; fontsize=9; fontname="Helvetica";
+        style="rounded"; color="#333333"; penwidth=1.2;
+        d [shape=plaintext, label=<
+            <table border="0" cellborder="0" cellspacing="0" cellpadding="3">
+            <tr><td><font point-size="8"><b>SNDR</b></font></td><td><font point-size="8">58.7 dB</font></td><td><font point-size="8"><b>SFDR</b></font></td><td><font point-size="8">68.2 dB</font></td></tr>
+            <tr><td><font point-size="8"><b>ENOB</b></font></td><td><font point-size="8">9.6 bits</font></td><td><font point-size="8"><b>THD</b></font></td><td><font point-size="8">-65.4 dB</font></td></tr>
+            <tr><td><font point-size="8"><b>INL</b></font></td><td><font point-size="8">+/-0.8 LSB</font></td><td><font point-size="8"><b>DNL</b></font></td><td><font point-size="8">+/-0.6 LSB</font></td></tr>
+            <tr><td><font point-size="8"><b>FOM Walden</b></font></td><td colspan="3"><font point-size="8">117 fJ/conv-step</font></td></tr>
+            </table>
+        >];
+    }
+}

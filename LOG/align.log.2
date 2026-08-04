@@ -1,0 +1,17 @@
+2026-08-04 02:51:59 align.main INFO : Reading netlist: /work/align_input/lna_5t_core.sp subckt=LNA_5T_CORE, flat=0
+2026-08-04 02:51:59 align.compiler.compiler INFO : Starting topology identification...
+2026-08-04 02:51:59 align.schema.parser WARNING : Unknown device found SKY130_FD_PR__PFET_01V8 {'L': 2e-06, 'M': 16, 'W': 9.999999999999999e-05}, creating a generic model for this
+2026-08-04 02:51:59 align.schema.parser WARNING : Unknown device found SKY130_FD_PR__NFET_01V8 {'L': 8e-06, 'M': 3, 'W': 9.999999999999999e-05}, creating a generic model for this
+2026-08-04 02:52:00 align.cmdline ERROR : Fatal Error. Cannot proceed
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/align/cmdline.py", line 197, in parse_args
+    return schematic2layout(**vars(arguments))
+  File "/usr/local/lib/python3.10/dist-packages/align/main.py", line 167, in schematic2layout
+    primitive_lib = generate_hierarchy(netlist, subckt, topology_dir, flatten, pdk_dir)
+  File "/usr/local/lib/python3.10/dist-packages/align/compiler/compiler.py", line 27, in generate_hierarchy
+    ckt_data, primitive_library = compiler_input(
+  File "/usr/local/lib/python3.10/dist-packages/align/compiler/compiler.py", line 84, in compiler_input
+    ckt_data = create_data.read_inputs(design_name)
+  File "/usr/local/lib/python3.10/dist-packages/align/compiler/create_database.py", line 33, in read_inputs
+    assert top_subckt, f"{name.upper()} not found in library {[e.name for e in self.lib]}"
+AssertionError: LNA_5T_CORE not found in library ['NMOS', 'PMOS', 'CAP', 'RES', 'IND', 'SKY130_FD_PR__PFET_01V8', 'SKY130_FD_PR__NFET_01V8']

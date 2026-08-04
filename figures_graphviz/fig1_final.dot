@@ -1,0 +1,27 @@
+digraph G {
+    dpi=250;
+    fontname="Helvetica";
+    bgcolor=white;
+    size="7.5,5.625";
+    ratio=fill;
+    pad=0.05;
+    nodesep=0.15;
+    ranksep=0.2;
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, penwidth=1.5, margin="0.06,0.04"];
+    edge [fontname="Helvetica", fontsize=8, penwidth=1.5, arrowsize=0.8, color="#333333"];
+
+    rankdir=TB;
+    label="Six-Phase Open-Source Mixed-Signal ASIC Design Flow";
+    labelloc=t; fontsize=11;
+    p1 [label="Phase 1\nSystem Specification\nRange, fps, channels\nLink Budget + BAG cascade", width=2.0, fillcolor="#f0f0f0"];
+    p2 [label="Phase 2\nSchematic + Pre-Layout\nLNA,VGA,ADC,UERTX\nPMU,PLL,Xyce,5 corners", width=2.0, fillcolor="#f0f0f0"];
+    p3 [label="Phase 3\nDigital RTL+Verification\nRISC-V,Peripherals\nPV-RXBF,Verilator,51K", width=2.0, fillcolor="#f0f0f0"];
+    p4 [label="Phase 4\nLayout+DRC/LVS\nParam placement\nYosys+OpenROAD,5-metal", width=2.0, fillcolor="#f0f0f0"];
+    p5 [label="Phase 5\nPost-Layout PEX\nParasitic extraction\nRe-sim with R+C", width=2.0, fillcolor="#f0f0f0"];
+    p6 [label="Phase 6\nSystem Verification\n6 scenarios co-sim\nvs JSSC 2022 specs", width=2.0, fillcolor="#f0f0f0"];
+    { rank=same; p1; p2; p3; }
+    { rank=same; p4; p5; p6; }
+    p1->p2; p2->p3; p3->p4; p4->p5; p5->p6;
+    p6->p1 [color="#cc3333", style=dashed, constraint=false, fontcolor="#cc3333", fontsize=8];
+
+}

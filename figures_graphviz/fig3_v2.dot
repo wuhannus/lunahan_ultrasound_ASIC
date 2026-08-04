@@ -1,0 +1,64 @@
+digraph G {
+    dpi=250;
+    fontname="Helvetica";
+    bgcolor=white;
+    size="7.5,5.625";
+    ratio=compress;
+    pad=0.2;
+    nodesep=0.5;
+    ranksep=0.6;
+    pack="true";
+    packmode="node";
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=9, penwidth=1.5, margin="0.08,0.06"];
+    edge [fontname="Helvetica", fontsize=7, penwidth=1.5, arrowsize=0.8, color="#333333"];
+
+    label="LNA Transistor-Level Schematic with BAG-Computed Device Sizes";
+    labelloc=t; fontsize=11; fontname="Helvetica";
+    node [fillcolor=white, color="#333333"];
+    
+    subgraph cluster_sch {
+        label="(a) 3-Stage Cascoded CS LNA Schematic"; fontsize=9;
+        style="rounded"; color="#333333"; penwidth=1.2;
+        
+        m1 [label="M1 (Input)\nW=224um L=0.15um\n40 fingers, gm=1.5mS\nId=83.3uA (gm/Id=18)", width=2.2];
+        mcasc [label="MCAS (Cascode)\nW=224um L=0.18um\nIsolation above 60dB", width=2.0];
+        m2 [label="M2 (Gain Stage)\nW=112um L=0.15um\nId=200uA", width=1.8];
+        m3 [label="M3 (Output Buffer)\nW=60um L=0.15um\nSource follower\nZout approx 200 Ohm", width=1.8];
+        
+        m1 -> mcasc [color="#2255aa", label="Drain"];
+        mcasc -> m2 [color="#2255aa", label="AC coupled 10pF"];
+        m2 -> m3 [color="#2255aa", label="AC coupled 10pF"];
+        m3 -> out [color="#2255aa"]; out [shape=plaintext, label="OUTPUT"];
+    }
+    
+    subgraph cluster_perf {
+        label="(b) BAG-Computed Performance"; fontsize=9;
+        style="rounded"; color="#333333"; penwidth=1.2;
+        stats [shape=plaintext, label=<
+            <table border="1" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr><td bgcolor="#e8e8e8"><font point-size="9"><b>Parameter</b></font></td><td bgcolor="#e8e8e8"><font point-size="9"><b>Value</b></font></td><td bgcolor="#e8e8e8"><font point-size="9"><b>Design Method</b></font></td></tr>
+            <tr><td><font point-size="9">Gain</font></td><td><font point-size="9">29.5 dB</font></td><td><font point-size="9">gm * omega * Lload</font></td></tr>
+            <tr><td><font point-size="9">Noise Figure</font></td><td><font point-size="9">2.4 dB</font></td><td><font point-size="9">gm/Id = 18 S/A</font></td></tr>
+            <tr><td><font point-size="9">Input Noise</font></td><td><font point-size="9">2.7 nV/rtHz</font></td><td><font point-size="9">4kT*gamma/gm</font></td></tr>
+            <tr><td><font point-size="9">Bandwidth</font></td><td><font point-size="9">180 kHz</font></td><td><font point-size="9">-3dB point</font></td></tr>
+            <tr><td><font point-size="9">Power</font></td><td><font point-size="9">412.5 uW</font></td><td><font point-size="9">1.8V * Id_total</font></td></tr>
+            <tr><td><font point-size="9">Process Corners</font></td><td><font point-size="9">TT, FF, SS, FS, SF</font></td><td><font point-size="9">ALL PASS</font></td></tr>
+            </table>
+        >];
+    }
+    
+    subgraph cluster_notes {
+        label="Design Notes"; fontsize=9;
+        style="rounded"; color="#333333"; penwidth=1.2;
+        notes [shape=plaintext, label=<
+            <font point-size="8" color="#666666">
+            Stage 1: Simultaneous noise and impedance matching via inductive degeneration (Ls=80uH, Lg=280uH)<br/>
+            Stage 2: Voltage amplification with PMOS active load (W=45um/0.5um)<br/>
+            Stage 3: Low-impedance output buffer for driving VGA input<br/>
+            Bias: PTAT constant-gm reference for temperature-compensated operation across -40C to 125C<br/>
+            Cascode device provides over 60dB reverse isolation for robust TX/RX switching
+            </font>
+        >];
+    }
+
+}

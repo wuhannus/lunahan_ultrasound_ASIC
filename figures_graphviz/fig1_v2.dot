@@ -1,0 +1,40 @@
+digraph G {
+    dpi=250;
+    fontname="Helvetica";
+    bgcolor=white;
+    size="7.5,5.625";
+    ratio=compress;
+    pad=0.2;
+    nodesep=0.5;
+    ranksep=0.6;
+    pack="true";
+    packmode="node";
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=9, penwidth=1.5, margin="0.08,0.06"];
+    edge [fontname="Helvetica", fontsize=7, penwidth=1.5, arrowsize=0.8, color="#333333"];
+
+    rankdir=LR;
+    label="Six-Phase Open-Source Mixed-Signal ASIC Design Flow";
+    labelloc=t; fontsize=11; fontname="Helvetica";
+    
+    p1 [label="Phase 1\nSystem Specification\nRange, fps, channels\nLink Budget + BAG cascade", width=2.2, fillcolor="#f0f0f0", color="#333333"];
+    p2 [label="Phase 2\nSchematic + Pre-Layout Sim\nLNA, VGA, ADC, UERTX\nPMU, PLL, Xyce, 5 corners", width=2.2, fillcolor="#f0f0f0", color="#333333"];
+    p3 [label="Phase 3\nDigital RTL + Verification\nRISC-V RV32IMC + Peripherals\nPV-RXBF, Verilator, 51K cells", width=2.2, fillcolor="#f0f0f0", color="#333333"];
+    p4 [label="Phase 4\nLayout + DRC/LVS\nParameterized placement\nYosys+OpenROAD, 5-metal", width=2.2, fillcolor="#f0f0f0", color="#333333"];
+    p5 [label="Phase 5\nPost-Layout PEX Simulation\nParasitic extraction\nRe-simulate with R+C", width=2.2, fillcolor="#f0f0f0", color="#333333"];
+    p6 [label="Phase 6\nSystem Verification\n6 scenarios co-simulation\nvs JSSC 2022 specifications", width=2.2, fillcolor="#f0f0f0", color="#333333"];
+    
+    { rank=same; p1; p2; p3; }
+    { rank=same; p4; p5; p6; }
+    
+    p1 -> p2 [color="#2255aa", penwidth=2];
+    p2 -> p3 [color="#2255aa", penwidth=2];
+    p3 -> p4 [color="#2255aa", penwidth=2, weight=2];
+    p4 -> p5 [color="#2255aa", penwidth=2];
+    p5 -> p6 [color="#2255aa", penwidth=2];
+    p6 -> p1 [color="#cc3333", style=dashed, penwidth=1.5, constraint=false, label="Re-design if fail", fontcolor="#cc3333"];
+    
+    tools [shape=plaintext, label=<
+        <font point-size="7" color="#666666">Tools: Xyce [15] | Yosys [16] | OpenROAD [14] | Magic | Netgen | Verilator | sky130 PDK [13] | Python BAG [3]</font>
+    >];
+
+}

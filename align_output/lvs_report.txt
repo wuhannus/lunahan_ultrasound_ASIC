@@ -1,20 +1,34 @@
 ======================================================================
-  LVS Report: Layout vs Schematic
-  PDK: sky130A (Magic extraction @ 0.005um/unit)
+  LVS REPORT — LNA 5T OTA (sky130)
+  Layout: lna_5t_final.gds  (Magic-extracted)
+  Schematic: align_input/lna_5t_core.sp
 ======================================================================
 
-  Schematic: 5 devices (2N + 3P)
-  Layout:    150 devices (6N + 144P)
+[1] DEVICE COUNT / WxM EQUIVALENCE
+  [PASS] Tail XMT  : 80 fingers x 20um = 1600um  (sch 100u x 16)
+  [PASS] Diff XM1  : 32 fingers x 100um = 3200um (sch 100u x 32)
+  [PASS] Diff XM2  : 32 fingers x 100um = 3200um (sch 100u x 32)
+  [PASS] Loads     : 6 fingers x 100um = 600um   (sch 100u x 3 each)
+  Total devices: 150 (80 tail + 64 diff + 6 loads)
 
-  [PASS] XMT -> LXMT (sky130_fd_pr__pfet_01v8) WxM: schem=1600.0um², lay=1600um² L: schem=2.0um, lay=2um (schem=16, lay=80 fingers)
-  [PASS] XM1 -> LXM1 (sky130_fd_pr__pfet_01v8) WxM: schem=3200.0um², lay=3200um² L: schem=2.0um, lay=2um (schem=32, lay=32 fingers)
-  [PASS] XM2 -> LXM2 (sky130_fd_pr__pfet_01v8) WxM: schem=3200.0um², lay=3200um² L: schem=2.0um, lay=2um (schem=32, lay=32 fingers)
-  [PASS] XMNL -> LXML (sky130_fd_pr__nfet_01v8) WxM: schem=300.0um², lay=300um² L: schem=8.0um, lay=8um (schem=3, lay=3 fingers)
-  [PASS] XMNR -> LXMR (sky130_fd_pr__nfet_01v8) WxM: schem=300.0um², lay=300um² L: schem=8.0um, lay=8um (schem=3, lay=3 fingers)
+[2] NET CONNECTIVITY
+  [PASS] TS  = tail drain + diff sources (GP & GN halves)
+  [PASS] OP  = diff GP drains + load L drains
+  [PASS] ON  = diff GN drains + load R drains
+  [PASS] NG  = single net on all NMOS gates
+  [PASS] GP  = diff left input gate
+  [PASS] GN  = diff right input gate
+  [PASS] VB2 = tail gate
+  [PASS] VDDA = tail source rail
+  [PASS] GND = load source rail
 
-  Tap/well-tie: 10 devices (correctly excluded from LVS)
-  DRC status: 0 violations (Magic 8.3 + sky130A)
+[3] BODY NETS
+  [PASS] PMOS bodies: single nwell net (VDDA)
+  [PASS] NMOS bodies: VSUBS (GND)
+
+[4] DRC STATUS
+  [PASS] 0 violations (Magic 8.3.678 + sky130A)
 
 ======================================================================
-  VERDICT: PASSED
+  VERDICT: LVS PASSED (5/5 schematic devices matched)
 ======================================================================

@@ -127,26 +127,24 @@ total_width = M × pitch
 └────────────────┬───────────────────┘
                  │
 ┌────────────────▼───────────────────┐
-│  6. LVS (netgen-lvs / Python)       │
+│  6. LVS (topology-aware Python)     │
 │     Compare: schematic vs layout    │
-│     Ignore: tap/well-tie cells      │
-│     Match: W×M equivalence          │
+│     Match: W×M equivalence + nets   │
 │     Result: 5/5 PASSED ✓            │
-│       XMT→LXMT: W×M=1600µm²        │
-│       XM1→LXM1: W×M=3200µm²        │
-│       XM2→LXM2: W×M=3200µm²        │
-│       XMNL→LXML: W×M=300µm²        │
-│       XMNR→LXMR: W×M=300µm²        │
+│       Tail: 80×20µ=1600µm²         │
+│       Diff: 32×100µ=3200µm² ×2     │
+│       Loads: 3×100µ=300µm² ×2      │
+│       Nets: TS/OP/ON/NG/GP/GN       │
+│             /VB2/VDDA/GND ✓         │
 └────────────────┬───────────────────┘
                  │
 ┌────────────────▼───────────────────┐
 │  7. GDSII OUTPUT                    │
-│     File: lna_5t_routed.gds        │
-│     Size: 10 MB                     │
+│     File: lna_5t_final.gds         │
+│     Size: 9 MB                      │
+│     DRC: 0 violations               │
+│     LVS: PASSED (150 devices)       │
 │     View: KLayout 0.30.9            │
-│     Layers: nwell, diff, poly,      │
-│             cont, M1, via1, M2,     │
-│             via2, M3                │
 └─────────────────────────────────────┘
 ```
 
@@ -275,6 +273,13 @@ Device breakdown:
 | KLayout quarantine error | macOS Gatekeeper | `xattr -dr com.apple.quarantine` |
 | Docker container no network | macOS HTTP_PROXY=127.0.0.1:8118 | `unset HTTP_PROXY` before `colima start` |
 | Magic DRC CIF layer mismatch | Wrong GDS layer numbers | Use Magic's tech-mapped CIF numbers (not GDS numbers) |
+| **Symmetry placement bug** | `movex(0-xmax-sep/2)` misplaces 2nd cell → diffusion overlap | Use `movex(-(half+sep/2))` and `movex(half+sep/2)` |
+| **glayout port via lands off-bar** | routing to `drain_N/S` (bar-center) vias land below bar | Route to `drain_E/W`/`source_E/W` edge ports |
+| **Two NMOS loads merge on flatten** | overlapping diffusion regions | Correct symmetric placement (no overlap) |
+| **diff_pair 279k ports hang** | `for pn in ref.ports` iterates 279,540 ports | Access named ports directly, never iterate all |
+| **QEMU/colima CPU starvation** | colima VM eats 2 cores, layout gen 100× slower | `colima stop` before glayout generation |
+| **Magic needs sky130A.tcl** | magicrc sources device generator, file missing | Install from open_pdks: `sed s/TECHNAME/sky130A/g sky130.tcl > sky130A.tcl` |
+| **pwell (64,44) not a Magic layer** | glayout NMOS writes pwell, Magic rejects | Strip pwell (64,44) from GDS before reading |
 
 ---
 

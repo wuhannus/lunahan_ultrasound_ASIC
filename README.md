@@ -155,7 +155,26 @@ lunahan_ultrasound_ASIC/
 │   └── output/                      # GDSII, DEF, SPEF output
 ├── scripts/                         # Automation scripts
 │   ├── run_analog_sim.sh            # Analog SPICE simulation runner
-│   └── run_physical_flow.sh         # RTL→GDSII flow runner
+│   ├── run_physical_flow.sh         # RTL→GDSII flow runner
+│   └── run_lna5t_flow.sh            # LNA 5T generation+sim one-command flow
+├── align_input/                     # LNA 5T core netlists (layout + sim)
+│   └── lna_5t_core.sp               #   5-transistor LNA schematic (W×M)
+├── align_output/                    # LNA 5T layout / extraction results
+│   ├── lna_5t_final.gds             #   final GDS (DRC=0, LVS=PASS)
+│   ├── lna_5t_final_extracted.sp    #   Magic-extracted netlist (150 devs)
+│   └── lna_5t_final_extracted_sim.sp #  ngspice-ready netlist
+├── simulation/lna5t/                # LNA 5T pre/post-layout simulation
+│   ├── lna5t_prelayout_tb.sp        #   schematic testbench (AC+noise+DC)
+│   ├── lna5t_postlayout_tb.sp       #   extracted-layout testbench
+│   ├── lna5t_ac_gain.png            #   gain plot (pre+post)
+│   ├── lna5t_noise.png              #   IRN/NF plot (pre+post)
+│   ├── lna5t_results_report.md      #   results report + DC/saturation tables
+│   └── plot_lna5t_results.py        #   plot/report generator
+├── tools/                           # Layout/LVS tools
+│   ├── gen_lna_layout_v8.py         # glayout cell + routing generator
+│   └── lna_topology_lvs.py          # topology-aware LVS
+├── layout_skill.md                  # Design rules + flow knowledge
+├── SKILLS.md                        # Reusable analog-flow playbook
 └── diagrams/                        # Architecture diagrams (Mermaid)
 ```
 
@@ -197,6 +216,35 @@ xyce uertx_tb.sp
 cd afe/pll
 xyce pll_tb.sp
 ```
+
+### LNA 5T OTA — Generation + Simulation Flow
+
+A complete open-source analog flow: **schematic → layout → DRC=0 → LVS → GDSII
+→ pre/post-layout simulation**. See
+[`docs/lna_generation_simulation_flow.md`](docs/lna_generation_simulation_flow.md)
+(flow illustration) and [`SKILLS.md`](SKILLS.md) (reusable playbook).
+
+```bash
+# one-command generation + simulation flow
+bash scripts/run_lna5t_flow.sh
+
+# or manually:
+python3 tools/gen_lna_layout_v8.py          # layout -> align_output/lna_5t_final.gds
+magic ...                                   # DRC (0 viol.) + extraction
+python3 tools/lna_topology_lvs.py align_output/lna_5t_final_extracted.sp
+ngspice -b simulation/lna5t/lna5t_prelayout_tb.sp
+ngspice -b simulation/lna5t/lna5t_postlayout_tb.sp
+python3 simulation/lna5t/plot_lna5t_results.py
+```
+
+Key results (TT, 27 °C):
+
+| Metric | Pre-layout | Post-layout |
+|:-------|-----------:|------------:|
+| AC gain @ 40 kHz | 39.02 dB | 39.02 dB |
+| IRN @ 40 kHz | 8.17 nV/√Hz | 8.09 nV/√Hz |
+| Output CM / Power | 0.748 V / 0.67 mW | 0.748 V / 0.67 mW |
+| DRC / LVS | — | 0 viol. / PASSED |
 
 ### Digital Simulation
 

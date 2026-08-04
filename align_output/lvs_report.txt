@@ -1,0 +1,20 @@
+======================================================================
+  LVS Report: Layout vs Schematic
+  PDK: sky130A (Magic extraction @ 0.005um/unit)
+======================================================================
+
+  Schematic: 5 devices (2N + 3P)
+  Layout:    150 devices (6N + 144P)
+
+  [PASS] XMT -> LXMT (sky130_fd_pr__pfet_01v8) WxM: schem=1600.0um², lay=1600um² L: schem=2.0um, lay=2um (schem=16, lay=80 fingers)
+  [PASS] XM1 -> LXM1 (sky130_fd_pr__pfet_01v8) WxM: schem=3200.0um², lay=3200um² L: schem=2.0um, lay=2um (schem=32, lay=32 fingers)
+  [PASS] XM2 -> LXM2 (sky130_fd_pr__pfet_01v8) WxM: schem=3200.0um², lay=3200um² L: schem=2.0um, lay=2um (schem=32, lay=32 fingers)
+  [PASS] XMNL -> LXML (sky130_fd_pr__nfet_01v8) WxM: schem=300.0um², lay=300um² L: schem=8.0um, lay=8um (schem=3, lay=3 fingers)
+  [PASS] XMNR -> LXMR (sky130_fd_pr__nfet_01v8) WxM: schem=300.0um², lay=300um² L: schem=8.0um, lay=8um (schem=3, lay=3 fingers)
+
+  Tap/well-tie: 10 devices (correctly excluded from LVS)
+  DRC status: 0 violations (Magic 8.3 + sky130A)
+
+======================================================================
+  VERDICT: PASSED
+======================================================================

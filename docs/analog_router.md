@@ -10,8 +10,46 @@ between mixed metal levels.
 |:-----|:------------|
 | `tools/analog_router.py` | Core A* maze router (multi-layer, DRC-aware) |
 | `tools/route_glayout_netlist.py` | Glayout integration (placed cells + netlist → routed GDS) |
+| `tools/magic_drc.py` | Magic DRC scanner (tile-scan violation localization) |
 | `tools/demo_router_lna.py` | LNA 5T routing demo |
 | `afe/adc/redesign/gen_adc_routed_layout.py` | ADC comparator-core routing demo |
+
+## Magic DRC-aware routing
+
+The router has a **DRC-aware feedback loop** (`AnalogRouter.drc_aware_route`):
+
+```
+route all nets (A*)
+   │
+   ▼
+write GDS → Magic DRC tile-scan (magic_drc.py)
+   │
+   ▼
+violations? ──yes──> add violation tiles as obstacles → rip up → re-route
+   │
+   no
+   ▼
+DRC-clean (or max_iter)
+```
+
+`magic_drc.py` exploits Magic's `box → drc check → drc why` to localize
+violations per tile (Magic's batch mode does not expose error coordinates via
+feedback/drc listall reliably). Two Magic quirks handled:
+- per-tile `drc check` (a prior full check consumes the error DB)
+- box must be padded beyond the layout bbox (min-spacing errors register at
+  the layout origin edge)
+
+Verified:
+```
+python3 tools/magic_drc.py /tmp/drc_spacing.gds DRCAWARE   # spacing viols: >0
+python3 tools/magic_drc.py /tmp/drc_loop4.gds DRCAWARE     # multi-layer: 0
+```
+
+To enable in a layout generator:
+```python
+route_placed_layout(comp, nets, out_gds, drc_aware=True,
+                    drc_tile=2.0, drc_max_iter=4)
+```
 
 ## What it does
 

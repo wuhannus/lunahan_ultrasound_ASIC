@@ -37,7 +37,8 @@ def _poly_layer(poly):
 
 def route_placed_layout(component, netlist, out_gds, top_cell="ROUTED",
                         grid=0.1, spacing=0.2, metal_width=0.3, via_size=0.2,
-                        extra_obstacles=None):
+                        extra_obstacles=None, drc_aware=False,
+                        drc_tile=2.0, drc_max_iter=4):
     refs = list(component.references)
     if not refs:
         raise ValueError("component has no placed references")
@@ -65,7 +66,7 @@ def route_placed_layout(component, netlist, out_gds, top_cell="ROUTED",
             if li is None:
                 continue
             bb = _poly.bounding_box()
-            r.add_obstacle(bb[0][0], bb[0][1], bb[1][0], bb[1][1], li)
+            r.add_base_obstacle(bb[0][0], bb[0][1], bb[1][0], bb[1][1], li)
     # also flatten any nested refs in the top cell
     for _cell in _lib.cells:
         _cell.flatten(True)
@@ -74,11 +75,11 @@ def route_placed_layout(component, netlist, out_gds, top_cell="ROUTED",
             if li is None:
                 continue
             bb = _poly.bounding_box()
-            r.add_obstacle(bb[0][0], bb[0][1], bb[1][0], bb[1][1], li)
+            r.add_base_obstacle(bb[0][0], bb[0][1], bb[1][0], bb[1][1], li)
 
     if extra_obstacles:
         for x0o, y0o, x1o, y1o, lyr in extra_obstacles:
-            r.add_obstacle(x0o, y0o, x1o, y1o, lyr)
+            r.add_base_obstacle(x0o, y0o, x1o, y1o, lyr)
 
     # ---- ports: ONLY the ports actually named in the netlist ----
     # (registering every metal port of a diff_pair/cell adds hundreds of pads
@@ -112,6 +113,19 @@ def route_placed_layout(component, netlist, out_gds, top_cell="ROUTED",
         out.add_polygon(pts, layer=(poly.layer, poly.datatype))
     out.write_gds(out_gds)
     print(f"Wrote {out_gds}: {len(r.polys)} metal + {len(r.vias)} via polys, {len(netlist)} nets")
+
+    # ---- optional DRC-aware feedback loop ----
+    if drc_aware:
+        vi, it = r.drc_aware_route(out_gds, top_cell, tile=drc_tile,
+                                   max_iter=drc_max_iter)
+        # rewrite final routing
+        out = component.copy()
+        out.name = top_cell
+        for poly in r.polys + r.vias:
+            pts = np.array(poly.points, dtype=float)
+            out.add_polygon(pts, layer=(poly.layer, poly.datatype))
+        out.write_gds(out_gds)
+        print(f"DRC-aware: {len(vi)} violations after {it} reroute(s)")
     return r
 
 

@@ -56,6 +56,9 @@ class AnalogRouter:
         self.ports = {}
         self.polys = []
         self.vias = []
+        self.netlist = {}
+        self.base_obstacles = []   # (x0,y0,x1,y1,li) from cells
+        self.drc_obstacles = []    # (x0,y0,x1,y1,li) from DRC feedback
 
     # ---------------------------------------------------------------
     def set_bounds(self, x0, y0, x1, y1, margin=1.0):
@@ -97,6 +100,28 @@ class AnalogRouter:
         i0, j0 = self._cell(x0 - pad, y0 - pad)
         i1, j1 = self._cell(x1 + pad, y1 + pad)
         self.obstacles[li, j0:j1 + 1, i0:i1 + 1] = True
+
+    def rebuild_obstacles(self):
+        """Rebuild the obstacle map from base + DRC obstacles, then re-clear
+        port regions. Call before re-routing after rip-up."""
+        import numpy as np
+        self.obstacles = np.zeros((self.nlay, self.ny, self.nx), dtype=bool)
+        for (x0, y0, x1, y1, li) in self.base_obstacles + self.drc_obstacles:
+            pad = self.spacing
+            i0, j0 = self._cell(x0 - pad, y0 - pad)
+            i1, j1 = self._cell(x1 + pad, y1 + pad)
+            self.obstacles[li, j0:j1 + 1, i0:i1 + 1] = True
+        for name, p in self.ports.items():
+            self._clear_port(p, clear=0.35)
+
+    def add_base_obstacle(self, x0, y0, x1, y1, layer):
+        """Register a cell obstacle and apply it."""
+        if isinstance(layer, int) and 0 <= layer < self.nlay:
+            li = layer
+        else:
+            li = self._layer_index(layer)
+        self.base_obstacles.append((x0, y0, x1, y1, li))
+        self.add_obstacle(x0, y0, x1, y1, li)
 
     def add_port(self, name, layer, x, y, clear=0.35):
         """Register a port and clear a region so a route can land on it."""
@@ -160,10 +185,23 @@ class AnalogRouter:
         """Route a net (star from first port)."""
         if not port_names:
             return
+        self.netlist[net_name] = list(port_names)
         ports = [self.ports[n] for n in port_names]
         a = ports[0]
         for b in ports[1:]:
             self._route_pair(net_name, a, b)
+
+    def clear_routes(self):
+        """Rip up all routing (keep ports + obstacles)."""
+        self.polys = []
+        self.vias = []
+        # un-mark routed cells: rebuild obstacles from scratch is complex;
+        # simplest is a fresh obstacle map (caller re-adds obstacles).
+
+    def route_all(self):
+        """(Re)route all registered nets."""
+        for net_name, port_names in self.netlist.items():
+            self.route_net(net_name, port_names)
 
     def _route_pair(self, net, a, b):
         sa = (a.layer, self._cell(a.x, a.y)[1], self._cell(a.x, a.y)[0])
@@ -230,6 +268,63 @@ class AnalogRouter:
         lib.add(top)
         lib.write_gds(path)
         print(f"Wrote {path}: {len(self.polys)} metal + {len(self.vias)} via polys")
+
+    # ---------------------------------------------------------------
+    def drc_aware_route(self, gds_path, top_cell="ROUTED", tile=2.0,
+                        max_iter=4, magicrc=None):
+        """DRC-aware routing loop:
+           1. route all nets (obstacle-avoiding A*)
+           2. write GDS, run Magic DRC tile-scan
+           3. if violations: add them as obstacles, rip up, re-route
+           4. repeat until DRC=0 or max_iter
+
+        Returns (violations_remaining, iterations_done).
+        """
+        from magic_drc import MagicDRC
+        md = MagicDRC(magicrc=magicrc)
+        self.write_gds(gds_path, top_cell)
+        vi = md.scan(gds_path, top_cell, tile=tile)
+        it = 0
+        while vi and it < max_iter:
+            print(f"  DRC iter {it+1}: {len(vi)} violation tiles -> block & reroute")
+            # add violation tiles as DRC obstacles (parse layer from text;
+            # fall back to all layers)
+            for (xa, ya, xb, yb, text) in vi:
+                li = self._layer_from_drc(text)
+                if li is None:
+                    for l in range(self.nlay):
+                        self.drc_obstacles.append((xa, ya, xb, yb, l))
+                else:
+                    self.drc_obstacles.append((xa, ya, xb, yb, li))
+            # rip up routing and re-route around base + DRC obstacles
+            self.polys = []
+            self.vias = []
+            self.rebuild_obstacles()
+            self.route_all()
+            self.write_gds(gds_path, top_cell)
+            vi = md.scan(gds_path, top_cell, tile=tile)
+            it += 1
+        return vi, it
+
+    @staticmethod
+    def _layer_from_drc(text):
+        """Map a Magic DRC violation text to a layer index (0=MET1..3=MET4)."""
+        t = text.lower()
+        for li, name in [(3, "met4"), (2, "met3"), (1, "met2"), (0, "met1")]:
+            if name in t:
+                return li
+        if "via" in t:
+            # via violations touch the metal below/above; block MET2 (1)
+            return 1
+        return None
+
+    def _clear_port(self, p, clear):
+        import numpy as np
+        c = max(clear, self.width * 2)
+        i0, j0 = self._cell(p.x - c, p.y - c)
+        i1, j1 = self._cell(p.x + c, p.y + c)
+        for l in range(self.nlay):
+            self.obstacles[l, j0:j1 + 1, i0:i1 + 1] = False
 
 
 if __name__ == "__main__":

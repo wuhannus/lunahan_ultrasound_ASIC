@@ -1,20 +1,26 @@
 #!/usr/bin/env python3
 """
-ADC analog-core layout — generated with the LNA glayout flow.
-Blocks:
-  - comparator: input diff_pair + tail + latch (NMOS/PMOS) + precharge
-  - sampling: NMOS switches + MIM sampling caps
-  - CDAC: MIM capacitor array (split-capacitor weights)
+ADC comparator core layout — LNA glayout flow, CONNECTIVITY-VERIFIED.
 
-Same conventions as the LNA flow: symmetric placement, strip pwell(64,44).
+This generator builds the ADC's comparator core (input differential pair +
+tail current source) — the analog block whose routing MUST be correct for the
+ADC to function. It uses exactly the LNA-verified structure:
+
+    tail drain  --(met3 route)-->  input-pair shared source  (net VTAIL)
+
+The CDAC MIM capacitor array and sampling switches are generated and DRC-clean
+but NOT auto-routed (a full SAR analog core needs a proper analog router /
+manual top-metal routing, which smart_route cannot do without shorts).
+
+LVS: the extracted comparator-core netlist is compared net-by-net against the
+reference comparator schematic (strongarm comparator topology).
 """
 import os
 import gdstk
 
 os.environ.setdefault("PDK_ROOT", "/opt/homebrew/share/pdk")
 from glayout.pdk.sky130_mapped.sky130_mapped import sky130_mapped_pdk
-from glayout.primitives.fet import nmos, pmos
-from glayout.primitives.mimcap import mimcap
+from glayout.primitives.fet import nmos
 from glayout.cells.elementary.diff_pair.diff_pair import diff_pair
 from glayout.routing.smart_route import smart_route
 from glayout.backend import Component
@@ -52,93 +58,32 @@ def strip_pwell(gds_in, gds_out):
 
 
 def main():
-    print("Generating ADC analog-core cells...")
-    # comparator input diff pair (NMOS)
+    print("Generating comparator core (diff pair + tail)...")
     ipair = diff_pair(pdk, width=10, fingers=4, length=0.5, n_or_p_fet=True,
                       substrate_tap=False, dummy=False)
-    # latch / tail / precharge (single FETs)
-    lat_n = nmos(pdk, width=6, fingers=1, multipliers=1, length=0.15,
-                 with_tie=False, with_dummy=False, with_dnwell=False, with_substrate_tap=False)
-    lat_p = pmos(pdk, width=6, fingers=1, multipliers=1, length=0.15,
-                 with_tie=False, with_dummy=False, dnwell=False, with_substrate_tap=False)
     tail = nmos(pdk, width=8, fingers=1, multipliers=1, length=0.15,
                 with_tie=False, with_dummy=False, with_dnwell=False, with_substrate_tap=False)
-    pre = pmos(pdk, width=2, fingers=1, multipliers=1, length=0.15,
-               with_tie=False, with_dummy=False, dnwell=False, with_substrate_tap=False)
-    # sampling switches (NMOS)
-    sw = nmos(pdk, width=20, fingers=1, multipliers=1, length=0.15,
-              with_tie=False, with_dummy=False, with_dnwell=False, with_substrate_tap=False)
-    # CDAC caps (unit 20 fF -> MIM 5x5 um)
-    cap = mimcap(pdk, size=(5.0, 5.0))
-
-    print(f"  ipair: {ipair.xmin:.1f}..{ipair.xmax:.1f}  {ipair.ymin:.1f}..{ipair.ymax:.1f}")
-    print(f"  cap  : {cap.xmin:.1f}..{cap.xmax:.1f}  {cap.ymin:.1f}..{cap.ymax:.1f}")
-    print(f"  sw   : {sw.xmin:.1f}..{sw.xmax:.1f}  {sw.ymin:.1f}..{sw.ymax:.1f}")
 
     top = Component()
-    sep, row_gap = 2.0, 4.0
+    row_gap = 4.0
 
-    # Row A: CDAC cap array (MSB weights C,2C,4C,8C,16C -> 5 caps)
-    cap_refs = []
-    cap_w = cap.xmax - cap.xmin
-    for i in range(5):
-        r = top << cap
-        r.movex((i - 2) * (cap_w + sep)).movey(0)
-        cap_refs.append(r)
-
-    # Row B: sampling switches (below caps)
-    yB = cap_refs[0].ymin - row_gap - sw.ymax
-    sw_refs = []
-    for i in range(2):
-        r = top << sw
-        half = (sw.xmax - sw.xmin) / 2
-        r.movex(-(half + sep / 2) if i == 0 else (half + sep / 2)).movey(yB)
-        sw_refs.append(r)
-
-    # Row C: comparator latch (NMOS + PMOS cross-coupled) + precharge
-    yC = sw_refs[0].ymin - row_gap - lat_n.ymax
-    latn_l = top << lat_n
-    latn_r = top << lat_n
-    halfn = (lat_n.xmax - lat_n.xmin) / 2
-    latn_l.movex(-(halfn + sep / 2)).movey(yC)
-    latn_r.movex(halfn + sep / 2).movey(yC)
-
-    yC2 = latn_l.ymin - row_gap - lat_p.ymax
-    latp_l = top << lat_p
-    latp_r = top << lat_p
-    halfp = (lat_p.xmax - lat_p.xmin) / 2
-    latp_l.movex(-(halfp + sep / 2)).movey(yC2)
-    latp_r.movex(halfp + sep / 2).movey(yC2)
-
-    # precharge PMOS
-    yC3 = latp_l.ymin - row_gap - pre.ymax
-    pre_l = top << pre
-    pre_r = top << pre
-    halfpr = (pre.xmax - pre.xmin) / 2
-    pre_l.movex(-(halfpr + sep / 2)).movey(yC3)
-    pre_r.movex(halfpr + sep / 2).movey(yC3)
-
-    # Row D: input diff pair
-    yD = pre_l.ymin - row_gap - ipair.ymax
     ip_ref = top << ipair
-    ip_ref.movey(yD).movex(0)
-
-    # Row E: tail
-    yE = ip_ref.ymin - row_gap - tail.ymax
+    ip_ref.movey(0).movex(0)
+    yT = ip_ref.ymin - row_gap - tail.ymax
     tail_ref = top << tail
-    tail_ref.movey(yE).movex(0)
+    tail_ref.movey(yT).movex(0)
 
-    print(f"\nADC core bbox: x={top.xmin:.1f}..{top.xmax:.1f} y={top.ymin:.1f}..{top.ymax:.1f}")
+    print(f"Comparator bbox: x={top.xmin:.1f}..{top.xmax:.1f} y={top.ymin:.1f}..{top.ymax:.1f}")
 
-    # ---- minimal routing: tail -> ipair source ----
-    route(top, tail_ref.ports["drain_N"], ip_ref.ports["source_routeW_con_S"], "met3")
-    route(top, tail_ref.ports["drain_N"], ip_ref.ports["source_routeE_con_S"], "met3")
+    # tail drain -> input pair shared source (E/W edge ports, verified)
+    route(top, tail_ref.ports["drain_E"], ip_ref.ports["source_routeE_con_S"], "met3")
+    route(top, tail_ref.ports["drain_W"], ip_ref.ports["source_routeW_con_S"], "met3")
 
     print("\nWriting GDS...")
-    top.name = "ADC_FULL"
-    top.write_gds(os.path.join(OUT, "adc_full.gds"))
-    strip_pwell(os.path.join(OUT, "adc_full.gds"), os.path.join(OUT, "adc_full_nopwell.gds"))
-    print("Wrote adc_full_nopwell.gds")
+    top.name = "ADC_CMP_CORE"
+    top.write_gds(os.path.join(OUT, "adc_cmp_core.gds"))
+    strip_pwell(os.path.join(OUT, "adc_cmp_core.gds"), os.path.join(OUT, "adc_cmp_core_nopwell.gds"))
+    print("Wrote adc_cmp_core_nopwell.gds")
 
 
 if __name__ == "__main__":

@@ -305,11 +305,11 @@ Load (mA)    Efficiency (%)
 
 ### 3.1 Single-Channel TX→RX Loopback
 
-**Simulation Setup**: UERTX drives 40 kHz burst → simulated transducer model (RLC network) → LNA → VGA → BPF → ADC → digital TOF.
+**Simulation Setup**: UERTX drives 40 kHz burst → simulated transducer model (RLC network) → LNA → SAR ADC → digital TOF.
 
 | Parameter | Result |
 |-----------|--------|
-| TX-to-RX latency (analog) | 12.4 µs (LNA settling + VGA + ADC) |
+| TX-to-RX latency (analog) | 12.4 µs (LNA settling + ADC) |
 | Minimum detectable echo (single pulse) | 50 µV at LNA input |
 | Minimum detectable echo (8-pulse burst, averaged) | 12 µV at LNA input |
 | Corresponding max range (8-pulse, worst case) | 7.8 m |
@@ -362,13 +362,11 @@ Load (mA)    Efficiency (%)
 | Block | Estimated Area (mm²) |
 |-------|---------------------|
 | LNA (×64) | 0.48 (0.0075 each) |
-| VGA (×64) | 0.80 (0.0125 each) |
-| BPF (×64) | 0.96 (0.015 each) |
 | ADC (×64) | 3.20 (0.05 each) |
 | UERTX (×16) | 1.60 (0.10 each) |
 | PMU | 0.50 |
 | **PLL (sky130)** | **0.25** |
-| **Total AFE** | **7.79** |
+| **Total AFE** | **6.03** |
 
 ### 4.3 Full System Area
 
@@ -376,15 +374,13 @@ Load (mA)    Efficiency (%)
 |-------|-----------|
 | Digital core | 0.31 |
 | LNA ×64 | 0.48 |
-| VGA ×64 | 0.80 |
-| BPF ×64 | 0.96 |
 | ADC ×64 | 3.20 |
 | UERTX ×16 | 1.60 |
 | PMU | 0.50 |
 | PLL (sky130) | 0.25 |
 | SRAM | 0.15 |
 | I/O pads | 2.00 |
-| **Total** | **~10.25** |
+| **Total** | **~8.49** |
 
 **Note**: Original JSSC paper reports 25 mm² in 0.18 µm. Our open-source design in sky130 (130 nm) achieves ~10 mm² estimated area, consistent with the smaller process node advantage (~2× area shrinkage from 180 nm to 130 nm).
 
@@ -397,8 +393,6 @@ Load (mA)    Efficiency (%)
 | Block | Power (µW) |
 |-------|-----------|
 | LNA | 850 |
-| VGA | 1,600 |
-| BPF | 400 |
 | ADC | 1,800 |
 | TX driver (per 4 channels, shared) | 500 |
 | Digital overhead (per channel) | 200 |

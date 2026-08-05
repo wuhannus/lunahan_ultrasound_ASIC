@@ -14,9 +14,7 @@ digraph G {
         node [fillcolor=white, color="#333333"];
         
         lna [label="LNA
-30dB, 2.4dB NF", width=1.1];
-        vga [label="VGA
-0-46dB", width=1.0];
+40dB, 2.5dB NF", width=1.1];
         adc [label="SAR ADC
 10b, 1.2MS/s
 9.6 ENOB", width=1.1];
@@ -27,7 +25,7 @@ H-Bridge + CSTORE
 Boost+LDOx2
 78% eff.", width=1.1];
         
-        lna -> vga -> adc [color="#2255aa"];
+        lna -> adc [color="#2255aa"];
     }
     
     subgraph cluster_digital {
@@ -59,7 +57,7 @@ Boost+LDOx2
     uertx -> lna [style=invis];
     adc -> rx_ctrl [lhead=cluster_digital, color="#2255aa", penwidth=2];
     adc -> pv_rxbf [lhead=cluster_digital, color="#2255aa", penwidth=2, style=dashed];
-    pmu -> {lna, vga, adc, core} [color="#888888", style=dashed, penwidth=1];
+    pmu -> {lna, adc, core} [color="#888888", style=dashed, penwidth=1];
     tx_ctrl -> uertx [color="#2255aa"];
     pmu_ctrl -> pmu [color="#2255aa"];
     pll -> core [color="#2255aa"];

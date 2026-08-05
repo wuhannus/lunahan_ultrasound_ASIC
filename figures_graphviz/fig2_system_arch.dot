@@ -15,17 +15,13 @@ digraph system_arch {
         node [fillcolor=white, color="#1446a0", fontsize=15];
 
         transducer [label="4×4 Transducer\nArrays ×4 Directions", shape=box];
-        lna [label="LNA\n30 dB gain\n2.4 dB NF\n412 µW"];
-        vga [label="VGA\n0-46 dB\n64 steps\n1.4 mW"];
-        bpf [label="BPF\n40 kHz\nBW=10 kHz"];
-        adc [label="SAR ADC\n10-bit 1.2 MS/s\n9.6 ENOB\n700 µW"];
+        lna [label="LNA\n40 dB gain\n2.5 dB NF\n0.85 mW"];
+        adc [label="SAR ADC\n10-bit 1.2 MS/s\n9.6 ENOB\n1.8 mW"];
         uertx [label="UERTX Driver\nH-Bridge + CSTORE\n44.2% energy saving\nNO inductor"];
         pmu [label="PMU\nBoost 6-14V\nLDO 1.8V ×2\n78% efficiency"];
 
         transducer -> lna [label="Echo (RX)"];
-        lna -> vga;
-        vga -> bpf;
-        bpf -> adc;
+        lna -> adc;
         uertx -> transducer [label="TX burst\n6-14 Vpp", dir=back];
     }
 
@@ -71,7 +67,6 @@ digraph system_arch {
     adc -> rx_ctrl [label="10-bit parallel", color="#1446a0", ltail=cluster_afe, lhead=cluster_digital, minlen=2];
     adc -> pv_rxbf [label="Sample stream", color="#1446a0", minlen=2];
     pmu -> lna [label="1.8V", color="#1446a0"];
-    pmu -> vga [label="1.8V", color="#1446a0"];
     pmu -> adc [label="1.8V", color="#1446a0"];
     pmu -> uertx [label="6-14V", color="#1446a0"];
     pmu -> core [label="1.8V", color="#1446a0"];

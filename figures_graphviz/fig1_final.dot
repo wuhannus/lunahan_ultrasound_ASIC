@@ -14,7 +14,7 @@ digraph G {
     label="Six-Phase Open-Source Mixed-Signal ASIC Design Flow";
     labelloc=t; fontsize=11;
     p1 [label="Phase 1\nSystem Specification\nRange, fps, channels\nLink Budget + BAG cascade", width=2.0, fillcolor="#f0f0f0"];
-    p2 [label="Phase 2\nSchematic + Pre-Layout\nLNA,VGA,ADC,UERTX\nPMU,PLL,Xyce,5 corners", width=2.0, fillcolor="#f0f0f0"];
+    p2 [label="Phase 2\nSchematic + Pre-Layout\nLNA,ADC,UERTX\nPMU,PLL,Xyce,5 corners", width=2.0, fillcolor="#f0f0f0"];
     p3 [label="Phase 3\nDigital RTL+Verification\nRISC-V,Peripherals\nPV-RXBF,Verilator,51K", width=2.0, fillcolor="#f0f0f0"];
     p4 [label="Phase 4\nLayout+DRC/LVS\nParam placement\nYosys+OpenROAD,5-metal", width=2.0, fillcolor="#f0f0f0"];
     p5 [label="Phase 5\nPost-Layout PEX\nParasitic extraction\nRe-sim with R+C", width=2.0, fillcolor="#f0f0f0"];

@@ -24,7 +24,7 @@
 ### 1.1 What is lunahan_ultrasound_ASIC?
 
 `lunahan_ultrasound_ASIC` is an open-source ultrasound system-on-chip for 3-D obstacle detection and navigation. It combines:
-- **64-channel analog front-end** (LNA, VGA, BPF, SAR ADC)
+- **64-channel analog front-end** (LNA → SAR ADC)
 - **16-channel UERTX driver** with energy recycling
 - **On-chip PMU** for single-supply operation
 - **lunahan_v1 RISC-V RV32IMC core** for digital control
@@ -60,28 +60,28 @@
                     ┌──────────────────────────────────┐
                     │     lunahan_ultrasound_ASIC        │
                     │                                    │
-  Ultrasound ──────→│  ┌─────┐ ┌─────┐ ┌─────┐ ┌────┐ │
-  Transducers       │  │ LNA │→│ VGA │→│ BPF │→│ADC │ │
-  (4×4 array ×4)    │  └─────┘ └─────┘ └─────┘ └──┬─┘ │
-                    │                              │    │
-                    │  ┌───────┐  ┌─────────────┐  │    │
-  TX (16 ch) ←──────┤  │UERTX  │←─│ TX Controller│  │    │
-                    │  └───────┘  └─────────────┘  │    │
-                    │                              ▼    │
-                    │  ┌────────────────────────────────┤
-                    │  │   lunahan_v1 RISC-V (50 MHz)   │
-                    │  │   RV32IMC, I/D Cache, SRAM     │
-                    │  └────────────────────────────────┤
-                    │                              │    │
-  Host PC ←─────────┤ UART (115200 bps)           │    │
-                    │ SPI (config/debug)           │    │
-                    └──────────────────────────────────┘
+  Ultrasound ──────→│  ┌─────┐       ┌────┐ │
+  Transducers       │  │ LNA │──────→│ADC │ │
+  (4×4 array ×4)    │  └─────┘       └──┬─┘ │
+                    │                   │    │
+                    │  ┌───────┐  ┌─────┐   │    │
+  TX (16 ch) ←──────┤  │UERTX  │←─│ TX Ctrl │  │
+                    │  └───────┘  └─────────┘  │
+                    │                   ▼    │
+                    │  ┌───────────────────────┤
+                    │  │ lunahan_v1 RISC-V (50 MHz) │
+                    │  │ RV32IMC, I/D Cache, SRAM  │
+                    │  └───────────────────────────┤
+                    │                             │
+  Host PC ←─────────┤ UART (115200 bps)          │
+                    │ SPI (config/debug)          │
+                    └─────────────────────────────┘
 ```
 
 ### 2.1 Operating Principle
 
 1. **TX Phase**: The RISC-V core commands the TX controller to emit a burst of 40 kHz pulses through the UERTX drivers to the 4×4 transducer array.
-2. **Listen Phase**: All 16 transducers in the array switch to receive mode. Echo signals are amplified (LNA→VGA), filtered (BPF), and digitized (SAR ADC).
+2. **Listen Phase**: All 16 transducers in the array switch to receive mode. Echo signals are amplified (LNA) and digitized (SAR ADC).
 3. **Processing**: The RISC-V core computes Time-of-Flight for each channel:
    - $d = v_{sound} \cdot t_{TOF} / 2$ where $v_{sound} \approx 343\text{ m/s}$
    - 3-D coordinates are derived from multi-channel TOF data

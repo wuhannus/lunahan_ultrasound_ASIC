@@ -54,7 +54,7 @@ digraph G {
             <font point-size="8" color="#666666">
             Stage 1: Simultaneous noise and impedance matching via inductive degeneration (Ls=80uH, Lg=280uH)<br/>
             Stage 2: Voltage amplification with PMOS active load (W=45um/0.5um)<br/>
-            Stage 3: Low-impedance output buffer for driving VGA input<br/>
+            Stage 3: Low-impedance output buffer for driving SAR ADC input<br/>
             Bias: PTAT constant-gm reference for temperature-compensated operation across -40C to 125C<br/>
             Cascode device provides over 60dB reverse isolation for robust TX/RX switching
             </font>

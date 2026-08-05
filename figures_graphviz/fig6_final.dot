@@ -35,8 +35,8 @@ digraph G {
     subgraph cluster_c { label="(c) RX Echo (wall 3m)"; fontsize=9; style="rounded"; color="#333333"; penwidth=1.2;
         c [shape=plaintext, label=<
             <table border="0" cellborder="0" cellspacing="0" cellpadding="2">
-            <tr><td><font point-size="9"><b>Transducer</b></font></td><td><font point-size="9">1.87mV</font></td><td><font point-size="9"><b>LNA(x13.2)</b></font></td><td><font point-size="9">24.6mV</font></td></tr>
-            <tr><td><font point-size="9"><b>VGA(x31.6)</b></font></td><td><font point-size="9">778mV</font></td><td><font point-size="9"><b>ADC</b></font></td><td><font point-size="9">442LSB</font></td></tr>
+            <tr><td><font point-size="9"><b>Transducer</b></font></td><td><font point-size="9">1.87mV</font></td><td><font point-size="9"><b>LNA(x100)</b></font></td><td><font point-size="9">187mV</font></td></tr>
+            <tr><td><font point-size="9"><b>SAR ADC</b></font></td><td><font point-size="9">106 LSB</font></td><td><font point-size="9"><b>Direct</b></font></td><td><font point-size="9">LNA→ADC</font></td></tr>
             <tr><td><font point-size="9"><b>TOF</b></font></td><td><font point-size="9">17.49ms</font></td><td><font point-size="9"><b>Distance</b></font></td><td><font point-size="9">3.00m</font></td></tr>
             </table>
         >];

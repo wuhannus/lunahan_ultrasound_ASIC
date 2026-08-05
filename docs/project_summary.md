@@ -16,7 +16,7 @@
 
 ### 1.1 What This Project Provides
 
-1. **Analog Front-End Design**: LNA, VGA, BPF, SAR ADC, UERTX driver, and PMU — complete SPICE netlists with testbenches
+1. **Analog Front-End Design**: LNA, SAR ADC, UERTX driver, and PMU — complete SPICE netlists with testbenches
 2. **Digital Controller**: Full SystemVerilog RTL integrating the `lunahan_v1` RISC-V (RV32IMC) core with TX/RX/PMU controllers
 3. **Firmware**: RISC-V C firmware for ultrasound TOF measurement and UART reporting
 4. **Simulation Flows**: Xyce analog simulation, Verilator digital simulation, and mixed-signal co-simulation framework
@@ -146,7 +146,7 @@ Digital Domain (1.8V)              Analog Domain (1.8V / 6-14V)
 ### 5.2 Power Architecture
 
 ```
-External 3.3V ──→ PMU ──→ 1.8V Analog (LNA, VGA, BPF, ADC)
+External 3.3V ──→ PMU ──→ 1.8V Analog (LNA, SAR ADC)
                       ──→ 1.8V Digital (Core, SRAM, Peripherals)
                       ──→ 6-14V Programmable (UERTX drivers)
 ```

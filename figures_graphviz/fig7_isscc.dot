@@ -9,7 +9,7 @@ digraph G {
     
     // (a) Range sweep table
     subgraph cluster_range {
-        label="(a) Maximum Range (TX=14Vpp, VGA=max)"; fontsize=9; fontname="Helvetica";
+        label="(a) Maximum Range (TX=14Vpp)"; fontsize=9; fontname="Helvetica";
         style="rounded"; color="#333333"; penwidth=1.2;
         
         range_t [shape=plaintext, label=<

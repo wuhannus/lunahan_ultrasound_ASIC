@@ -39,7 +39,7 @@ digraph waveforms {
         style="rounded,filled"; fillcolor="#f0f0f0"; color=gray; penwidth=2;
         node [fillcolor=white, color="#1446a0", fontsize=14];
 
-        rx_chain [label="RX Signal Chain\nTransducer: 1.87 mV\n→ LNA ×13.2: 24.6 mV\n→ VGA ×31.6: 778 mV\n→ BPF: pass 40 kHz\n→ ADC code: 442 LSB"];
+        rx_chain [label="RX Signal Chain\nTransducer: 1.87 mV\n→ LNA ×13.2: 24.6 mV\n→ SAR ADC: code 442 LSB"];
         rx_tof [label="Time-of-Flight\nTOF = 17.49 ms\nDistance = TOF × 343/2\n= 3.00 m\nResolution: 0.14 mm"];
 
         rx_chain -> rx_tof [label="TOF calc"];

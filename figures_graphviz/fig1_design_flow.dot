@@ -17,7 +17,7 @@ digraph design_flow {
 
     // Phase nodes
     phase1 [label="Phase 1\nSystem Specification\n\n• Range, fps, channels\n• Link budget analysis\n• BAG spec cascade", fillcolor="#dce8fc", color="#1446a0"];
-    phase2 [label="Phase 2\nSchematic & Pre-Layout Sim\n\n• LNA, VGA, ADC, UERTX\n• PMU, PLL design\n• Xyce SPICE, 5 corners", fillcolor="#dce8fc", color="#1446a0"];
+    phase2 [label="Phase 2\nSchematic & Pre-Layout Sim\n\n• LNA, ADC, UERTX\n• PMU, PLL design\n• Xyce SPICE, 5 corners", fillcolor="#dce8fc", color="#1446a0"];
     phase3 [label="Phase 3\nDigital RTL & Verification\n\n• RISC-V RV32IMC core\n• TX/RX/PMU controllers\n• PV-RXBF, Verilator sim", fillcolor="#fde8d0", color="#dc7814"];
     phase4 [label="Phase 4\nLayout & DRC/LVS\n\n• Parameterized placement\n• Yosys+OpenROAD P&R\n• Magic DRC, Netgen LVS", fillcolor="#d8f0d8", color="#1e8c1e"];
     phase5 [label="Phase 5\nPost-Layout PEX Simulation\n\n• Parasitic extraction\n• Re-sim with parasitics\n• Degradation check", fillcolor="#e8d8f8", color="#8232c8"];

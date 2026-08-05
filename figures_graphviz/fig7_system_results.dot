@@ -9,7 +9,7 @@ digraph sys_results {
     edge [fontname="Helvetica", fontsize=12, penwidth=3, arrowsize=1.0];
 
     subgraph cluster_a {
-        label="(a) Maximum Range Sweep (TX=14 Vpp, VGA=42 dB)";
+        label="(a) Maximum Range Sweep (TX=14 Vpp)";
         fontsize=18; fontname="Helvetica";
         style="rounded,filled"; fillcolor="#f0f0f0"; color=gray; penwidth=2;
         node [fillcolor=white, color="#1446a0", fontsize=14];

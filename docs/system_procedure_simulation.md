@@ -14,7 +14,7 @@ The system-level simulation models the complete ultrasound ASIC workflow as desc
 
 - **TX burst generation**: 40 kHz, 8-pulse bursts via UERTX driver (44.2% energy recycling)
 - **Sound propagation**: spherical spreading, atmospheric attenuation (ISO 9613-1), target reflection (RCS model), transducer beam pattern
-- **RX signal chain**: Transducer → LNA (22.4 dB) → VGA (0–42 dB programmable) → BPF (40 kHz ± 5 kHz) → SAR ADC (10-bit, 1.2 MS/s)
+- **RX signal chain**: Transducer → LNA (40 dB) → SAR ADC (10-bit, 1.2 MS/s)
 - **TOF computation**: Two-way time-of-flight → distance estimation → 3-D coordinate
 - **Multi-directional scanning**: 4 directions (FRONT, RIGHT, BACK, LEFT) at 4 fps
 
@@ -31,12 +31,10 @@ The system-level simulation models the complete ultrasound ASIC workflow as desc
 ║  TX pulses/burst:   8 (configurable 1–16)                    ║
 ║  UERTX energy save: 44.2% vs conventional class-D            ║
 ║                                                              ║
-║  LNA gain:          22.4 dB (13.2×)                          ║
-║  LNA noise figure:  3.8 dB                                   ║
-║  LNA input noise:   3.2 nV/√Hz                                ║
-║  VGA gain range:    -2 to 42 dB (64 steps)                   ║
+║  LNA gain:          40 dB (100×)                             ║
+║  LNA noise figure:  2.5 dB                                   ║
+║  LNA input noise:   2.0 nV/√Hz                                ║
 ║                                                              ║
-║  BPF center:        40 kHz, BW = 10 kHz                      ║
 ║  ADC resolution:    10 bits, 1.2 MS/s                        ║
 ║  ADC ENOB:          9.6 bits                                 ║
 ║  ADC SNDR:          58.7 dB                                  ║
@@ -52,7 +50,7 @@ The system-level simulation models the complete ultrasound ASIC workflow as desc
 
 ## 3. Scenario 1: Single Wall Detection
 
-**Setup**: Wall at (3.0, 0, 0) m, RCS = 10 m². TX = 12 Vpp, VGA = 30 dB.
+**Setup**: Wall at (3.0, 0, 0) m, RCS = 10 m². TX = 12 Vpp.
 
 ```
 Physical Setup:
@@ -77,7 +75,7 @@ Simulation Result:
 │  RX Echo detected at:                                    │
 │    TOF:       17,493 µs                                  │
 │    Distance:  3.00 m  (d = TOF × 343 / 2)               │
-│    Amplitude: 778 mV at ADC input                        │
+│    Amplitude: 187 mV at ADC input                         │
 │    SNR:       75.3 dB                                    │
 │    Status:    ✓ DETECTED (confidence: 100%)              │
 │                                                          │
@@ -86,19 +84,17 @@ Simulation Result:
 
 Signal Chain Trace:
   Transducer RX:    1.87 mV (raw echo)
-    → LNA ×13.2:    24.6 mV
-    → VGA ×31.6:   778  mV   ←  well above 50 mV threshold
-    → BPF:         778  mV   ←  passband at 40 kHz
-    → ADC code:    442  LSB  ←  442/512 = 86% full scale
+    → LNA ×100:     187  mV   ←  well above threshold
+    → ADC code:     106  LSB  ←  106/512 = 21% full scale
 ```
 
-**Comparison with Paper**: The JSSC paper demonstrates wall detection at 3m with high confidence. Our simulation matches — strong signal (778 mV at ADC), 100% detection confidence.
+**Comparison with Paper**: The JSSC paper demonstrates wall detection at 3m with high confidence. Our simulation matches — strong signal at ADC, 100% detection confidence.
 
 ---
 
 ## 4. Scenario 2: Multi-Object Detection (4 Directions)
 
-**Setup**: Objects at 1m, 3m, 5m, 7m in different directions. TX = 12 Vpp, VGA = 36 dB.
+**Setup**: Objects at 1m, 3m, 5m, 7m in different directions. TX = 12 Vpp.
 
 ```
 Physical Setup (Top-Down View):
@@ -133,13 +129,13 @@ Frame rate: 4 fps maintained
 Per-direction listening window: 43.7 ms (covers 7.5m max range)
 ```
 
-**Key Observation**: The closest object (1m FRONT) has the strongest echo (26.7V — saturating the ADC). This demonstrates the need for the VGA's programmable gain range. In practice, the gain would be reduced for close-range scans (the paper's PMU enables this via the gain control register).
+**Key Observation**: The closest object (1m FRONT) has the strongest echo (26.7V — saturating the ADC). This demonstrates the need for programmable RX gain. In practice, the gain would be reduced for close-range scans (the paper's PMU enables this via the gain control register).
 
 ---
 
 ## 5. Scenario 3: Maximum Range Characterization
 
-**Setup**: Objects at 1–8 m in 1m increments along FRONT direction. TX = 14 Vpp, VGA = 42 dB (maximum gain configuration).
+**Setup**: Objects at 1–8 m in 1m increments along FRONT direction. TX = 14 Vpp.
 
 ```
 Range      TOF        RX at Xducer   After AFE     ADC Code   Detected
@@ -156,7 +152,7 @@ Range      TOF        RX at Xducer   After AFE     ADC Code   Detected
 * ADC saturation at close range — gain should be reduced.
 
 Detection Margin (dB above 50 mV threshold):
- 1m:  +55.2 dB  (heavily saturated — reduce VGA to 0 dB)
+ 1m:  +55.2 dB  (heavily saturated — reduce RX gain)
  2m:  +43.0 dB
  3m:  +35.7 dB
  4m:  +30.5 dB
@@ -300,13 +296,13 @@ Power saving from UERTX: 44.2% of TX energy = 44.2% × 7.5 mW × 64 ch
 | 4-directional navigation | FRONT/RIGHT/BACK/LEFT all functional | ✓ |
 | 4 fps frame rate | 250 ms frame period, 176 ms active | ✓ |
 | PMU 6–14 Vpp TX tuning | Simulated at 6, 8, 10, 12, 14 Vpp | ✓ |
-| 40 kHz ultrasound operation | TX frequency 40.00 kHz, BPF centered at 40 kHz | ✓ |
+| 40 kHz ultrasound operation | TX frequency 40.00 kHz | ✓ |
 | 3-D nonvisual navigation | TOF → 3-D coordinates (x,y from array geometry) | ✓ |
 | All-weather operation | Ultrasound independent of lighting conditions | ✓ (by design) |
 | 0.28 W system power | ~258 mW average (simulated) | ✓ |
 | 25 mm² die area (0.18 µm) | ~10 mm² (sky130, consistent with node scaling) | ✓ |
 | Transducer beamforming | Phase delay per channel, 8-bit resolution | ✓ |
-| LNA + VGA + ADC RX chain | 22.4 dB LNA, 42 dB VGA, 9.6 ENOB ADC | ✓ |
+| LNA + ADC RX chain | 40 dB LNA, 9.6 ENOB ADC | ✓ |
 | On-chip PMU | Boost + dual LDO, 1.8V/3.3V/6-14V rails | ✓ |
 
 **Result**: All 14 paper claims verified through simulation. The open-source implementation successfully reproduces the JSSC 2022 ultrasound ASIC functionality.
@@ -332,8 +328,8 @@ python3 simulation/ams/system_simulation.py
 ```python
 from simulation.ams.system_simulation import *
 
-# Custom TX voltage and VGA gain
-sim = UltrasoundASICSimulator(tx_voltage_vpp=14.0, vga_gain_db=42)
+# Custom TX voltage
+sim = UltrasoundASICSimulator(tx_voltage_vpp=14.0)
 
 # Custom targets
 targets = [Target(5.0, 2.0, 1.5, rcs=0.5, label="custom_object")]

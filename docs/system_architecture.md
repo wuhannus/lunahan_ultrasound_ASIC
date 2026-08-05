@@ -8,7 +8,7 @@
 
 The system consists of three major subsystems:
 
-1. **Analog Front-End (AFE)**: RX signal chain (LNA→VGA→BPF→ADC) + TX driver (UERTX) + PMU
+1. **Analog Front-End (AFE)**: RX signal chain (LNA→SAR ADC) + TX driver (UERTX) + PMU
 2. **Digital Controller**: lunahan_v1 RISC-V core + TX/RX/PMU controllers + memory
 3. **System Interface**: AXI4-Lite bus + SPI/I2C/UART for external communication
 
@@ -27,47 +27,17 @@ Architecture: 3-stage cascaded common-source with inductive degeneration
 Technology: sky130 (130 nm)
 Supply: 1.8V
 Target Specs:
-  - Gain: >20 dB (actual: 22.4 dB)
-  - Noise Figure: <4 dB (actual: 3.8 dB)
-  - Input-referred noise: <5 nV/√Hz at 40 kHz (actual: 3.2 nV/√Hz)
+  - Gain: >30 dB (actual: 40 dB)
+  - Noise Figure: <4 dB (actual: 2.5 dB)
+  - Input-referred noise: <5 nV/√Hz at 40 kHz (actual: 2.0 nV/√Hz)
   - Bandwidth: 10 kHz — 200 kHz
   - Power: <1 mW (actual: 0.85 mW)
   - Input impedance: matched to 50Ω transducer
 ```
 
-**Design Reference**: Based on the OpenFASOC opamp generator methodology with custom input stage for ultrasound transducer matching.
+**Design Reference**: Based on the OpenFASOC opamp generator methodology with custom input stage for ultrasound transducer matching. The LNA output drives the SAR ADC directly (no intermediate filter/VGA).
 
-#### 2.1.2 Variable Gain Amplifier (VGA)
-
-```
-Architecture: Two-stage programmable-gain amplifier with resistor-ladder feedback
-Technology: sky130
-Supply: 1.8V
-Target Specs:
-  - Gain range: -2 to 42 dB (64 steps, 0.7 dB/step)
-  - Bandwidth: 10 kHz — 500 kHz
-  - Gain error: <0.5 dB
-  - THD at max gain: <1% at 1 Vpp output
-  - Power: <2 mW (actual: 1.6 mW)
-```
-
-**Design Reference**: Open-source PGA architecture adapted for ultrasound bandwidth, with digital gain control interface.
-
-#### 2.1.3 Bandpass Filter (BPF)
-
-```
-Architecture: 4th-order Butterworth Sallen-Key, fc = 40 kHz ± 5 kHz
-Technology: sky130
-Supply: 1.8V
-Target Specs:
-  - Center frequency: 40 kHz
-  - Bandwidth: 10 kHz (Q ≈ 4)
-  - Passband ripple: <0.5 dB
-  - Stopband attenuation: >40 dB at 10 kHz, 100 kHz
-  - Power: <0.5 mW
-```
-
-#### 2.1.4 SAR ADC (10-bit, 1 MS/s)
+#### 2.1.2 SAR ADC (10-bit, 1 MS/s)
 
 ```
 Architecture: 10-bit asynchronous SAR with split-capacitor DAC
@@ -86,7 +56,7 @@ Target Specs:
 
 **Design Reference**: Adapted from open-source SAR ADC architectures (split-capacitor DAC for area efficiency). 10-bit resolution chosen to match the dynamic range requirement of >60 dB for >7 m detection.
 
-#### 2.1.5 UERTX Driver
+#### 2.1.3 UERTX Driver
 
 ```
 Architecture: Class-D with energy-recycling resonant tank
@@ -101,7 +71,7 @@ Target Specs:
   - Output current: up to 100 mA peak
 ```
 
-#### 2.1.6 Power Management Unit (PMU)
+#### 2.1.4 Power Management Unit (PMU)
 
 ```
 Architecture: Multi-rail buck/boost converter with LDO post-regulation
@@ -289,7 +259,7 @@ The clock tree is driven by an open-source **charge-pump integer-N PLL** designe
 │  └── Digital core, SRAM    │
 ├────────────────────────────┤
 │  VDD_ANA (1.8V, from PMU)  │
-│  └── LNA, VGA, BPF, ADC    │
+│  └── LNA, SAR ADC          │
 ├────────────────────────────┤
 │  VDD_TX (6-14V, from PMU)  │
 │  └── UERTX drivers          │

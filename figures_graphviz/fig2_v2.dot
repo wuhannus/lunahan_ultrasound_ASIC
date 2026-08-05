@@ -20,7 +20,7 @@ digraph G {
         label="ANALOG FRONT-END"; fontsize=9;
         style="rounded,dashed"; color="#2255aa"; penwidth=1.5;
         node [fillcolor=white, color="#333333"];
-        rx [label="RX Chain (x64 channels)\nLNA(30dB)\u2192VGA(0-46dB)\u2192BPF\u2192SAR ADC(10b,9.6ENOB)", width=2.8];
+        rx [label="RX Chain (x64 channels)\nLNA(40dB)\u2192SAR ADC(10b,9.6ENOB,1.2MS/s)", width=2.8];
         txpmu [label="TX Driver + PMU\nUERTX: H-Bridge+CSTORE, 44.2% saving\nPMU: Boost(6-14V)+LDOx2(1.8V), 78% eff.", width=2.8];
         rx -> txpmu [style=invis];
     }

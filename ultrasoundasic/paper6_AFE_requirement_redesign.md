@@ -63,7 +63,7 @@ RX voltage at transducer     =  -68.0 dBV  →  0.4 mV (398 µV)
 
 | Parameter | Derived Value | Rationale |
 |-----------|:---:|---|
-| **Gain** | **30 dB (31.6×)** | Amplify 398 µV → 12.6 mV at VGA input |
+| **Gain** | **40 dB (100×)** | Amplify 398 µV → 39.8 mV at ADC input |
 | **Input-referred noise** | **≤ 2.5 nV/√Hz** | Must be ≤ transducer Johnson noise (2.9 nV/√Hz) |
 | **Noise figure** | **≤ 3 dB** | Dominated by LNA; NFtotal ≈ NFLNA |
 | **Bandwidth** | **10 kHz – 200 kHz** | 40 kHz carrier ± 5 kHz, with margin for Q variations |
@@ -73,28 +73,7 @@ RX voltage at transducer     =  -68.0 dBV  →  0.4 mV (398 µV)
 | **Power** | **≤ 1 mW** | Paper 1: 4.3 mW/ch total; LNA ~20% of RX budget |
 | **Topology** | **Cascoded CS with inductive degeneration** | Best NF for capacitive source (Paper 4) |
 
-### 3.2 VGA Requirements
-
-| Parameter | Derived Value | Rationale |
-|-----------|:---:|---|
-| **Gain range** | **0 to 46 dB** | Compensate 46 dB variation from 0.5m (28 mV at transducer) to 7.5m (280 µV) |
-| **Gain steps** | **≤ 1 dB, 64 steps** | Fine enough for smooth AGC |
-| **Bandwidth** | **≥ 200 kHz** | Sufficient for 40 kHz carrier |
-| **THD** | **≤ 0.5% at 1 Vpp out** | Linear enough for TOF accuracy |
-| **Input noise** | **≤ 10 nV/√Hz** | Degraded by LNA gain; negligible after LNA |
-| **Power** | **≤ 2 mW** | ~35% of RX budget |
-
-### 3.3 BPF Requirements
-
-| Parameter | Derived Value | Rationale |
-|-----------|:---:|---|
-| **Center frequency** | **40 kHz** | Matches transducer resonance |
-| **Bandwidth** | **10 kHz (Q = 4)** | Captures 40 kHz signal; rejects 50/60 Hz, switch-mode noise |
-| **Order** | **4th-order Butterworth** | Good compromise: flat passband, adequate roll-off |
-| **Stopband rejection** | **>40 dB at 20 kHz, 80 kHz** | Reject harmonics and switching noise |
-| **Power** | **≤ 0.5 mW** | Passive + active hybrid |
-
-### 3.4 SAR ADC Requirements
+### 3.2 SAR ADC Requirements
 
 | Parameter | Derived Value | Rationale |
 |-----------|:---:|---|
@@ -106,7 +85,7 @@ RX voltage at transducer     =  -68.0 dBV  →  0.4 mV (398 µV)
 | **Power** | **≤ 2 mW** | ~35% of RX budget |
 | **Topology** | **Asynchronous SAR with split-CDAC** | Best FOM for 10-bit/1MS/s (Paper 5) |
 
-### 3.5 TX Driver Requirements
+### 3.3 TX Driver Requirements
 
 | Parameter | Derived Value | Rationale |
 |-----------|:---:|---|
@@ -127,7 +106,7 @@ Based on the literature survey and derived requirements, the AFE is redesigned a
 ### 4.1 LNA Redesign
 
 **Changes from previous design:**
-1. **Gain increased**: 22.4 dB → **30 dB** (better SNR for max range)
+1. **Gain increased**: 22.4 dB → **40 dB** (better SNR for max range, drives ADC directly)
 2. **Added cascode device**: Improves isolation for TX/RX switching
 3. **Input device optimization**: 40-finger layout for minimum gate resistance
 4. **Bias**: PTAT constant-gm reference (temperature-compensated gain)
@@ -135,7 +114,7 @@ Based on the literature survey and derived requirements, the AFE is redesigned a
 ```
 Previous LNA specification        Redesigned LNA specification
 ────────────────────────────────  ────────────────────────────────
-Gain:      22.4 dB        →      30.0 dB
+Gain:      22.4 dB        →      40.0 dB
 NF:        3.8 dB         →      2.5 dB (improved)
 IRN:       3.2 nV/√Hz     →      2.0 nV/√Hz (lower noise)
 BW:        120 kHz        →      180 kHz (wider)
@@ -144,23 +123,17 @@ Cascode:   No             →      Yes (improved isolation)
 Bias:      Ideal V-sources→      PTAT constant-gm reference
 ```
 
-### 4.2 VGA Redesign
+> **Note**: The redesigned RX chain is **LNA → SAR ADC directly**. No VGA or BPF stage is used; the SAR ADC's programmable input is driven straight from the LNA output.
 
-**Changes from previous design:**
-1. **Gain range expanded**: -2~42 dB → **0~46 dB** (cover full dynamic range)
-2. **Two-stage topology**: Stage 1 = programmable R-2R (0-40 dB), Stage 2 = fixed 6 dB buffer
-3. **Differential throughout**: Fully differential from LNA output through ADC input
-4. **Common-mode feedback**: Ensures output CM = VDD/2 = 0.9V for ADC compatibility
-
-### 4.3 SAR ADC Redesign
+### 4.2 SAR ADC Redesign
 
 **Changes from previous design:**
 1. **ENOB target maintained**: 9.6 bits at 1.2 MS/s (good enough)
 2. **Split-CDAC confirmed**: Optimal for area/power at 10 bits
 3. **Asynchronous clocking**: Removes need for high-speed SAR clock
-4. **Input buffer added**: Isolates CDAC switching from VGA output
+4. **Input buffer added**: Isolates CDAC switching from LNA output
 
-### 4.4 UERTX Redesign
+### 4.3 UERTX Redesign
 
 **Changes from previous design:**
 1. **Confirm UERTX topology**: Proven 44.2% saving in simulation
@@ -173,13 +146,11 @@ Bias:      Ideal V-sources→      PTAT constant-gm reference
 
 | Block | Parameter | Before | After | Improvement |
 |-------|-----------|:---:|:---:|:---:|
-| **LNA** | Gain | 22.4 dB | **30.0 dB** | +7.6 dB |
+| **LNA** | Gain | 22.4 dB | **40.0 dB** | +17.6 dB |
 | | NF | 3.8 dB | **2.5 dB** | -1.3 dB |
 | | IRN | 3.2 nV/√Hz | **2.0 nV/√Hz** | -37.5% |
 | | Cascode | No | **Yes** | + isolation |
 | | Bias | Ideal | **PTAT ref** | + temp stability |
-| **VGA** | Gain range | -2~42 dB | **0~46 dB** | +4 dB headroom |
-| | Steps | 64 (0.7 dB) | **64 (0.73 dB)** | Similar |
 | **ADC** | ENOB | 9.6 | **9.6** | Maintained |
 | | Asynchronous | No | **Yes** | + power efficiency |
 | **UERTX** | Energy saving | 44.2% | **44.2%** | Maintained |
@@ -194,10 +165,9 @@ Bias:      Ideal V-sources→      PTAT constant-gm reference
 | Decision | Choice | Papers Supporting |
 |----------|--------|-------------------|
 | LNA topology | Cascoded CS + inductive degeneration | Papers 1, 4 |
-| LNA gain target | 30 dB (vs 22.4 dB) | Derived from link budget |
+| LNA gain target | 40 dB (vs 22.4 dB) | Derived from link budget |
 | Input device layout | 40-finger for low Rg | Paper 4 |
-| VGA topology | Fully-differential R-2R PGA | Papers 1, Standard |
-| VGA gain range | 0–46 dB (vs -2~42 dB) | Derived from dynamic range |
+| RX chain | LNA → SAR ADC directly (no VGA/BPF) | Simplifies RX path |
 | ADC topology | Asynchronous SAR 10-bit | Papers 5, Standard |
 | ADC DAC type | Split-capacitor (5+5 bit) | Paper 5 |
 | TX topology | UERTX (H-Bridge + LC) | Paper 1 |

@@ -1,9 +1,7 @@
 ```mermaid
 graph TB
     subgraph AFE["Analog Front-End (sky130)"]
-        LNA["LNA<br/>3-stage CS<br/>22.4 dB, 3.8 dB NF"]
-        VGA["VGA<br/>-2 to 42 dB<br/>64-step PGA"]
-        BPF["BPF<br/>4th-order Butterworth<br/>fc=40 kHz"]
+        LNA["LNA<br/>3-stage CS<br/>40 dB, 2.5 dB NF"]
         ADC["SAR ADC<br/>10-bit, 1.2 MS/s<br/>ENOB=9.6, SNDR=58.7 dB"]
         UERTX["UERTX Driver<br/>Class-D + energy recycle<br/>6-14 Vpp, 44% saving"]
         PMU["PMU<br/>Boost + LDO<br/>1.8V/3.3V/6-14V"]
@@ -35,9 +33,7 @@ graph TB
 
     %% AFE signal chain
     TRANSDUCER -->|"Echo (RX)"| LNA
-    LNA --> VGA
-    VGA --> BPF
-    BPF --> ADC
+    LNA --> ADC
     ADC -->|"10-bit parallel"| RXCTRL
     ADC -->|"Sample stream"| PV_RXBF
 
@@ -47,7 +43,6 @@ graph TB
 
     %% PMU
     PMU -->|"1.8V"| LNA
-    PMU -->|"1.8V"| VGA
     PMU -->|"1.8V"| ADC
     PMU -->|"6-14V"| UERTX
     PMU -->|"1.8V"| CORE
@@ -77,7 +72,7 @@ graph TB
     classDef digital fill:#fff3e0,stroke:#f57c00
     classDef io fill:#e8f5e9,stroke:#388e3c
     classDef clock fill:#fce4ec,stroke:#c62828
-    class LNA,VGA,BPF,ADC,UERTX,PMU analog
+    class LNA,ADC,UERTX,PMU analog
     class CORE,ICACHE,DCACHE,SRAM,TXCTRL,RXCTRL,PMUCTRL,PV_RXBF,DELAY_SRAM,SAMPLE_SRAM digital
     class XTAL,UART_IO,SPI_IO,TRANSDUCER io
     class PLL clock

@@ -5,26 +5,12 @@ graph LR
         TRANS["Transducer<br/>40 kHz"] -->|"50Ω"| LNA1["LNA Stage 1<br/>CS + Inductive<br/>Degeneration"]
         LNA1 --> LNA2["LNA Stage 2<br/>CS Amplifier"]
         LNA2 --> LNA3["LNA Stage 3<br/>Output Buffer"]
-        LNA3 -->|"22.4 dB<br/>3.8 dB NF"| VGA_IN["To VGA"]
-    end
-
-    subgraph VGA_CHAIN["VGA (×64)"]
-        direction LR
-        VGA_IN2["From LNA"] --> VGA1["VGA Stage 1<br/>Programmable<br/>R-2R Ladder"]
-        VGA1 --> VGA2["VGA Stage 2<br/>Fixed Gain<br/>Output Driver"]
-        VGA2 -->|"-2 to 42 dB"| BPF_IN["To BPF"]
-    end
-
-    subgraph BPF_CHAIN["BPF (×64)"]
-        direction LR
-        BPF_IN2["From VGA"] --> BPF1["Sallen-Key<br/>HP Stage<br/>fc=30 kHz"]
-        BPF1 --> BPF2["Sallen-Key<br/>LP Stage<br/>fc=50 kHz"]
-        BPF2 -->|"BW=10 kHz<br/>Q≈4"| ADC_IN["To ADC"]
+        LNA3 -->|"40 dB<br/>2.5 dB NF"| ADC_IN["To SAR ADC"]
     end
 
     subgraph ADC_CHAIN["SAR ADC (×64)"]
         direction LR
-        ADC_IN2["From BPF"] --> SH["S/H<br/>Bootstrapped<br/>Switch"]
+        ADC_IN2["From LNA"] --> SH["S/H<br/>Bootstrapped<br/>Switch"]
         SH --> CDAC["Split-Cap<br/>DAC<br/>5+5 bit"]
         CDAC --> COMP["Dynamic<br/>Comparator"]
         COMP --> SARLOGIC["Asynchronous<br/>SAR Logic"]
@@ -54,13 +40,10 @@ graph LR
 
     classDef block fill:#e3f2fd,stroke:#1565c0
     classDef gain fill:#fce4ec,stroke:#c62828
-    classDef filter fill:#e8f5e9,stroke:#2e7d32
     classDef adc fill:#fff3e0,stroke:#e65100
     classDef tx fill:#f3e5f5,stroke:#6a1b9a
     classDef pmu fill:#e0f7fa,stroke:#00695c
     class LNA1,LNA2,LNA3 block
-    class VGA1,VGA2 gain
-    class BPF1,BPF2 filter
     class SH,CDAC,COMP,SARLOGIC adc
     class PWM,PREDRV,HS,LS,LC tx
     class BOOST,LDO1,LDO2 pmu

@@ -38,9 +38,8 @@ digraph G {
         c [shape=plaintext, label=<
             <table border="0" cellborder="0" cellspacing="0" cellpadding="3">
             <tr><td><font point-size="8"><b>RX voltage</b></font></td><td><font point-size="8">1.87 mV (transducer)</font></td></tr>
-            <tr><td><font point-size="8"><b>After LNA x13.2</b></font></td><td><font point-size="8">24.6 mV</font></td></tr>
-            <tr><td><font point-size="8"><b>After VGA x31.6</b></font></td><td><font point-size="8">778 mV</font></td></tr>
-            <tr><td><font point-size="8"><b>ADC code</b></font></td><td><font point-size="8">442 LSB</font></td></tr>
+            <tr><td><font point-size="8"><b>After LNA x100</b></font></td><td><font point-size="8">187 mV</font></td></tr>
+            <tr><td><font point-size="8"><b>ADC code</b></font></td><td><font point-size="8">106 LSB</font></td></tr>
             <tr><td><font point-size="8"><b>TOF / Distance</b></font></td><td><font point-size="8">17.49 ms / 3.00 m</font></td></tr>
             </table>
         >];

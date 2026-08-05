@@ -200,9 +200,9 @@ The PV-RXBF module operates in parallel with the existing RX controller. The RX 
 | PV-RXBF beamformer | 0.18 |
 | Delay table SRAM (96 KB) | 0.35 |
 | Sample buffer SRAM (320 KB) | 1.15 |
-| AFE (LNA+VGA+BPF+ADC+UERTX+PMU+PLL) | 7.79 |
+| AFE (LNA+ADC+UERTX+PMU+PLL) | 6.03 |
 | I/O pads | 2.00 |
-| **Total** | **~11.89** |
+| **Total** | **~10.13** |
 
 ---
 

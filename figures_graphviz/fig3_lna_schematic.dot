@@ -49,7 +49,7 @@ digraph lna_schematic {
         msink [label="MSINK (Current sink)\nW=15 µm, L=0.5 µm"];
     }
 
-    output [shape=plaintext, label="OUTPUT\n(to VGA input)", fontsize=14];
+    output [shape=plaintext, label="OUTPUT\n(to SAR ADC input)", fontsize=14];
 
     subgraph cluster_bias {
         label="BIAS NETWORK";

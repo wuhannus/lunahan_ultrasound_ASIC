@@ -132,48 +132,21 @@ Transducer Output (raw echo, µV scale)
        burst   (2 × 3.0m / 343 m/s = 17.5 ms)
 
 
-After LNA (22.4 dB gain = 13.2×)
+After LNA (40 dB gain = 100×)
 ──────────────────────────────────────────────────────────
- 25mV ┤                          ╭───╮
+200mV ┤                          ╭───╮
       │                         ╱     ╲
- 10mV ┤                      ╱╱       ╲╲
+100mV ┤                      ╱╱       ╲╲
       │                    ╱╱           ╲╲
-  0mV ┼──────────────────╱╱               ╲╲────────────
+   0mV ┼──────────────────╱╱               ╲╲────────────
       │               ╱╱                     ╲╲
--10mV ┤            ╱╱                         ╲╲
+-100mV┤            ╱╱                         ╲╲
       │         ╱╱                              ╲╲
--25mV ┤      ╱╱
+-200mV┤      ╱╱
       └─────────────────────────────────────────────────
-  Noise floor (input-referred): 3.2 nV/√Hz → 320 nV RMS
+  Noise floor (input-referred): 2.0 nV/√Hz → 200 nV RMS
   SNR at LNA output: ~35 dB for 3m target
-
-
-After VGA (30 dB gain = 31.6×, total gain 52.4 dB = 416×)
-──────────────────────────────────────────────────────────
-800mV ┤                          ╭───╮
-      │                         ╱     ╲
-400mV ┤                      ╱╱       ╲╲
-      │                    ╱╱           ╲╲
-  0mV ┼──────────────────╱╱               ╲╲────────────
-      │               ╱╱                     ╲╲
--400mV┤            ╱╱                         ╲╲
-      │         ╱╱                              ╲╲
--800mV┤      ╱╱
-      └─────────────────────────────────────────────────
-  Amplitude at ADC input: ~778 mV (well above 50 mV threshold)
-
-
-After BPF (40 kHz ± 5 kHz, 4th-order Butterworth)
-──────────────────────────────────────────────────────────
-800mV ┤                          ╭───╮   (clean 40 kHz
-      │                         ╱     ╲    sinusoid, out-of-
-400mV ┤                      ╱╱       ╲╲   band noise
-      │                    ╱╱           ╲╲  suppressed)
-  0mV ┼──────────────────╱╱               ╲╲────────────
--400mV┤               ╱╱                     ╲╲
-      │            ╱╱                          ╲╲
--800mV┤         ╱╱
-      └─────────────────────────────────────────────────
+  → LNA output drives SAR ADC directly (no filter/VGA)
 
 
 SAR ADC Output (10-bit, 1.2 MS/s)
@@ -188,8 +161,8 @@ Code
      0   5  10  15  20  25  30  35  40  45  50  55  samples
         (at 1.2 MS/s for 40 kHz signal = 30 samples/cycle)
 
-  Peak ADC code: ~442 (± the 9.6 ENOB noise floor ≈ ±2 LSB)
-  ADC resolution: 1.76 mV/LSB → 442 × 1.76 mV = 778 mV
+  Peak ADC code: ~106 (± the 9.6 ENOB noise floor ≈ ±2 LSB)
+  ADC resolution: 1.76 mV/LSB → 106 × 1.76 mV = 187 mV
   TOF measurement: sample #20991 at 1.2 MS/s → 17.493 ms
 ```
 

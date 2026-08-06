@@ -109,7 +109,8 @@ lunahan_ultrasound_ASIC/
 │   ├── system_procedure_simulation.md # Full-system workflow simulation
 │   ├── physical_design_report.md      # GDSII physical design report
 │   ├── pll_design_summary.md          # PLL design (sky130 open PDK)
-│   └── transistor_level_schematics.md # Transistor-level schematics for all AFE blocks
+│   ├── transistor_level_schematics.md # Transistor-level schematics for all AFE blocks
+│   └── adc_schematic.md               # 10-bit SAR ADC schematic (block diagram)
 ├── afe/                             # Analog Front-End designs
 │   ├── lna/                         # Low Noise Amplifier (3-stage)
 │   │   ├── lna_tb.sp                #   Functional testbench

@@ -7,22 +7,20 @@
 * PORTS:
 *   VDD   — power 1.8 V
 *   GND   — ground 0 V
-*   VREF  — CDAC reference (1.2 V)
-*   VCM   — CDAC bottom-plate common mode (0.75 V)
+*   VREF  — CDAC reference (1.5 V)
+*   VCM   — CDAC bottom-plate common mode (0.9 V)
 *   INP   — differential analog input + (LNA differential output +)
 *   INN   — differential analog input - (LNA differential output -)
 *   CLKS  — sampling clock (CMOS sampling switch)
-*   CLKC  — comparator clock (evaluate edge)
+*   CLKC  — comparator clock (StrongARM evaluate edge)
 *   OUT   — comparator decision per CLKC cycle (digital logic level)
 *
 * BLOCKS (all transistor-level):
 *   1. CMOS sampling switch on INP/INN (clocked by CLKS / CLKSB)
 *   2. two parallel split-capacitor CDACs (fully differential, 10-bit,
 *      5+5 each, unit C = 20 fF, MIM caps)
-*   3. Comparator — dynamic clocked PREAMP with PMOS input pair +
-*      cross-coupled regenerative latch (NMOS input stage)
-*      (PMOS input pair chosen for LNA output CM ~0.75 V; see
-*       agent_for_lna_adc.md §CM revision)
+*   3. StrongARM comparator (NMOS input pair, NMOS tail, cross-coupled
+*      NMOS/PMOS latch, PMOS precharge)
 *   4. SAR register + switch drivers (transistor logic)
 *      (register stores B9..B0, drives CDAC bottom plates)
 *
@@ -32,11 +30,6 @@
 *   the CMOS sampling switches. No dedicated sampling capacitor is used:
 *   the CDAC arrays themselves provide the sample-and-hold capacitance.
 *   Conversion compares the two CDAC top plates differentially.
-*
-*   VCM/VREF set to match the LNA output operating point:
-*     VCM  = 0.75 V  (LNA output CM = 0.748 V -> zero-differential = mid-code)
-*     VREF = 1.2  V  (VREF - VCM = 0.45 V -> differential FS ~0.9 V ~= LNA
-*                      ±0.434 V swing; 1 LSB ~= 0.9 mV)
 *
 * The SAR register is the digital block; in a tape-out it is synthesized
 * standard-cell logic. For layout, its physical gate array is described here.
@@ -170,69 +163,65 @@ XSW1NB M3    B1B  VREF VDD sky130_fd_pr__pfet_01v8 W=4u L=0.15u
 XSW0NB M4    B0B  VREF VDD sky130_fd_pr__pfet_01v8 W=4u L=0.15u
 
 *==============================================================================
-* 3. COMPARATOR — dynamic clocked preamp (PMOS input) + cross-coupled
-*   regenerative latch (NMOS input), mirrored for LNA output CM ~0.75 V
+* 3. COMPARATOR — dynamic clocked preamp + cross-coupled regenerative latch
 *   compares SIPN vs SINN; CLKC high = evaluate; OUT = decision (logic level)
 *==============================================================================
-* Reference architecture (dynamic comparator + cross-coupled latch), MIRRORED:
+* Reference architecture (dynamic comparator + cross-coupled latch):
 *
-*   LEFT  block — clocked dynamic preamp with PMOS input pair (low-CM sense),
-*     NMOS diode loads -> small-swing output near GND, low kickback.
-*   RIGHT block — cross-coupled static latch with NMOS input pair, PMOS
-*     loads (regenerates + holds full-swing output).
+*   LEFT  block — clocked dynamic preamp (input sensing, small swing, low kickback)
+*   RIGHT block — cross-coupled static latch (regenerates + holds full-swing output)
 *
 * Two-phase operation:
-*   Reset  (CLKC=0, CLKC_B=1): preamp NMOS reset pulls INTP/INTN to GND; latch
-*     top PMOS precharge pulls OUTP/OUTN to VDD.
-*   Eval   (CLKC=1, CLKC_B=0): preamp PMOS tail on, PMOS diff pair steers
-*     small differential onto INTP/INTN; latch enabled, positive feedback
-*     regenerates full-swing OUTP/OUTN and holds the decision.
+*   Reset  (CLKC=0, CLKC_B=1): preamp PMOS precharge INTP/INTN to VDD; latch
+*     top PMOS off, bottom NMOS pull OUTP/OUTN to GND.
+*   Eval   (CLKC=1, CLKC_B=0): preamp tail on, diff pair steers small
+*     differential onto INTP/INTN; latch enabled, positive feedback regenerates
+*     full-swing OUTP/OUTN and holds the decision.
 *
 * Decision: OUT = NOT(OUTN)  ->  OUT high (1) when SIPN > SINN.
-*   (PMOS input pair: higher gate -> less current -> INTP < INTN when
-*    SIPN > SINN; NMOS latch input: INTP < INTN -> OUTP high -> OUT high.)
 *
-* Widths: PMOS ~2x NMOS for same drive (mirror of the verified reference):
-*   preamp tail PMOS 4u, diff PMOS 2u, reset/load NMOS 2u, latch bottom NMOS
-*   4u, latch input NMOS 2u, latch cross PMOS 4u, latch reset PMOS 2u.
+* Reference topology with L = 180 nm (KR_VDD = VDD). Widths are the reference
+*   ratios scaled up for reliable regeneration (verified monotonic): tail 2u,
+*   diff pair 1u, reset/load PMOS 2u, latch top PMOS 4u, latch PMOS/NMOS 2u,
+*   reset NMOS 1u.
 *
 * ---- CLKC_B = inverse of CLKC (on-chip inverter) ----
 XINV_CLKC CLKC_B CLKC VDD VDD sky130_fd_pr__pfet_01v8 W=1u L=0.18u
 XINV_CLKC_N CLKC_B CLKC GND GND sky130_fd_pr__nfet_01v8 W=1u L=0.18u
 
 *==============================================================================
-* 3a. LEFT — dynamic clocked preamp (PMOS input pair, small-swing near GND)
+* 3a. LEFT — dynamic clocked preamp (small-swing input sense stage)
 *==============================================================================
-* tail current-switch PMOS (source VDD, gate CLKC_B, on during evaluate)
-Xtail_pa tail_pa CLKC_B VDD VDD sky130_fd_pr__pfet_01v8 W=4u L=180n
-* differential input PMOS pair (gates SIPN/SINN, drains INTP/INTN, source tail)
-Xdp_p INTP SIPN tail_pa VDD sky130_fd_pr__pfet_01v8 W=2u L=180n
-Xdp_n INTN SINN tail_pa VDD sky130_fd_pr__pfet_01v8 W=2u L=180n
-* NMOS reset devices (gate CLKC_B, source GND, drain = preamp nodes) pull
-*   INTP/INTN to GND during reset; off during evaluate.
-Xr_pa_p INTP CLKC_B GND GND sky130_fd_pr__nfet_01v8 W=2u L=180n
-Xr_pa_n INTN CLKC_B GND GND sky130_fd_pr__nfet_01v8 W=2u L=180n
-*   two diode-connected NMOS (gate=drain, INTP/INTN to GND) act as loads
-*   giving a small-swing differential output near GND -> low kickback to
-*   the CDAC top plates.
-Xld_pa_p INTP INTP GND GND sky130_fd_pr__nfet_01v8 W=2u L=180n
-Xld_pa_n INTN INTN GND GND sky130_fd_pr__nfet_01v8 W=2u L=180n
+* tail current-switch NMOS 500n/180n (gate CLKC)
+Xtail_pa tail_pa CLKC GND GND sky130_fd_pr__nfet_01v8 W=2u L=180n
+* differential input NMOS pair 500n/180n (ref 250n, raised to model min; gates SIPN/SINN)
+Xdp_p INTP SIPN tail_pa GND sky130_fd_pr__nfet_01v8 W=1u L=180n
+Xdp_n INTN SINN tail_pa GND sky130_fd_pr__nfet_01v8 W=1u L=180n
+* PMOS reset/load devices 500n/180n:
+*   two clocked PMOS (gate CLKC, source VDD, drain = preamp nodes) precharge
+*   INTP/INTN to VDD during reset; off during evaluate.
+Xr_pa_p INTP CLKC VDD VDD sky130_fd_pr__pfet_01v8 W=2u L=180n
+Xr_pa_n INTN CLKC VDD VDD sky130_fd_pr__pfet_01v8 W=2u L=180n
+*   two diode-connected PMOS (gate=drain, VDD to INTP/INTN) act as loads
+*   giving a small-swing differential output -> low kickback to CDAC top plates.
+Xld_pa_p INTP INTP VDD VDD sky130_fd_pr__pfet_01v8 W=2u L=180n
+Xld_pa_n INTN INTN VDD VDD sky130_fd_pr__pfet_01v8 W=2u L=180n
 
 *==============================================================================
-* 3b. RIGHT — cross-coupled regenerative static latch (NMOS input, output hold)
+* 3b. RIGHT — cross-coupled regenerative static latch (output hold)
 *==============================================================================
-* bottom NMOS clock switch (source GND, gate CLKC, drain = latch rail)
-Xbot_latch latch_rail CLKC GND GND sky130_fd_pr__nfet_01v8 W=4u L=180n
-* input NMOS pair (gates INTP/INTN, drains OUTP/OUTN, source latch rail)
-Xl_n_p OUTP INTP latch_rail GND sky130_fd_pr__nfet_01v8 W=2u L=180n
-Xl_n_n OUTN INTN latch_rail GND sky130_fd_pr__nfet_01v8 W=2u L=180n
-* cross-coupled regenerative PMOS pair (source VDD)
-Xl_p_1 OUTP OUTN VDD VDD sky130_fd_pr__pfet_01v8 W=4u L=180n
-Xl_p_2 OUTN OUTP VDD VDD sky130_fd_pr__pfet_01v8 W=4u L=180n
-* top clock-gated PMOS precharge (gate CLKC, source VDD, drain = outputs)
-*   reset latch to VDD during reset; off during evaluate.
-Xl_rst_1 OUTP CLKC VDD VDD sky130_fd_pr__pfet_01v8 W=2u L=180n
-Xl_rst_2 OUTN CLKC VDD VDD sky130_fd_pr__pfet_01v8 W=2u L=180n
+* top PMOS clock switch 2u/180n (gate CLKC_B, source VDD, drain = latch rail)
+Xtop_latch latch_rail CLKC_B VDD VDD sky130_fd_pr__pfet_01v8 W=4u L=180n
+* input PMOS pair 500n/180n (gate INTP/INTN, drain OUTP/OUTN, source latch rail)
+Xl_p_p OUTP INTP latch_rail VDD sky130_fd_pr__pfet_01v8 W=2u L=180n
+Xl_p_n OUTN INTN latch_rail VDD sky130_fd_pr__pfet_01v8 W=2u L=180n
+* cross-coupled regenerative NMOS pair 500n/180n
+Xl_n_1 OUTP OUTN GND GND sky130_fd_pr__nfet_01v8 W=2u L=180n
+Xl_n_2 OUTN OUTP GND GND sky130_fd_pr__nfet_01v8 W=2u L=180n
+* bottom clock-gated NMOS pull-downs 500n/180n (ref 250n, raised to model min;
+*   gate CLKC_B) reset latch to GND
+Xl_rst_1 OUTP CLKC_B GND GND sky130_fd_pr__nfet_01v8 W=1u L=180n
+Xl_rst_2 OUTN CLKC_B GND GND sky130_fd_pr__nfet_01v8 W=1u L=180n
 
 * ---- output buffer: OUT = NOT(OUTN) (digital decision) ----
 Xout_buf_n OUT OUTN GND GND sky130_fd_pr__nfet_01v8 W=1u L=0.18u

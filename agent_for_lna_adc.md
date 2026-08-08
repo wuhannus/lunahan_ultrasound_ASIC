@@ -40,16 +40,23 @@ near the LNA output CM (0.748 V), NOT ±0.5–1 V at 0.9 V CM.
 - **CURRENT (LNA-matched) reference levels:** VDD=1.8, **VREF=1.2, VCM=0.75**
   (changed from VREF=1.5 / VCM=0.9). VCM = LNA output CM (0.748 V) → zero
   differential ≈ mid-code; VREF−VCM = 0.45 V → differential FS ≈ 0.9 V ≈ LNA swing.
+- **MID-CODE SAMPLING is REQUIRED** — the SAR register must reset to **code
+  512 (B9=1)** during the CLKS sampling window (testbench `RST` presets B9=1).
+  Without it the subtracting-reference CDAC + top-plate sampling is **unipolar**
+  (`code 0 ↔ 0 V`; negative LNA echo clipped; systematic offset ≈ VREF−VCM).
+  With it: `V_inp−V_inn = (VREF−VCM)(2w−1)` → zero diff ↔ mid-code, bipolar
+  ±0.45 V. See §2c.
 - Comparator = **dynamic clocked PREAMP with PMOS input pair + cross-coupled
   latch (NMOS input)** — mirrored to sense the low LNA CM (0.75 V). The old
   NMOS-input-preamp version is archived as
   `align_input/adc_10bit_sar_core_obs_nmos_preamp.sp`.
-- **Verified metrics (LNA-matched, new):** ENOB **7.69 bits**, SNDR **48.0 dB**,
-  SFDR 53.7 dB, THD −52.9 dB, INL 5.63 LSB, DNL 3.66 LSB, transfer
-  1090 code/V offset 173 code. **Improvement vs old NMOS-preamp (VCM=0.9):
-  ENOB 6.77→7.69 (+0.92 bits), SNDR 42.5→48.0 dB, SFDR 43.2→53.7 dB.**
-- Systematic offset to mid-code **~0.31 V persists** — it is a **CDAC/SAR-loop**
-  offset (present with an ideal comparator), the next limiter to > 8 bits.
+- **Verified metrics (current, offset fixed):** ENOB **7.60 bits**, SNDR
+  **47.5 dB**, SFDR 52.0 dB, THD −49.0 dB, INL **4.63 LSB**, DNL **2.24 LSB**,
+  transfer 2010 code/V offset **483 code (~mid-code)**, systematic offset
+  **+0.014 V**. Transfer is bipolar + monotonic.
+- **Systematic offset SOLVED** (was ~0.31 V): root cause was the unipolar CDAC
+  transfer, not the comparator/CM. See §2c. Remaining limiter to > 8 bits is
+  CDAC/SAR-loop nonlinearity (HD2 ≈ −52 dBc).
 
 ---
 
@@ -99,6 +106,7 @@ while not done:
 | — | VCM=GND / VREF=VDD test | compressed (code 308 vs 918) | **does not help** — keep VCM≈0.9, VREF slightly above; attack asymmetry/parasitics |
 | — | LNA swing review | ±0.434 V CMFB-limited | ADC must match ±0.4–0.5 V, not ±0.5+ |
 | **6** | **LNA-match redesign:** mirror comparator → **PMOS-input preamp** (sense low CM) + NMOS-input latch; set **VCM=0.75 V, VREF=1.2 V** | Implemented in `adc_10bit_sar_core.sp`; original archived as `adc_10bit_sar_core_obs_nmos_preamp.sp` | **ENOB 6.77→7.69 bits, SNDR 42.5→48.0 dB, SFDR 43.2→53.7 dB, THD −42.9→−52.9 dB**; systematic CDAC offset ~0.31 V persists (F6-listed CDAC offset, not comparator) |
+| **7** | **Fix systematic offset:** diagnose + mid-code sampling (reset SAR to code 512 = B9=1 during CLKS) | `RST` presets B9=1 in TB; netlist header documents requirement | **Systematic offset 0.31 V → +0.014 V; transfer bipolar ±0.45 V; INL 5.63→4.63, DNL 3.66→2.24 LSB; ENOB 7.60** | Root cause = unipolar CDAC transfer (not comparator); next limiter = CDAC/SAR nonlinearity (HD2 −52 dBc) |
 
 ---
 
@@ -168,6 +176,71 @@ mid-code (~0.31 V) did **not** move — confirming the F6 audit: it is a
 
 ---
 
+## 2c. Systematic offset — root cause, diagnosis, and fix (verified)
+
+### Symptom
+- Transfer `code = gain·diff + off` with `off ≈ 173` and **mid-code at
+  diff ≈ +0.31 V** regardless of VCM/VREF tuning → only `0…+0.9 V`
+  differential usable; the LNA's negative echo half-swing is **clipped**.
+- Verified independent of comparator (present with an ideal comparator,
+  audit F6) and ~linearly **proportional to `VREF−VCM`** (diagnostic sweep:
+  mid@diff = +0.117 @dV=0.25 → +0.311 @dV=0.45 → +0.729 @dV=0.85).
+
+### Root cause — unipolar CDAC transfer (NOT the comparator/CM)
+The subtracting-reference CDAC with **top-plate sampling** stores the input
+against a **code-0** CDAC state (all DAC_P plates at VREF, DAC_N at VCM).
+Charge conservation gives:
+```
+V_SIPN = INP − (VREF−VCM)·w
+V_SINN = INN + (VREF−VCM)·w
+balance:  INP − INN = 2·(VREF−VCM)·w          (w = code/1023)
+```
+So `code 0 ↔ 0 V differential`, and the range is unipolar `0…+2dV`.
+A bipolar LNA (±0.434 V) can only use half of it → looks like a large
+systematic offset to mid-code, and the offset scales with dV. This is why
+VCM/VREF tuning alone could never center it.
+
+### Fix — mid-code sampling (standard SAR technique)
+Reset the SAR register to **code 512 (B9=1, all other bits 0) during the
+CLKS sampling window**, so the stored charge is centered:
+```
+V_SIPN = INP + dV·(1−w)   →  balance:  INP − INN = (VREF−VCM)·(2w−1)
+V_SINN = INN + dV·w
+```
+Now `w=0.5 (code 512) ↔ zero differential`, and the range is **bipolar
+±dV = ±0.45 V** — exactly the LNA's ±0.434 V swing.
+
+### Implementation
+- `adc_10bit_sar_tb.sp`: `RST` presets **B9 to VDD** (was GND) so the CDAC
+  samples at mid-code: `SRST9 B9 VDD RST 0 SWSW`.
+- `align_input/adc_10bit_sar_core.sp` header documents the mid-code sampling
+  requirement (the SAR register must reset to code 512 during CLKS).
+- All other bits keep reset-to-0 (they're the LSBs, no contribution at 512).
+
+### Diagnostic procedure (reusable)
+1. Parameterize the TB (regex-substitute `VREF`/`VCM` DC lines).
+2. Sweep `VREF` (VCM fixed) and fit `mid@diff = (512−off)/gain`.
+3. If `mid@diff` scales ~linearly with `VREF−VCM` → **reference/transfer
+   centering** (this case); if constant → fixed charge-injection/switch offset.
+   (Bug seen: tempfiles must be written inside the sim dir — relative
+   `.include` paths break in `/tmp`.)
+
+### Result (verified)
+| Metric | Before | After |
+|:--|:--:|:--:|
+| Systematic offset (to mid-code) | ~0.31 V | **+0.014 V** |
+| Transfer | unipolar `0…+0.9 V` | **bipolar ±0.45 V**, monotonic |
+| INL max | 5.63 LSB | **4.63 LSB** |
+| DNL max | 3.66 LSB | **2.24 LSB** |
+| ENOB | 7.69 bits | 7.60 bits (HD2 −52 dBc now limits) |
+
+**Remaining limiter:** CDAC/SAR-loop nonlinearity (HD2 ≈ −52 dBc) — switch
+charge injection / cap mismatch. Path to > 8 bits: larger unit cap
+(20→40 fF, resize bridge), symmetric ±VREF, offset/gain calibration, NOR2
+clock gate.
+
+---
+
 ## 3. CMFB design — procedure & status
 
 ### Goal
@@ -217,9 +290,9 @@ standalone layout-source CMFB cell** that senses `(OP+ON)/2`, compares to
 | `afe/lna/lna_redesign.sp` | LNA (behavioral CMFB) + verified specs |
 | `simulation/lna5t/lna5t_results_report.md` | LNA pre/post metrics, DC op point |
 | `align_input/lna_5t_core.sp` | LNA layout-source core |
-| `align_input/adc_10bit_sar_core.sp` | SAR ADC netlist — **PMOS-input preamp + NMOS-input latch, VCM=0.75/VREF=1.2** |
+| `align_input/adc_10bit_sar_core.sp` | SAR ADC netlist — **PMOS-input preamp + NMOS-input latch, VCM=0.75/VREF=1.2, mid-code sampling required** |
 | `align_input/adc_10bit_sar_core_obs_nmos_preamp.sp` | **OBSOLETE** — old NMOS-input-preamp comparator (VCM=0.9/VREF=1.5) |
-| `simulation/adc10bit/adc_10bit_sar_tb.sp` | ADC testbench (one conversion per run) |
+| `simulation/adc10bit/adc_10bit_sar_tb.sp` | ADC testbench (one conversion per run); **RST presets B9=1 (mid-code sample)** |
 | `simulation/adc10bit/run_adc_metrics.py` | Metrics harness (SNDR/ENOB/INL/DNL); `VCM` const = 0.75 |
 | `simulation/adc10bit/adc_metrics_report.md` | ADC report incl. MEA record |
 | `align_input/lna_cmfb.sp` | Standalone CMFB layout-source netlist |
@@ -232,12 +305,19 @@ standalone layout-source CMFB cell** that senses `(OP+ON)/2`, compares to
    margin + compensation cap on NG.
 2. ~~**Match ADC input to LNA swing:** re-center VCM/range to the LNA's
    ±0.43 V / 0.748 V CM and re-measure ENOB~~ **DONE** — VCM=0.75/VREF=1.2 +
-   PMOS-input preamp → ENOB 6.77→7.69 bits. Re-measure remaining offset.
-3. **Reduce CDAC systematic offset (~0.31 V) → >8-bit target:** symmetric
+   PMOS-input preamp → ENOB 6.77→7.69 bits.
+3. ~~**Reduce CDAC systematic offset (~0.31 V) → >8-bit target:** symmetric
    ±VREF reference scheme, or input-referred offset/gain calibration (weight
    biasing per 0.3 V SAR paper), or larger unit cap (20→40 fF, resize bridge
-   ~20.6 fF) + switch charge-injection fixes (HD2 −48 dBc still present).
+   ~20.6 fF) + switch charge-injection fixes (HD2 −48 dBc still present).~~
+   **DONE (offset part)** — root cause was the **unipolar CDAC transfer**
+   (not comparator/CM); fixed by **mid-code sampling** (SAR reset to code 512
+   during CLKS) → offset 0.31 V → **+0.014 V**, transfer now bipolar ±0.45 V.
+   See §2c.
 4. **Model the NOR2 clock gate** so CLKC is derived from CLKS (non-overlap by
    design, not by manual timing).
 5. **Verify PMOS-preamp comparator in isolation** at VCM=0.75 (offset/kickback
    audit) and confirm low-end conduction across the LNA 0.32–1.18 V range.
+6. **>8-bit path (remaining limiter = CDAC/SAR nonlinearity, HD2 ≈ −52 dBc):**
+   larger unit cap (20→40 fF, resize bridge ~20.6 fF), switch charge-injection
+   fixes, symmetric ±VREF, input-referred offset/gain calibration.

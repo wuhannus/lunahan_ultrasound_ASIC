@@ -78,36 +78,46 @@ conversion is monotonic.
 
 ## 3. Measured metrics
 
-Conditions: `VDD=1.8 V, VREF=1.2 V, VCM=0.75 V` (LNA-matched), fs = 1.2 MS/s
-(testbench conversion = 360 ns/cycle), coherent sine 7/128, 128 samples;
-256-point ramp.
+Conditions: `VDD=1.8 V, VREF=1.2 V, VCM=0.75 V` (LNA-matched) + **mid-code
+sampling** (SAR reset to code 512 during CLKS), fs = 1.2 MS/s (testbench
+conversion = 360 ns/cycle), coherent sine 7/128, 128 samples; 256-point ramp.
 
-| Metric | Old (NMOS preamp) | New (PMOS preamp, LNA CM) |
-|:-------|:---:|:---:|
-| Resolution | 10 bit | 10 bit |
-| Sampling rate | 1.2 MS/s | 1.2 MS/s |
-| Usable input range (diff) | 0 … +0.40 V | +0.05 … +0.30 V |
-| SNDR | 42.5 dB | **48.0 dB** |
-| SFDR | 43.2 dB | **53.7 dB** |
-| THD | −42.9 dB | **−52.9 dB** |
-| ENOB | 6.77 bits | **7.69 bits** |
-| INL (max abs) | 7.0 LSB | 5.63 LSB |
-| DNL (max abs) | 3.2 LSB | 3.66 LSB |
-| Transfer gain | 968 code/V | 1090 code/V |
-| Transfer offset | 164 code | 173 code |
-| Systematic offset (to mid-code) | ~0.27 V | ~0.31 V |
+| Metric | Old (NMOS preamp) | CM/preamp fix | + offset fix |
+|:-------|:---:|:---:|:---:|
+| Resolution | 10 bit | 10 bit | 10 bit |
+| Sampling rate | 1.2 MS/s | 1.2 MS/s | 1.2 MS/s |
+| Usable input range (diff) | 0 … +0.40 V | +0.05 … +0.30 V | **−0.15 … +0.20 V** (bipolar) |
+| SNDR | 42.5 dB | 48.0 dB | **47.5 dB** |
+| SFDR | 43.2 dB | 53.7 dB | **52.0 dB** |
+| THD | −42.9 dB | −52.9 dB | **−49.0 dB** |
+| ENOB | 6.77 bits | 7.69 bits | **7.60 bits** |
+| INL (max abs) | 7.0 LSB | 5.63 LSB | **4.63 LSB** |
+| DNL (max abs) | 3.2 LSB | 3.66 LSB | **2.24 LSB** |
+| Transfer gain | 968 code/V | 1090 code/V | 2010 code/V |
+| Transfer offset | 164 code | 173 code | **483 code (~mid-code)** |
+| Systematic offset (to mid-code) | ~0.27 V | ~0.31 V | **+0.014 V** |
 
-> **Improvement from the CM/preamp redesign:** ENOB 6.77 → 7.69 bits
-> (+0.92 bits), SNDR +5.5 dB, SFDR +10.5 dB, THD +10 dB. The PMOS-input
-> preamp + LNA-matched VCM/VREF removed the low-end clipping/HD2 that came
-> from driving the comparator at a common mode (0.9 V) far above the LNA
-> output CM (0.748 V).
+> **Systematic offset — ROOT CAUSE & FIX.** The ~0.31 V offset was NOT a
+> comparator/CM artifact: it is the **unipolar transfer** of the subtracting-
+> reference CDAC with top-plate sampling. Sampling against a code-0 CDAC
+> state gives `V_inp − V_inn = 2·(VREF−VCM)·w` → code 0 at zero differential
+> (negative LNA echo clipped, only `0…+0.9 V` usable). Verified: the offset
+> scales ~linearly with `VREF−VCM`.
 >
-> **Remaining limiter (>8-bit target):** the systematic offset to mid-code
-> (~0.31 V) persists — it is a **CDAC / SAR-loop** offset (verified present
-> with an ideal comparator in the previous audit), not the comparator or CM.
-> Reaching > 8 bits requires reducing/calibrating this CDAC offset (symmetric
-> ±VREF reference scheme, or input-referred offset/gain calibration).
+> **Fix — mid-code sampling:** reset the SAR register to **code 512 (B9=1)**
+> during the CLKS window. The stored charge is then centered:
+> `V_inp − V_inn = (VREF−VCM)·(2w−1)` → zero differential ↔ mid-code, full
+> `±0.45 V` bipolar range. Measured: systematic offset **0.31 V → 0.014 V**
+> (mid-code at diff = +0.014 V), transfer now bipolar and monotonic,
+> INL 5.63 → 4.63 LSB, DNL 3.66 → 2.24 LSB. Implemented by driving `RST`
+> to preset `B9=1` in `adc_10bit_sar_tb.sp`; the netlist header documents
+> the requirement.
+>
+> **Remaining limiter (>8-bit target):** ENOB ~7.6 bits is now limited by
+> CDAC/SAR-loop nonlinearity (HD2 ≈ −52 dBc, reduced from −48 dBc) — switch
+> charge injection and cap mismatch, not the offset or comparator. Path:
+> larger unit cap (20→40 fF, resize bridge ~20.6 fF), symmetric ±VREF
+> reference, offset/gain calibration, NOR2 clock gate.
 
 ## 4. Figures
 
@@ -139,18 +149,24 @@ audited before updating state.
 | 3 | Reduce comparator offset (sweep preamp sizing) | Wdp/Wld sweep | Offset unchanged (~50 mV) — offset is in the **latch/CDAC**, not preamp gain | F5 |
 | 4 | Isolate limiter: ideal-comparator audit | Behavioral ideal comparator in TB | Same ~7-bit ENOB → **limiter is CDAC/SAR-loop nonlinearity (HD2 ≈ −48 dBc), not the comparator** | F6 verified |
 | 5 | Match ADC to LNA operating point: **PMOS-input preamp** (low-CM sense) + mirrored latch; VCM 0.9→**0.75 V**, VREF 1.5→**1.2 V** | PMOS preamp (tail PMOS 4u, diff PMOS 2u, NMOS load/reset 2u), NMOS-input latch; original archived as `adc_10bit_sar_core_obs_nmos_preamp.sp` | ENOB 6.77→**7.69 bits**, SNDR 42.5→**48.0 dB**, SFDR 43.2→53.7 dB, THD −42.9→−52.9 dB | F7: +0.92 bits; systematic CDAC offset (~0.31 V) persists → next limiter |
+| 6 | **Fix systematic offset (unipolar transfer):** reset SAR to **mid-code (B9=1, code 512)** during sampling; root cause = subtracting-ref CDAC + top-plate sampling is unipolar (`code 0 ↔ 0 V diff`), offset ∝ VREF−VCM | `RST` presets B9=1 in `adc_10bit_sar_tb.sp`; netlist header documents the requirement | Systematic offset **0.31 V→0.014 V**; transfer bipolar/monotonic; INL 5.63→**4.63 LSB**, DNL 3.66→**2.24 LSB**; ENOB 7.60 (HD2 −52 dBc) | F8: offset FIXED; next limiter = CDAC/SAR nonlinearity |
 
-**Why ENOB is < 8 bits and the path forward** (per audit F6):
-- Dominant distortion is **HD2 (−48 dBc)**, a signature of asymmetric transfer
-  from the CDAC reference scheme (single-side offset ~270 mV to mid-code) —
-  present even with an ideal comparator.
-- To reach > 8 bits: (a) re-center/reduce the CDAC reference (lower VREF or
-  a symmetric ±VREF scheme) to eliminate the dead-zone and HD2, or
-  (b) add input-referred offset / gain calibration (per survey: weight-biasing
-  calibration in the 0.3 V SAR paper), or (c) increase CDAC linearity (larger
-  unit cap, better switch matching).
-- The comparator change is already the highest-leverage fix: it removed the
-  catastrophic kickback (ENOB 1.34 → 6.77 bits).
+**Why ENOB is < 8 bits and the path forward** (per audits F6/F8):
+- **F6 (offset): FIXED.** The ~0.31 V systematic offset was the *unipolar
+  transfer* of the subtracting-reference CDAC with top-plate sampling
+  (sampling against code 0 → `code 0 ↔ 0 V`). Mid-code sampling (code 512
+  during CLKS) centers it: `V_inp−V_inn = (VREF−VCM)(2w−1)`. Measured
+  offset → +0.014 V.
+- **F8 (remaining):** dominant distortion is **HD2 ≈ −52 dBc** (was −48 dBc),
+  now from **CDAC/SAR-loop nonlinearity** — switch charge injection, cap
+  mismatch — not offset or comparator.
+- To reach > 8 bits: (a) increase CDAC linearity (larger unit cap 20→40 fF,
+  resize bridge ~20.6 fF), (b) switch charge-injection fixes, (c) input-referred
+  offset/gain calibration (weight-biasing per 0.3 V SAR paper), (d) NOR2 clock
+  gate so CLKC is derived from CLKS (non-overlap by design).
+- The comparator change (round 1) removed catastrophic kickback (ENOB 1.34 →
+  6.77); the CM/preamp redesign (+0.92 bits) and mid-code sampling (offset
+  fix) brought it to ~7.6 bits with a bipolar, offset-free transfer.
 
 ## 7. Files
 

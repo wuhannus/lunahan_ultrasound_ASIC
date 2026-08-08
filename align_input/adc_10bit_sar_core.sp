@@ -38,6 +38,17 @@
 *     VREF = 1.2  V  (VREF - VCM = 0.45 V -> differential FS ~0.9 V ~= LNA
 *                      ±0.434 V swing; 1 LSB ~= 0.9 mV)
 *
+*   MID-CODE SAMPLING (required, fixes systematic offset):
+*     During the CLKS sampling window the SAR register must be RESET to
+*     mid-code (B9 = 1, all other bits = 0  ->  code 512), NOT to code 0.
+*     Top-plate sampling against a code-0 CDAC state makes the transfer
+*     unipolar (code 0 <-> 0 V diff; negative LNA echo clipped, systematic
+*     offset to mid-code ~= VREF-VCM). Sampling at mid-code centers the
+*     stored charge so the transfer is bipolar:
+*         V_inp - V_inn = (VREF-VCM)*(2w - 1)   (w = code/1023)
+*     -> zero differential <-> mid-code; full ±0.45 V bipolar range.
+*     (The testbench adc_10bit_sar_tb.sp drives RST to preset B9=1.)
+*
 * The SAR register is the digital block; in a tape-out it is synthesized
 * standard-cell logic. For layout, its physical gate array is described here.
 *
